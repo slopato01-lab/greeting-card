@@ -1,0 +1,654 @@
+/* ============================================================
+   GLOBALS — токены дизайн-системы «Стикерпак» + база + общие компоненты.
+   Единственный источник значений: цвет, шрифт, отступ, радиус,
+   тень и движение берутся только отсюда.
+   ============================================================ */
+
+/* ——— Шрифты (локальные, вариативные) ——— */
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('../assets/fonts/unbounded-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('../assets/fonts/unbounded-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../assets/fonts/onest-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../assets/fonts/onest-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+
+/* ——— Токены ——— */
+:root {
+  /* Нейтрали: от фона до текста, одна холодная фиолетовая тональность */
+  --ink:    #24202B;  /* уголь — основной текст, тёмные поверхности */
+  --slate:  #55505F;  /* сланец — вторичный текст (6.9:1 на листе) */
+  --mist:   #8B8494;  /* туман — только декор и крупные подписи, не мелкий текст */
+  --line:   #DCD9E0;  /* границы, разделители */
+  --paper:  #F3F2F4;  /* лист — фон страницы */
+  --vinyl:  #FCFBFD;  /* винил — поверхности, карточки */
+
+  /* Бренд */
+  --raspberry: #C9366F; /* малина */
+  --plum:      #6C4AB0; /* слива */
+
+  /* Акценты праздников: один акцент на праздник, все ≥4.5:1 белым текстом */
+  --occ-newyear:    #2B825C; /* хвоя */
+  --occ-birthday:   #6C4AB0; /* слива */
+  --occ-valentine:  #CE3A4E; /* алый */
+  --occ-mar8:       #A94A9C; /* орхидея */
+  --occ-feb23:      #4658B0; /* сталь */
+  --occ-wedding:    #956C23; /* янтарь */
+  --occ-graduation: #2C7A9A; /* океан */
+  --occ-other:      #C9366F; /* малина */
+
+  /* Светлые варианты акцентов — для текста на угле, все ≥4.5:1 */
+  --occ-newyear-lt:    #349D6F;
+  --occ-birthday-lt:   #977EC9;
+  --occ-valentine-lt:  #D96575;
+  --occ-mar8-lt:       #C06EB4;
+  --occ-feb23-lt:      #7987CA;
+  --occ-wedding-lt:    #B2812A;
+  --occ-graduation-lt: #3695BC;
+  --occ-other-lt:      #D66692;
+
+  /* Семантика — из палитры праздников */
+  --ok:    var(--occ-newyear);
+  --err:   var(--occ-valentine);
+  --warn:  var(--occ-wedding);
+
+  /* Типографика: Unbounded (display) + Onest (текст), шкала 1.25 от 16px */
+  --font-display: 'Unbounded', 'Onest', sans-serif;
+  --font-text: 'Onest', sans-serif;
+  --fs-100: 0.8125rem; /* 13 */
+  --fs-200: 1rem;      /* 16 */
+  --fs-300: 1.25rem;   /* 20 */
+  --fs-400: 1.5625rem; /* 25 */
+  --fs-500: 1.9375rem; /* 31 */
+  --fs-600: 2.4375rem; /* 39 */
+  --fs-700: 3.0625rem; /* 49 */
+
+  /* Отступы: шкала на базе 4px */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-24: 96px;
+
+  /* Радиусы: три ступени */
+  --r-s: 6px;
+  --r-m: 14px;
+  --r-full: 999px;
+
+  /* Тени: жёсткий цветной офсет — сигнатура. Мягких серых нет. */
+  --shadow-color: var(--ink);
+  --shadow-1: 3px 3px 0 var(--shadow-color);
+  --shadow-2: 5px 5px 0 var(--shadow-color);
+  --shadow-3: 9px 9px 0 var(--shadow-color);
+
+  /* Движение: одна физика на весь продукт */
+  --ease: cubic-bezier(.22, .9, .3, 1);
+  --dur-1: 180ms;   /* микровзаимодействия */
+  --dur-2: 400ms;   /* переходы блоков */
+  --dur-open: 1400ms; /* сигнатурное открытие */
+}
+
+/* ——— База ——— */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-text);
+  font-size: var(--fs-200);
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-feature-settings: 'ss01' on;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+img { max-width: 100%; display: block; }
+button, input, textarea, select { font: inherit; color: inherit; }
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--plum);
+  outline-offset: 2px;
+  border-radius: var(--r-s);
+}
+
+::selection { background: var(--raspberry); color: var(--vinyl); }
+
+.hidden { display: none !important; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+}
+
+.container {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: var(--sp-4);
+}
+@media (min-width: 768px) { .container { padding-inline: var(--sp-8); } }
+
+/* ——— Иконки ——— */
+.icon {
+  display: inline-block;
+  vertical-align: -0.18em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ——— Стикер: базовая поверхность продукта ——— */
+.sticker {
+  background: var(--vinyl);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  box-shadow: var(--shadow-2);
+}
+
+/* ——— Кнопки ——— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-6);
+  font-family: var(--font-text);
+  font-size: var(--fs-200);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  background: var(--vinyl);
+  color: var(--ink);
+  box-shadow: var(--shadow-1);
+  transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease);
+  user-select: none;
+}
+.btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-2); }
+.btn:active { transform: translate(3px, 3px); box-shadow: none; }
+.btn:disabled { opacity: .45; pointer-events: none; }
+
+.btn--primary {
+  background: var(--raspberry);
+  color: var(--vinyl);
+  --shadow-color: var(--plum);
+}
+.btn--plum {
+  background: var(--plum);
+  color: var(--vinyl);
+  --shadow-color: var(--raspberry);
+}
+.btn--ghost {
+  border-color: transparent;
+  box-shadow: none;
+  background: transparent;
+}
+.btn--ghost:hover { transform: none; box-shadow: none; background: var(--line); }
+.btn--ghost:active { transform: translate(1px, 1px); }
+.btn--lg { padding: var(--sp-4) var(--sp-8); font-size: var(--fs-300); border-radius: var(--r-m); }
+.btn--sm { padding: var(--sp-2) var(--sp-4); font-size: var(--fs-100); box-shadow: var(--shadow-1); }
+
+/* ——— Поля форм ——— */
+.field { margin-bottom: var(--sp-4); }
+.field__label {
+  display: block;
+  font-size: var(--fs-100);
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+.field__hint { font-size: var(--fs-100); color: var(--slate); margin-top: var(--sp-1); }
+.field__input,
+.field__textarea {
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  background: var(--vinyl);
+  color: var(--ink);
+  transition: box-shadow var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.field__input::placeholder, .field__textarea::placeholder { color: var(--mist); }
+.field__input:focus, .field__textarea:focus {
+  outline: none;
+  box-shadow: var(--shadow-1);
+  transform: translate(-1px, -1px);
+  --shadow-color: var(--plum);
+}
+.field__textarea { resize: vertical; min-height: 120px; }
+.field--error .field__input, .field--error .field__textarea { border-color: var(--err); }
+.field__error { font-size: var(--fs-100); color: var(--err); font-weight: 600; margin-top: var(--sp-1); }
+
+/* ——— Загрузка фото ——— */
+.photo-upload {
+  border: 2px dashed var(--ink);
+  border-radius: var(--r-m);
+  padding: var(--sp-8) var(--sp-4);
+  text-align: center;
+  cursor: pointer;
+  background: var(--vinyl);
+  color: var(--slate);
+  transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease);
+}
+.photo-upload:hover, .photo-upload--drag {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-1);
+  --shadow-color: var(--plum);
+}
+.photo-upload p { font-size: var(--fs-100); margin-top: var(--sp-2); }
+.photo-upload strong { color: var(--raspberry); }
+.photo-preview { position: relative; border: 2px solid var(--ink); border-radius: var(--r-m); overflow: hidden; }
+.photo-preview img { width: 100%; height: 220px; object-fit: cover; }
+.photo-remove {
+  position: absolute;
+  top: var(--sp-2); right: var(--sp-2);
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  background: var(--vinyl);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  cursor: pointer;
+}
+
+/* ——— Тумблер ——— */
+.switch {
+  position: relative;
+  width: 46px; height: 26px;
+  flex-shrink: 0;
+}
+.switch input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+.switch__track {
+  position: absolute; inset: 0;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--paper);
+  transition: background var(--dur-1) var(--ease);
+  pointer-events: none;
+}
+.switch__track::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 18px; height: 18px;
+  border-radius: var(--r-full);
+  background: var(--ink);
+  transition: transform var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+.switch input:checked + .switch__track { background: var(--raspberry); }
+.switch input:checked + .switch__track::after { transform: translateX(20px); background: var(--vinyl); }
+.switch input:focus-visible + .switch__track { outline: 3px solid var(--plum); outline-offset: 2px; }
+
+/* ——— Шапка ——— */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--paper);
+  border-bottom: 2px solid var(--ink);
+}
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-block: var(--sp-3);
+}
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-200);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.logo__mark {
+  width: 34px; height: 34px;
+  display: grid;
+  place-items: center;
+  background: var(--raspberry);
+  color: var(--vinyl);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: rotate(-6deg);
+  transition: transform var(--dur-1) var(--ease);
+}
+.logo:hover .logo__mark { transform: rotate(4deg); }
+.site-nav { display: none; gap: var(--sp-6); }
+.site-nav a {
+  text-decoration: none;
+  font-weight: 600;
+  font-size: var(--fs-100);
+  color: var(--slate);
+  transition: color var(--dur-1) var(--ease);
+}
+.site-nav a:hover { color: var(--ink); }
+@media (min-width: 768px) { .site-nav { display: flex; } }
+
+/* ——— Футер ——— */
+.site-footer {
+  border-top: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: var(--sp-12);
+  margin-top: var(--sp-24);
+}
+.site-footer a { color: var(--paper); text-decoration: none; opacity: .75; transition: opacity var(--dur-1) var(--ease); }
+.site-footer a:hover { opacity: 1; }
+.site-footer__inner { display: flex; flex-wrap: wrap; gap: var(--sp-8); justify-content: space-between; align-items: flex-start; }
+.site-footer__note { font-size: var(--fs-100); opacity: .6; margin-top: var(--sp-3); max-width: 380px; }
+.site-footer__links { display: flex; gap: var(--sp-6); flex-wrap: wrap; font-size: var(--fs-100); font-weight: 600; }
+
+/* ——— Оверлеи и модальные окна ——— */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  background: rgba(36, 32, 43, .72);
+  animation: overlay-in var(--dur-2) var(--ease);
+}
+@keyframes overlay-in { from { opacity: 0; } }
+.modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - var(--sp-8));
+  overflow-y: auto;
+  background: var(--vinyl);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  box-shadow: var(--shadow-3);
+  --shadow-color: var(--plum);
+  padding: var(--sp-6);
+  animation: modal-in var(--dur-2) var(--ease);
+}
+@keyframes modal-in { from { opacity: 0; transform: translateY(16px) rotate(-1deg); } }
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+.modal__title { font-size: var(--fs-300); }
+.modal__close {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  cursor: pointer;
+  transition: transform var(--dur-1) var(--ease);
+}
+.modal__close:hover { transform: rotate(90deg); }
+
+/* ——— Тост ——— */
+.toast {
+  position: fixed;
+  bottom: var(--sp-6);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  z-index: 200;
+  padding: var(--sp-3) var(--sp-6);
+  background: var(--ink);
+  color: var(--vinyl);
+  border: 2px solid var(--vinyl);
+  border-radius: var(--r-m);
+  box-shadow: var(--shadow-1);
+  --shadow-color: var(--raspberry);
+  font-size: var(--fs-100);
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+  white-space: nowrap;
+}
+.toast--show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ——— Чипы-фильтры ——— */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--vinyl);
+  font-size: var(--fs-100);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--dur-1) var(--ease), background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+.chip:hover { transform: translateY(-2px); }
+.chip--active { background: var(--ink); color: var(--vinyl); }
+
+/* ——— Карточка шаблона (каталог и редактор) ——— */
+.tpl-card {
+  display: block;
+  width: 100%;
+  text-align: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  overflow: hidden;
+  background: var(--vinyl);
+  box-shadow: var(--shadow-1);
+  transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease);
+}
+.tpl-card:hover {
+  transform: translate(-3px, -3px) rotate(-.5deg);
+  box-shadow: var(--shadow-2);
+}
+.tpl-card__preview {
+  aspect-ratio: 4 / 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  text-align: center;
+  border-bottom: 2px solid var(--ink);
+}
+.tpl-card__icon {
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border: 2px solid currentColor;
+  border-radius: var(--r-s);
+  color: var(--tpl-title);
+  position: relative;
+}
+.tpl-card__name {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-200);
+  color: var(--tpl-title);
+}
+.tpl-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-100);
+  background: var(--vinyl);
+}
+.tpl-card__occ { font-weight: 700; }
+.tpl-card__cta { color: var(--slate); display: inline-flex; align-items: center; gap: var(--sp-1); }
+
+/* ——— Открытка: общий рендер (превью в редакторе и страница получателя) ——— */
+.card-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  text-align: center;
+  padding: var(--sp-12) var(--sp-6);
+}
+.card-face__icon {
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border: 2px solid currentColor;
+  border-radius: var(--r-s);
+  color: var(--tpl-title);
+  position: relative;
+  transform: rotate(-4deg);
+}
+.card-face__recipient {
+  font-size: var(--fs-100);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--tpl-muted);
+  position: relative;
+}
+.card-face__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-400);
+  line-height: 1.2;
+  color: var(--tpl-title);
+  position: relative;
+  max-width: 22ch;
+}
+.card-face__photo {
+  width: min(240px, 70%);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  box-shadow: var(--shadow-1);
+  --shadow-color: var(--tpl-accent);
+  transform: rotate(2deg);
+  position: relative;
+}
+.card-face__text {
+  max-width: 40ch;
+  white-space: pre-line;
+  position: relative;
+}
+.card-face__signature {
+  font-weight: 700;
+  color: var(--tpl-muted);
+  position: relative;
+}
+
+/* ——— Скелетоны ——— */
+.skeleton {
+  border-radius: var(--r-s);
+  background: linear-gradient(100deg, var(--line) 40%, var(--paper) 50%, var(--line) 60%);
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.4s var(--ease) infinite;
+}
+@keyframes skeleton-wave { to { background-position: -200% 0; } }
+
+/* ============================================================
+   Поверхности шаблонов открыток — общий фундамент + акцент повода.
+   Используются в превью редактора, каталоге и на странице открытки.
+   ============================================================ */
+.tpl {
+  --tpl-accent: var(--occ-other);
+  --tpl-accent-lt: var(--occ-other-lt);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-text);
+}
+.tpl--occ-newyear    { --tpl-accent: var(--occ-newyear);    --tpl-accent-lt: var(--occ-newyear-lt); }
+.tpl--occ-birthday   { --tpl-accent: var(--occ-birthday);   --tpl-accent-lt: var(--occ-birthday-lt); }
+.tpl--occ-valentine  { --tpl-accent: var(--occ-valentine);  --tpl-accent-lt: var(--occ-valentine-lt); }
+.tpl--occ-mar8       { --tpl-accent: var(--occ-mar8);       --tpl-accent-lt: var(--occ-mar8-lt); }
+.tpl--occ-feb23      { --tpl-accent: var(--occ-feb23);      --tpl-accent-lt: var(--occ-feb23-lt); }
+.tpl--occ-wedding    { --tpl-accent: var(--occ-wedding);    --tpl-accent-lt: var(--occ-wedding-lt); }
+.tpl--occ-graduation { --tpl-accent: var(--occ-graduation); --tpl-accent-lt: var(--occ-graduation-lt); }
+.tpl--occ-other      { --tpl-accent: var(--occ-other);      --tpl-accent-lt: var(--occ-other-lt); }
+
+/* Поверхность: светлая, тёмная или акцентная */
+.tpl--light  { background: var(--vinyl); color: var(--ink);   --tpl-title: var(--tpl-accent); --tpl-muted: var(--slate); }
+.tpl--dark   { background: var(--ink);   color: var(--paper); --tpl-title: var(--tpl-accent-lt); --tpl-muted: var(--mist); }
+.tpl--accent { background: var(--tpl-accent); color: var(--vinyl); --tpl-title: var(--vinyl); --tpl-muted: rgba(252, 251, 253, .82); }
+
+/* Паттерны: тихая фактура из текущего цвета текста */
+.tpl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.tpl--pat-dots::before {
+  background-image: radial-gradient(currentColor 1.4px, transparent 1.4px);
+  background-size: 18px 18px;
+  opacity: .1;
+}
+.tpl--pat-grid::before {
+  background-image:
+    linear-gradient(currentColor 1px, transparent 1px),
+    linear-gradient(90deg, currentColor 1px, transparent 1px);
+  background-size: 22px 22px;
+  opacity: .09;
+}
+.tpl--pat-stripes::before {
+  background-image: repeating-linear-gradient(-45deg, currentColor 0 2px, transparent 2px 16px);
+  opacity: .09;
+}
+.tpl--pat-rays::before {
+  background-image: repeating-conic-gradient(from 0deg at 50% 118%, currentColor 0 5deg, transparent 5deg 16deg);
+  opacity: .09;
+}
+
+/* ——— Reduced motion: движение выключается, контент остаётся ——— */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

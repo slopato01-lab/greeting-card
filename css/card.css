@@ -1,0 +1,316 @@
+/* ============================================================
+   CARD — страница получателя: запечатанный стикер, peel-открытие,
+   отсчёт, игра, поздравления, шеринг. Токены в globals.css.
+   ============================================================ */
+
+.card-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.card-page main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-8) var(--sp-4) var(--sp-16);
+}
+
+/* ——— Состояния: загрузка / не найдено ——— */
+.card-state { text-align: center; max-width: 420px; }
+.card-state__icon {
+  width: 64px; height: 64px;
+  margin: 0 auto var(--sp-6);
+  display: grid; place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  background: var(--vinyl);
+  box-shadow: var(--shadow-1);
+  transform: rotate(-4deg);
+}
+.card-state h1 { font-size: var(--fs-400); margin-bottom: var(--sp-3); }
+.card-state p { color: var(--slate); margin-bottom: var(--sp-6); }
+.card-loading__bar {
+  height: 10px;
+  width: 220px;
+  margin-inline: auto;
+}
+
+/* ——— Отсчёт до открытия ——— */
+.countdown { text-align: center; max-width: 520px; width: 100%; }
+.countdown__seal {
+  padding: var(--sp-12) var(--sp-6);
+  margin-bottom: var(--sp-6);
+  --shadow-color: var(--plum);
+}
+.countdown__icon {
+  width: 56px; height: 56px;
+  margin: 0 auto var(--sp-4);
+  display: grid; place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  background: var(--paper);
+  color: var(--raspberry);
+  transform: rotate(-4deg);
+}
+.countdown h1 { font-size: var(--fs-400); margin-bottom: var(--sp-2); }
+.countdown__date { color: var(--slate); margin-bottom: var(--sp-8); }
+.countdown__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+  max-width: 420px;
+  margin-inline: auto;
+}
+.cd-cell {
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  background: var(--paper);
+  padding: var(--sp-3) var(--sp-1);
+}
+.cd-cell b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-400);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.cd-cell span { font-size: var(--fs-100); color: var(--slate); font-weight: 600; }
+.countdown__hint { font-size: var(--fs-100); color: var(--slate); }
+
+/* ——— Запечатанный стикер и peel-открытие ——— */
+.peel-stage {
+  position: relative;
+  width: min(440px, 100%);
+  perspective: 1200px;
+}
+.peel-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  text-align: center;
+  padding: var(--sp-8) var(--sp-6);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  box-shadow: var(--shadow-3);
+  cursor: pointer;
+  transform-origin: 18% 110%;
+  transition: transform var(--dur-open) var(--ease), opacity var(--dur-open) var(--ease);
+  will-change: transform;
+}
+.peel-cover:hover { transform: rotate(-1.5deg); }
+.peel-cover:focus-visible { outline: 4px solid var(--plum); outline-offset: 4px; }
+/* загнутый уголок */
+.peel-cover::after {
+  content: '';
+  position: absolute;
+  right: -2px; bottom: -2px;
+  width: 56px; height: 56px;
+  background: var(--paper);
+  border-top: 2px solid var(--ink);
+  border-left: 2px solid var(--ink);
+  border-radius: var(--r-m) 0 var(--r-m) 0;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  transition: width var(--dur-1) var(--ease), height var(--dur-1) var(--ease);
+}
+.peel-cover:hover::after { width: 72px; height: 72px; }
+
+.peel-cover__icon {
+  width: 64px; height: 64px;
+  display: grid; place-items: center;
+  border: 2px solid currentColor;
+  border-radius: var(--r-s);
+  color: var(--tpl-title);
+  transform: rotate(-5deg);
+  position: relative;
+}
+.peel-cover__for {
+  font-size: var(--fs-100);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--tpl-muted);
+  position: relative;
+}
+.peel-cover__name {
+  font-family: var(--font-display);
+  font-size: var(--fs-500);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--tpl-title);
+  position: relative;
+}
+.peel-cover__hint {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+  padding: var(--sp-2) var(--sp-4);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--vinyl);
+  color: var(--ink);
+  font-size: var(--fs-100);
+  font-weight: 700;
+  box-shadow: var(--shadow-1);
+  animation: hint-nudge 2.2s var(--ease) infinite;
+}
+@keyframes hint-nudge {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg) translateY(-2px); }
+}
+
+/* открытие: стикер отклеивается */
+.peel-stage--open .peel-cover {
+  transform: rotate(-24deg) translate(-16%, -130%);
+  opacity: 0;
+  pointer-events: none;
+}
+.card-view {
+  position: relative;
+  z-index: 1;
+  min-height: 480px;
+  opacity: 0;
+  transform: scale(.94);
+  transition: opacity var(--dur-2) var(--ease) 500ms, transform var(--dur-open) var(--ease) 400ms;
+}
+.peel-stage--open .card-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* ——— Открытая открытка ——— */
+.card-frame {
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  overflow: hidden;
+  box-shadow: var(--shadow-3);
+}
+.card-frame .card-face { min-height: 480px; }
+
+.card-actions {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--sp-8);
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease) 900ms;
+}
+.peel-stage--open ~ .card-actions,
+.card-actions--show { opacity: 1; }
+
+/* ——— Игра ——— */
+.game-modal { max-width: 480px; padding: var(--sp-4); }
+.game-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-2) var(--sp-2) var(--sp-3);
+}
+.game-hud__title { font-size: var(--fs-200); }
+.game-hud__stats { display: flex; gap: var(--sp-3); font-weight: 700; font-size: var(--fs-100); }
+.game-hud__stats b { font-family: var(--font-display); }
+.game-canvas-wrap {
+  position: relative;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  background: var(--paper);
+  overflow: hidden;
+}
+#gameCanvas { display: block; width: 100%; height: 420px; touch-action: manipulation; }
+.game-result {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  background: rgba(252, 251, 253, .94);
+  text-align: center;
+  padding: var(--sp-6);
+}
+.game-result__score {
+  font-family: var(--font-display);
+  font-size: var(--fs-600);
+  font-weight: 800;
+  color: var(--raspberry);
+}
+.game-result p { font-weight: 700; }
+
+/* ——— Поздравления группы ——— */
+.group-modal { max-width: 640px; }
+.group-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--sp-4);
+}
+.group-card {
+  border: 2px solid var(--ink);
+  border-radius: var(--r-m);
+  background: var(--paper);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-1);
+}
+.group-card:nth-child(odd) { transform: rotate(-1deg); }
+.group-card:nth-child(even) { transform: rotate(1deg); --shadow-color: var(--plum); }
+.group-card__photo {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  margin-bottom: var(--sp-3);
+}
+.group-card__initial {
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-300);
+  color: var(--vinyl);
+  background: var(--group-accent, var(--raspberry));
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  margin-bottom: var(--sp-3);
+  transform: rotate(-4deg);
+}
+.group-card__name { font-weight: 700; font-size: var(--fs-100); margin-bottom: var(--sp-1); }
+.group-card__msg { font-size: var(--fs-100); color: var(--slate); }
+.group-empty {
+  text-align: center;
+  padding: var(--sp-8) var(--sp-4);
+  color: var(--slate);
+  font-size: var(--fs-100);
+}
+
+/* ——— Шеринг ——— */
+.share-qr { display: grid; place-items: center; margin-bottom: var(--sp-4); }
+.share-qr > div {
+  padding: var(--sp-3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-s);
+  background: var(--vinyl);
+}
+.share-buttons { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-4); }
+.share-buttons .btn { flex: 1; }
+
+/* ——— Подвал-подпись ——— */
+.card-made-by {
+  text-align: center;
+  padding-bottom: var(--sp-8);
+  font-size: var(--fs-100);
+  color: var(--slate);
+}
+.card-made-by a { font-weight: 700; color: var(--raspberry); }

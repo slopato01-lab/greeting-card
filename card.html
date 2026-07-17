@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тебе открытка — Открыточка</title>
+  <meta name="description" content="Кто-то отправил вам интерактивную открытку. Откройте её!">
+  <meta property="og:title" content="Тебе открытка!">
+  <meta property="og:description" content="Кто-то приготовил для вас интерактивную открытку. Нажмите, чтобы открыть.">
+  <meta property="og:image" content="assets/og-image.png">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%273%27 y=%273%27 width=%2726%27 height=%2726%27 rx=%277%27 fill=%27%23C9366F%27 stroke=%27%2324202B%27 stroke-width=%272.5%27 transform=%27rotate(-6 16 16)%27/%3E%3Cpath d=%27M20 16h6v6c-3.5-.5-5.5-2.5-6-6z%27 fill=%27%23FCFBFD%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/globals.css">
+  <link rel="stylesheet" href="css/card.css">
+</head>
+<body class="card-page">
+
+  <main>
+    <!-- Загрузка -->
+    <div class="card-state" id="cardLoading">
+      <div class="skeleton card-loading__bar" aria-label="Загрузка открытки"></div>
+    </div>
+
+    <!-- Не найдено -->
+    <div class="card-state hidden" id="cardNotFound">
+      <div class="card-state__icon" data-icon="close" data-icon-size="28"></div>
+      <h1>Открытка не нашлась</h1>
+      <p>Похоже, ссылка неполная или открытка была создана на другом устройстве. Проверьте адрес — или сделайте кому-нибудь свою.</p>
+      <a class="btn btn--primary" href="index.html">Создать открытку <span data-icon="arrow-right"></span></a>
+    </div>
+
+    <!-- Отсчёт -->
+    <div class="countdown hidden" id="cardCountdown">
+      <div class="countdown__seal sticker">
+        <div class="countdown__icon" data-icon="clock" data-icon-size="26"></div>
+        <h1>Открытка запечатана</h1>
+        <p class="countdown__date">Откроется <span id="countdownDateLabel">—</span></p>
+        <div class="countdown__grid" role="timer" aria-label="До открытия осталось">
+          <div class="cd-cell"><b id="cdDays">00</b><span>дней</span></div>
+          <div class="cd-cell"><b id="cdHours">00</b><span>часов</span></div>
+          <div class="cd-cell"><b id="cdMinutes">00</b><span>минут</span></div>
+          <div class="cd-cell"><b id="cdSeconds">00</b><span>секунд</span></div>
+        </div>
+      </div>
+      <p class="countdown__hint">Сохраните ссылку и возвращайтесь к сроку — мы всё откроем.</p>
+    </div>
+
+    <!-- Открытка -->
+    <div class="hidden" id="cardMain" style="width: min(440px, 100%)">
+      <div class="peel-stage" id="peelStage">
+        <button class="peel-cover" id="peelCover" aria-label="Открыть открытку">
+          <span class="peel-cover__icon" id="coverIcon"></span>
+          <span class="peel-cover__for">Открытка для</span>
+          <span class="peel-cover__name" id="coverName">тебя</span>
+          <span class="peel-cover__hint"><span data-icon="peel" data-icon-size="16"></span> Потяни за уголок</span>
+        </button>
+        <div class="card-view" id="cardView">
+          <div class="card-frame" id="cardFrame"></div>
+        </div>
+      </div>
+      <div class="card-actions" id="cardActions">
+        <button class="btn" id="btnGame"><span data-icon="gamepad"></span> Игра</button>
+        <button class="btn hidden" id="btnGroup"><span data-icon="users"></span> Поздравления</button>
+        <button class="btn hidden" id="btnMusic"><span data-icon="play"></span> Музыка</button>
+        <button class="btn btn--primary" id="btnShare"><span data-icon="share"></span> Поделиться</button>
+      </div>
+    </div>
+  </main>
+
+  <p class="card-made-by">Сделано в <a href="index.html">Открыточке</a> — соберите свою за пару минут</p>
+
+  <!-- Оверлей: игра -->
+  <div class="overlay hidden" id="gameOverlay">
+    <div class="modal game-modal">
+      <div class="game-hud">
+        <h2 class="game-hud__title" id="gameTitle">Мини-игра</h2>
+        <div class="game-hud__stats">
+          <span>Счёт: <b id="gameScore">0</b></span>
+          <span>Время: <b id="gameTimer">30</b></span>
+        </div>
+        <button class="modal__close" id="gameClose" aria-label="Закрыть игру"><span data-icon="close" data-icon-size="16"></span></button>
+      </div>
+      <div class="game-canvas-wrap">
+        <canvas id="gameCanvas"></canvas>
+        <div class="game-result hidden" id="gameResult">
+          <div class="game-result__score" id="gameResultScore">0</div>
+          <p id="gameResultText">Отличный результат!</p>
+          <button class="btn btn--primary" id="gameRestart"><span data-icon="replay"></span> Ещё раз</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Оверлей: поздравления группы -->
+  <div class="overlay hidden" id="groupOverlay">
+    <div class="modal group-modal">
+      <div class="modal__head">
+        <h2 class="modal__title">Поздравления</h2>
+        <button class="modal__close" id="groupClose" aria-label="Закрыть"><span data-icon="close" data-icon-size="16"></span></button>
+      </div>
+      <div class="group-gallery" id="groupGallery"></div>
+    </div>
+  </div>
+
+  <!-- Оверлей: поделиться -->
+  <div class="overlay hidden" id="shareOverlay">
+    <div class="modal">
+      <div class="modal__head">
+        <h2 class="modal__title">Поделиться открыткой</h2>
+        <button class="modal__close" id="shareClose" aria-label="Закрыть"><span data-icon="close" data-icon-size="16"></span></button>
+      </div>
+      <div class="share-qr"><div id="shareQr"></div></div>
+      <div class="link-row" style="display:flex; gap: var(--sp-2)">
+        <input class="field__input" type="text" id="shareUrlInput" readonly aria-label="Ссылка на открытку" style="flex:1; font-size: var(--fs-100)">
+        <button class="btn" id="shareCopy" aria-label="Скопировать ссылку"><span data-icon="copy"></span></button>
+      </div>
+      <div class="share-buttons">
+        <button class="btn" id="shareTg">Telegram</button>
+        <button class="btn" id="shareWa">WhatsApp</button>
+        <button class="btn" id="shareVk">ВКонтакте</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/qr.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/card.js"></script>
+</body>
+</html>

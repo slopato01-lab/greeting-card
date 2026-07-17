@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Открыточка — интерактивные открытки по QR-коду</title>
+  <meta name="description" content="Соберите персональную интерактивную открытку: мини-игра, музыка, групповые поздравления и открытие в нужный момент. Получатель откроет её по ссылке или QR-коду.">
+  <meta property="og:title" content="Открыточка — интерактивные открытки по QR-коду">
+  <meta property="og:description" content="Открытка как подарок: мини-игра, музыка и групповые поздравления по одной ссылке.">
+  <meta property="og:image" content="assets/og-image.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%273%27 y=%273%27 width=%2726%27 height=%2726%27 rx=%277%27 fill=%27%23C9366F%27 stroke=%27%2324202B%27 stroke-width=%272.5%27 transform=%27rotate(-6 16 16)%27/%3E%3Cpath d=%27M20 16h6v6c-3.5-.5-5.5-2.5-6-6z%27 fill=%27%23FCFBFD%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/globals.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="logo" href="index.html">
+        <span class="logo__mark" data-icon="peel" data-icon-size="18"></span>
+        Открыточка
+      </a>
+      <nav class="site-nav" aria-label="Основная навигация">
+        <a href="#how-it-works">Как это работает</a>
+        <a href="#templates">Шаблоны</a>
+        <a href="#features">Возможности</a>
+        <a href="#faq">Вопросы</a>
+      </nav>
+      <a class="btn btn--primary btn--sm" href="editor.html">Создать открытку</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="container hero__inner">
+        <div>
+          <span class="hero__eyebrow">Открытка, которую хочется отправить</span>
+          <h1 class="hero__title">Не просто открытка. <em>Маленький подарок</em> по ссылке</h1>
+          <p class="hero__sub">Соберите персональную интерактивную открытку за пару минут: мини-игра, музыка, общие поздравления от компании друзей. Получатель откроет её с телефона — по ссылке или QR-коду.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg" href="editor.html">Создать открытку <span data-icon="arrow-right"></span></a>
+            <span class="hero__price">10 BYN за открытку, без подписок</span>
+          </div>
+        </div>
+        <div class="hero__collage" aria-hidden="true">
+          <div class="hero-card hero-card--1 tpl tpl--occ-birthday tpl--light tpl--pat-dots">
+            <div class="hero-card__icon" data-icon="cake" data-icon-size="22"></div>
+            <div class="hero-card__title">С днём рождения, Лера!</div>
+            <div class="hero-card__text">Открой — внутри игра и кое-что ещё…</div>
+          </div>
+          <div class="hero-card hero-card--2 tpl tpl--occ-valentine tpl--accent tpl--pat-rays">
+            <div class="hero-card__icon" data-icon="heart" data-icon-size="22"></div>
+            <div class="hero-card__title">Для самого любимого человека</div>
+            <div class="hero-card__text">— и это только начало</div>
+          </div>
+          <div class="hero-card hero-card--3 tpl tpl--occ-newyear tpl--dark tpl--pat-grid">
+            <div class="hero-card__icon" data-icon="snowflake" data-icon-size="22"></div>
+            <div class="hero-card__title">С Новым годом!</div>
+            <div class="hero-card__text">Откроется ровно в полночь</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- КАК ЭТО РАБОТАЕТ -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Три шага до открытки</h2>
+          <p class="section-sub">Никаких дизайнерских навыков — редактор ведёт за руку.</p>
+        </div>
+        <div class="hiw__grid">
+          <div class="hiw-step sticker">
+            <span class="hiw-step__num">1</span>
+            <h3>Выберите шаблон</h3>
+            <p>25 шаблонов для восьми поводов — от Нового года до «просто так». Все выглядят как одна семья, а не случайный набор.</p>
+          </div>
+          <div class="hiw-step sticker">
+            <span class="hiw-step__num">2</span>
+            <h3>Наполните смыслом</h3>
+            <p>Имя получателя, тёплые слова, фото. Добавьте мини-игру, музыку или соберите поздравления от всей компании.</p>
+          </div>
+          <div class="hiw-step sticker">
+            <span class="hiw-step__num">3</span>
+            <h3>Отправьте ссылку</h3>
+            <p>Получите ссылку и QR-код. Отправьте в мессенджере или распечатайте QR и вложите в настоящий конверт.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ШАБЛОНЫ -->
+    <section class="section" id="templates">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Дизайн для каждого повода</h2>
+          <p class="section-sub">Один характер, восемь поводов. У каждого праздника — свой фирменный цвет.</p>
+        </div>
+        <div class="tpl-filter" id="tplFilter" role="tablist" aria-label="Фильтр по поводу"></div>
+        <div class="tpl-grid" id="tplGrid"></div>
+      </div>
+    </section>
+
+    <!-- ГАЛЕРЕЯ -->
+    <section class="section" id="gallery">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Как это выглядит у получателя</h2>
+          <p class="section-sub">Три живых примера — нажмите и откройте, как настоящую открытку.</p>
+        </div>
+        <div class="gallery__grid">
+          <a class="gallery-card tpl tpl--occ-birthday tpl--dark tpl--pat-stripes" href="card.html?demo=bday_party">
+            <span class="gallery-card__title">Тебе уже 25, Макс!</span>
+            <span class="gallery-card__text">Внутри — игра «Лопни шарики» и подписи от всей нашей банды.</span>
+            <span class="gallery-card__from">— твои коллеги</span>
+          </a>
+          <a class="gallery-card tpl tpl--occ-valentine tpl--light tpl--pat-dots" href="card.html?demo=val_watercolor">
+            <span class="gallery-card__title">Насте, которая терпит меня 3 года</span>
+            <span class="gallery-card__text">С музыкой и очень важным вопросом в конце.</span>
+            <span class="gallery-card__from">— Дима</span>
+          </a>
+          <a class="gallery-card tpl tpl--occ-graduation tpl--accent tpl--pat-rays" href="card.html?demo=grad_gradient">
+            <span class="gallery-card__title">Выпуск-2026, мы сделали это!</span>
+            <span class="gallery-card__text">Открытка от всей группы — 18 поздравлений внутри.</span>
+            <span class="gallery-card__from">— староста</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ФИЧИ -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Больше, чем просто открытка</h2>
+          <p class="section-sub">Каждая деталь работает на одну секунду — когда получатель откроет ссылку.</p>
+        </div>
+        <div class="features__grid">
+          <div class="feature sticker" style="--feature-accent: var(--occ-birthday)">
+            <div class="feature__icon" data-icon="users" data-icon-size="22"></div>
+            <h3>Групповая открытка</h3>
+            <p>До 20 человек добавят свои фото и пожелания по ссылке-приглашению. Получатель увидит всех в общей галерее.</p>
+          </div>
+          <div class="feature sticker" style="--feature-accent: var(--occ-feb23)">
+            <div class="feature__icon" data-icon="clock" data-icon-size="22"></div>
+            <h3>Открытие в нужный момент</h3>
+            <p>Открытка «запечатана» до даты, которую вы выберете. До этого получатель видит обратный отсчёт.</p>
+          </div>
+          <div class="feature sticker" style="--feature-accent: var(--occ-newyear)">
+            <div class="feature__icon" data-icon="gamepad" data-icon-size="22"></div>
+            <h3>Мини-игры внутри</h3>
+            <p>Поймать снежинки, лопнуть шарики, найти сердечки — 30 секунд игры, которые запоминаются лучше любого текста.</p>
+          </div>
+          <div class="feature sticker" style="--feature-accent: var(--occ-graduation)">
+            <div class="feature__icon" data-icon="music" data-icon-size="22"></div>
+            <h3>Музыкальный фон</h3>
+            <p>Мелодия начинает играть, когда получатель открывает открытку — с его разрешения, без автозапуска.</p>
+          </div>
+          <div class="feature sticker" style="--feature-accent: var(--occ-mar8)">
+            <div class="feature__icon" data-icon="image" data-icon-size="22"></div>
+            <h3>Ваши фотографии</h3>
+            <p>Добавьте общее фото или мем, который поймёт только получатель. Открытка станет по-настоящему личной.</p>
+          </div>
+          <div class="feature sticker" style="--feature-accent: var(--occ-valentine)">
+            <div class="feature__icon" data-icon="mail" data-icon-size="22"></div>
+            <h3>Уведомление об открытии</h3>
+            <p>Узнайте момент, когда открытку открыли — придёт письмо на вашу почту.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Частые вопросы</h2>
+        </div>
+        <div class="faq">
+          <details class="faq-item">
+            <summary>Сколько это стоит?<span data-icon="close" data-icon-size="18"></span></summary>
+            <p>Одна открытка — 10 BYN. Никаких подписок и скрытых платежей: заплатили один раз, ссылка работает без ограничений по времени.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Как получатель откроет открытку?<span data-icon="close" data-icon-size="18"></span></summary>
+            <p>По обычной ссылке в любом браузере — с телефона или компьютера. Можно отправить ссылку в мессенджере или распечатать QR-код и вложить его в подарок.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Что такое групповая открытка?<span data-icon="close" data-icon-size="18"></span></summary>
+            <p>Вы создаёте открытку и получаете ссылку-приглашение. Отправляете её друзьям или коллегам — каждый добавляет своё фото и пожелание. Получатель увидит все поздравления в одной галерее.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Можно ли отложить открытие?<span data-icon="close" data-icon-size="18"></span></summary>
+            <p>Да. Укажите дату и время — до этого момента открытка «запечатана», а получатель видит обратный отсчёт. Удобно для полуночи Нового года или утра дня рождения.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Открытка когда-нибудь исчезнет?<span data-icon="close" data-icon-size="18"></span></summary>
+            <p>Нет, ссылка бессрочная. Открытку можно пересматривать сколько угодно раз.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section">
+      <div class="container">
+        <div class="cta">
+          <h2>Готовы сделать кому-то день?</h2>
+          <p>Две минуты на создание — и одна секунда, которую запомнят.</p>
+          <a class="btn btn--primary btn--lg" href="editor.html">Создать открытку <span data-icon="arrow-right"></span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <div>
+        <a class="logo" href="index.html">
+          <span class="logo__mark" data-icon="peel" data-icon-size="18"></span>
+          Открыточка
+        </a>
+        <p class="site-footer__note">Интерактивные персональные открытки. Сделано, чтобы секунда открытия стоила больше, чем бумажный конверт.</p>
+      </div>
+      <nav class="site-footer__links" aria-label="Ссылки в подвале">
+        <a href="editor.html">Создать открытку</a>
+        <a href="#templates">Шаблоны</a>
+        <a href="#faq">Вопросы</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="js/icons.js"></script>
+  <script src="js/templates.js"></script>
+  <script>
+    'use strict';
+    (function () {
+      const grid = document.getElementById('tplGrid');
+      const filter = document.getElementById('tplFilter');
+
+      function renderFilter(active) {
+        filter.innerHTML = CATEGORIES.map(c =>
+          `<button class="chip${c.id === active ? ' chip--active' : ''}" data-cat="${c.id}" role="tab" aria-selected="${c.id === active}">${c.label}</button>`
+        ).join('');
+      }
+
+      function renderGrid(cat) {
+        const list = cat === 'all' ? TEMPLATES : TEMPLATES.filter(t => t.cat === cat);
+        grid.innerHTML = list.map(t => `
+          <a class="tpl-card" href="editor.html?template=${t.id}" style="--shadow-color: var(--occ-${t.occ})">
+            <div class="tpl-card__preview ${tplClasses(t)}">
+              <span class="tpl-card__icon">${icon(OCCASIONS[t.occ].icon, 24)}</span>
+              <span class="tpl-card__name">${t.name}</span>
+            </div>
+            <div class="tpl-card__footer">
+              <span class="tpl-card__occ">${OCCASIONS[t.occ].label}</span>
+              <span class="tpl-card__cta">Выбрать ${icon('arrow-right', 14)}</span>
+            </div>
+          </a>`).join('');
+      }
+
+      filter.addEventListener('click', e => {
+        const btn = e.target.closest('.chip');
+        if (!btn) return;
+        renderFilter(btn.dataset.cat);
+        renderGrid(btn.dataset.cat);
+      });
+
+      renderFilter('all');
+      renderGrid('all');
+    })();
+  </script>
+</body>
+</html>
