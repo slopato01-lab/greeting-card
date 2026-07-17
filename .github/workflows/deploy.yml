@@ -22,13 +22,10 @@ jobs:
           if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
             echo "::error::Секрет CLOUDFLARE_API_TOKEN пуст или не задан (Settings → Secrets and variables → Actions)"; exit 1
           fi
-          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
-            echo "::error::Секрет CLOUDFLARE_ACCOUNT_ID пуст или не задан (Settings → Secrets and variables → Actions)"; exit 1
-          fi
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: 0d6efe3fc70e82760b76c47fd63ee406
           command: pages deploy . --project-name=greeting-card --branch=main
