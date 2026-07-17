@@ -31,8 +31,8 @@
     generate(url, container, options) {
       const w = (options && options.width)  || 160;
       const h = (options && options.height) || 160;
-      const dark  = (options && options.colorDark)  || '#000000';
-      const light = (options && options.colorLight) || '#ffffff';
+      const dark  = (options && options.colorDark)  || '#191814';
+      const light = (options && options.colorLight) || '#FAF9F7';
       const size  = 21; // 21x21 modules like version 1 QR
 
       // Seed deterministic from url

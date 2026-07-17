@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Редактор открытки — Открыточка</title>
   <meta name="robots" content="noindex">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%273%27 y=%273%27 width=%2726%27 height=%2726%27 rx=%277%27 fill=%27%23C9366F%27 stroke=%27%2324202B%27 stroke-width=%272.5%27 transform=%27rotate(-6 16 16)%27/%3E%3Cpath d=%27M20 16h6v6c-3.5-.5-5.5-2.5-6-6z%27 fill=%27%23FCFBFD%27/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23FAF9F7%27/%3E%3Crect x=%277%27 y=%277%27 width=%2718%27 height=%2718%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27 stroke-dasharray=%272.5 2.5%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%273%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/globals.css">
   <link rel="stylesheet" href="css/editor.css">
 </head>
@@ -13,47 +13,43 @@
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a class="logo" href="index.html">
-        <span class="logo__mark" data-icon="peel" data-icon-size="18"></span>
-        Открыточка
-      </a>
-      <button class="btn btn--sm" id="saveDraft">Сохранить черновик</button>
+      <a class="logo" href="index.html">Открыточка</a>
+      <button class="linkback" id="saveDraft">Сохранить черновик</button>
     </div>
   </header>
 
+  <!-- Степпер -->
+  <nav class="ep" aria-label="Шаги редактора">
+    <div class="container ep__inner">
+      <span class="ep-step" data-step="1">Шаблон</span>
+      <span class="ep-step" data-step="2">Текст</span>
+      <span class="ep-step" data-step="3">Опции</span>
+      <span class="ep-step" data-step="4">Превью</span>
+      <span class="ep-step" data-step="5">Оплата</span>
+    </div>
+  </nav>
+
   <main class="editor-main container">
+    <div class="editor-grid" id="editorGrid">
 
-    <!-- Прогресс -->
-    <nav class="ep" aria-label="Шаги редактора">
-      <div class="ep-step" data-step="1"><span class="ep-step__dot">1</span><span class="ep-step__label">Шаблон</span></div>
-      <div class="ep-line"></div>
-      <div class="ep-step" data-step="2"><span class="ep-step__dot">2</span><span class="ep-step__label">Текст</span></div>
-      <div class="ep-line"></div>
-      <div class="ep-step" data-step="3"><span class="ep-step__dot">3</span><span class="ep-step__label">Опции</span></div>
-      <div class="ep-line"></div>
-      <div class="ep-step" data-step="4"><span class="ep-step__dot">4</span><span class="ep-step__label">Превью</span></div>
-      <div class="ep-line"></div>
-      <div class="ep-step" data-step="5"><span class="ep-step__dot">5</span><span class="ep-step__label">Оплата</span></div>
-    </nav>
+      <div class="editor-controls">
 
-    <!-- ШАГ 1: Шаблон -->
-    <section class="editor-step" id="step1">
-      <h1 class="editor-step__title">Выберите шаблон</h1>
-      <p class="editor-step__sub">У каждого повода свой фирменный цвет — все открытки выглядят как одна семья.</p>
-      <div class="tpl-filter" id="step1Filter"></div>
-      <div class="tpl-picker" id="templatePicker"></div>
-      <div class="editor-nav">
-        <a class="btn btn--ghost" href="index.html"><span data-icon="arrow-left"></span> На главную</a>
-        <button class="btn btn--primary" onclick="goStep(2)">Дальше <span data-icon="arrow-right"></span></button>
-      </div>
-    </section>
+        <!-- ШАГ 1: Шаблон -->
+        <section class="editor-step" id="step1">
+          <h1 class="editor-step__title">Выберите шаблон</h1>
+          <p class="editor-step__sub">Пять макетов, восемь поводов. Всё напечатано одной краской — как марка.</p>
+          <div class="tpl-filter" id="step1Filter"></div>
+          <div class="tpl-grid tpl-grid--picker" id="templatePicker"></div>
+          <div class="editor-nav">
+            <a class="linkback" href="index.html"><span data-icon="arrow-left" data-icon-size="16"></span> На главную</a>
+            <button class="btn btn--primary" onclick="goStep(2)">Дальше <span data-icon="arrow-right"></span></button>
+          </div>
+        </section>
 
-    <!-- ШАГ 2: Текст -->
-    <section class="editor-step hidden" id="step2">
-      <h1 class="editor-step__title">Наполните смыслом</h1>
-      <p class="editor-step__sub">Имя, тёплые слова и, если хотите, фото. Превью обновляется на лету.</p>
-      <div class="step-cols">
-        <div>
+        <!-- ШАГ 2: Текст -->
+        <section class="editor-step hidden" id="step2">
+          <h1 class="editor-step__title">Наполните смыслом</h1>
+          <p class="editor-step__sub">Имя, тёплые слова и, если хотите, фото. Превью обновляется на лету.</p>
           <div class="field">
             <label class="field__label" for="recipientName">Имя получателя</label>
             <input class="field__input" type="text" id="recipientName" placeholder="Саша" maxlength="40" autocomplete="off">
@@ -83,151 +79,134 @@
               <button class="photo-remove" id="photoRemove" aria-label="Убрать фото"><span data-icon="close" data-icon-size="16"></span></button>
             </div>
           </div>
-        </div>
-        <div class="live-preview-wrap">
-          <div class="live-preview" id="livePreview"></div>
-          <p class="live-preview-hint">Так открытку увидит получатель</p>
-        </div>
-      </div>
-      <div class="editor-nav">
-        <button class="btn" onclick="goStep(1)"><span data-icon="arrow-left"></span> Назад</button>
-        <button class="btn btn--primary" onclick="goStep(3)">Дальше <span data-icon="arrow-right"></span></button>
-      </div>
-    </section>
-
-    <!-- ШАГ 3: Опции -->
-    <section class="editor-step hidden" id="step3">
-      <h1 class="editor-step__title">Добавьте магии</h1>
-      <p class="editor-step__sub">Всё необязательно — но именно это превращает открытку в подарок.</p>
-
-      <div class="options-list">
-        <div class="option-block sticker" style="--option-accent: var(--occ-newyear)">
-          <div class="option-block__head">
-            <span class="option-block__icon" data-icon="gamepad" data-icon-size="22"></span>
-            <div>
-              <div class="option-block__title">Мини-игра</div>
-              <p class="option-block__desc">30 секунд азарта прямо в открытке</p>
-            </div>
+          <div class="editor-nav">
+            <button class="linkback" onclick="goStep(1)"><span data-icon="arrow-left" data-icon-size="16"></span> Назад</button>
+            <button class="btn btn--primary" onclick="goStep(3)">Дальше <span data-icon="arrow-right"></span></button>
           </div>
-          <div class="option-block__body">
-            <div class="radio-grid" id="gameGrid"></div>
-          </div>
-        </div>
+        </section>
 
-        <div class="option-block sticker" style="--option-accent: var(--occ-feb23)">
-          <div class="option-block__head">
-            <span class="option-block__icon" data-icon="clock" data-icon-size="22"></span>
-            <div>
-              <div class="option-block__title">Открыть в момент</div>
-              <p class="option-block__desc">До назначенного времени открытка запечатана</p>
-            </div>
-            <label class="switch"><input type="checkbox" id="toggleMoment"><span class="switch__track"></span></label>
-          </div>
-          <div class="option-block__body hidden" id="momentBody">
-            <div class="datetime-row">
-              <div class="field">
-                <label class="field__label" for="openDate">Дата</label>
-                <input class="field__input" type="date" id="openDate">
+        <!-- ШАГ 3: Опции -->
+        <section class="editor-step hidden" id="step3">
+          <h1 class="editor-step__title">Добавьте магии</h1>
+          <p class="editor-step__sub">Всё необязательно — но именно это превращает открытку в подарок.</p>
+
+          <div class="options-list">
+            <div class="opt" id="optGame">
+              <div class="opt__row">
+                <div class="opt__info">
+                  <span class="opt__title">Мини-игра</span>
+                  <span class="opt__desc">30 секунд азарта прямо в открытке</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleGame" checked><span class="switch__track"></span></label>
               </div>
-              <div class="field">
-                <label class="field__label" for="openTime">Время</label>
-                <input class="field__input" type="time" id="openTime">
+              <div class="opt__body"><div class="opt__inner">
+                <div class="radio-grid" id="gameGrid"></div>
+              </div></div>
+            </div>
+
+            <div class="opt" id="optMoment">
+              <div class="opt__row">
+                <div class="opt__info">
+                  <span class="opt__title">Открыть в момент</span>
+                  <span class="opt__desc">До назначенного времени — запечатана, идёт обратный отсчёт</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleMoment"><span class="switch__track"></span></label>
               </div>
+              <div class="opt__body"><div class="opt__inner">
+                <div class="datetime-row">
+                  <div class="field">
+                    <label class="field__label" for="openDate">Дата</label>
+                    <input class="field__input" type="date" id="openDate">
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="openTime">Время</label>
+                    <input class="field__input" type="time" id="openTime">
+                  </div>
+                </div>
+              </div></div>
             </div>
-            <p class="option-hint">До этого момента получатель увидит обратный отсчёт.</p>
-          </div>
-        </div>
 
-        <div class="option-block sticker" style="--option-accent: var(--occ-birthday)">
-          <div class="option-block__head">
-            <span class="option-block__icon" data-icon="users" data-icon-size="22"></span>
-            <div>
-              <div class="option-block__title">Групповая открытка</div>
-              <p class="option-block__desc">Соберите поздравления от компании — до 20 человек</p>
+            <div class="opt" id="optGroup">
+              <div class="opt__row">
+                <div class="opt__info">
+                  <span class="opt__title">Групповая открытка</span>
+                  <span class="opt__desc">До 20 человек добавят подписи по ссылке-приглашению</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleGroup"><span class="switch__track"></span></label>
+              </div>
+              <div class="opt__body"><div class="opt__inner">
+                <div class="field">
+                  <label class="field__label" for="organizerName">Ваше имя (организатор)</label>
+                  <input class="field__input" type="text" id="organizerName" placeholder="Аня" maxlength="40">
+                </div>
+              </div></div>
             </div>
-            <label class="switch"><input type="checkbox" id="toggleGroup"><span class="switch__track"></span></label>
-          </div>
-          <div class="option-block__body hidden" id="groupBody">
-            <div class="field">
-              <label class="field__label" for="organizerName">Ваше имя (организатор)</label>
-              <input class="field__input" type="text" id="organizerName" placeholder="Аня" maxlength="40">
-            </div>
-            <p class="option-hint">После оплаты вы получите ссылку-приглашение для участников.</p>
-          </div>
-        </div>
 
-        <div class="option-block sticker" style="--option-accent: var(--occ-graduation)">
-          <div class="option-block__head">
-            <span class="option-block__icon" data-icon="music" data-icon-size="22"></span>
-            <div>
-              <div class="option-block__title">Музыкальный фон</div>
-              <p class="option-block__desc">Мелодия при открытии открытки</p>
+            <div class="opt" id="optMusic">
+              <div class="opt__row">
+                <div class="opt__info">
+                  <span class="opt__title">Музыкальный фон</span>
+                  <span class="opt__desc">Мелодия при открытии — с разрешения получателя</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleMusic"><span class="switch__track"></span></label>
+              </div>
+              <div class="opt__body"><div class="opt__inner">
+                <div class="radio-grid" id="musicGrid"></div>
+              </div></div>
             </div>
-            <label class="switch"><input type="checkbox" id="toggleMusic"><span class="switch__track"></span></label>
-          </div>
-          <div class="option-block__body hidden" id="musicBody">
-            <div class="radio-grid" id="musicGrid"></div>
-            <p class="option-hint">Музыка включится только после разрешения получателя.</p>
-          </div>
-        </div>
 
-        <div class="option-block sticker" style="--option-accent: var(--occ-valentine)">
-          <div class="option-block__head">
-            <span class="option-block__icon" data-icon="mail" data-icon-size="22"></span>
-            <div>
-              <div class="option-block__title">Уведомить об открытии</div>
-              <p class="option-block__desc">Письмо в момент, когда открытку откроют</p>
-            </div>
-            <label class="switch"><input type="checkbox" id="toggleNotify"><span class="switch__track"></span></label>
-          </div>
-          <div class="option-block__body hidden" id="notifyBody">
-            <div class="field">
-              <label class="field__label" for="notifyEmail">Ваш email</label>
-              <input class="field__input" type="email" id="notifyEmail" placeholder="you@example.com">
+            <div class="opt" id="optNotify">
+              <div class="opt__row">
+                <div class="opt__info">
+                  <span class="opt__title">Уведомить об открытии</span>
+                  <span class="opt__desc">Письмо в момент, когда открытку откроют</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleNotify"><span class="switch__track"></span></label>
+              </div>
+              <div class="opt__body"><div class="opt__inner">
+                <div class="field">
+                  <label class="field__label" for="notifyEmail">Ваш email</label>
+                  <input class="field__input" type="email" id="notifyEmail" placeholder="you@example.com">
+                </div>
+              </div></div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="editor-nav">
-        <button class="btn" onclick="goStep(2)"><span data-icon="arrow-left"></span> Назад</button>
-        <button class="btn btn--primary" onclick="goStep(4)">К превью <span data-icon="arrow-right"></span></button>
-      </div>
-    </section>
+          <div class="editor-nav">
+            <button class="linkback" onclick="goStep(2)"><span data-icon="arrow-left" data-icon-size="16"></span> Назад</button>
+            <button class="btn btn--primary" onclick="goStep(4)">К превью <span data-icon="arrow-right"></span></button>
+          </div>
+        </section>
 
-    <!-- ШАГ 4: Превью -->
-    <section class="editor-step hidden" id="step4">
-      <h1 class="editor-step__title">Проверьте перед отправкой</h1>
-      <p class="editor-step__sub">Именно так открытку увидит получатель.</p>
-      <div class="step-cols">
-        <div class="preview-frame" id="previewFrame"></div>
-        <div class="summary sticker">
-          <h3>Что внутри</h3>
-          <dl>
-            <div class="summary-line"><dt>Шаблон</dt><dd id="pvTemplate">—</dd></div>
-            <div class="summary-line"><dt>Получатель</dt><dd id="pvRecipient">—</dd></div>
-          </dl>
-          <div class="summary-flags" id="pvFlags"></div>
-        </div>
-      </div>
-      <div class="editor-nav">
-        <button class="btn" onclick="goStep(3)"><span data-icon="arrow-left"></span> Изменить</button>
-        <button class="btn btn--primary btn--lg" onclick="goStep(5)">Оплатить 10 BYN и получить QR <span data-icon="arrow-right"></span></button>
-      </div>
-    </section>
+        <!-- ШАГ 4: Превью -->
+        <section class="editor-step hidden" id="step4">
+          <h1 class="editor-step__title">Проверьте перед отправкой</h1>
+          <p class="editor-step__sub">Открытка справа — именно такой её увидит получатель.</p>
+          <div class="summary">
+            <h3 class="summary__title">Что внутри</h3>
+            <dl>
+              <div class="summary-line"><dt>Шаблон</dt><dd id="pvTemplate">—</dd></div>
+              <div class="summary-line"><dt>Получатель</dt><dd id="pvRecipient">—</dd></div>
+            </dl>
+            <div class="summary-flags" id="pvFlags"></div>
+          </div>
+          <div class="editor-nav">
+            <button class="linkback" onclick="goStep(3)"><span data-icon="arrow-left" data-icon-size="16"></span> Изменить</button>
+            <button class="btn btn--primary btn--lg" onclick="goStep(5)">Оплатить 10 BYN и получить QR <span data-icon="arrow-right"></span></button>
+          </div>
+        </section>
 
-    <!-- ШАГ 5: Оплата -->
-    <section class="editor-step hidden" id="step5">
-      <h1 class="editor-step__title">Оплата</h1>
-      <p class="editor-step__sub">После оплаты вы сразу получите ссылку и QR-код открытки.</p>
-      <div class="pay-cols">
-        <div>
+        <!-- ШАГ 5: Оплата -->
+        <section class="editor-step hidden" id="step5">
+          <h1 class="editor-step__title">Оплата</h1>
+          <p class="editor-step__sub">После оплаты вы сразу получите ссылку и QR-код открытки.</p>
+
           <div class="pm-row" role="tablist" aria-label="Способ оплаты">
             <button class="pm-btn pm-btn--active" data-method="card" role="tab" aria-selected="true">Банковская карта</button>
             <button class="pm-btn" data-method="erip" role="tab" aria-selected="false">ЕРИП</button>
           </div>
 
-          <div class="pay-form sticker" id="cardForm">
+          <div class="pay-form" id="cardForm">
             <div class="field">
               <label class="field__label" for="cardNumber">Номер карты</label>
               <input class="field__input" type="text" id="cardNumber" inputmode="numeric" placeholder="0000 0000 0000 0000" autocomplete="cc-number">
@@ -244,7 +223,7 @@
             </div>
           </div>
 
-          <div class="pay-form sticker hidden" id="erpForm">
+          <div class="pay-form hidden" id="erpForm">
             <div class="erip-steps">
               <div class="erip-step"><span class="erip-step__num">1</span><p>Откройте раздел «Система Расчёт (ЕРИП)» в интернет-банке</p></div>
               <div class="erip-step"><span class="erip-step__num">2</span><p>Найдите: Сервисы → Открыточка</p></div>
@@ -253,7 +232,7 @@
             </div>
           </div>
 
-          <div class="pay-form sticker" style="margin-top: var(--sp-4)">
+          <div class="pay-common">
             <div class="field">
               <label class="field__label" for="paymentEmail">Email для ссылки и QR-кода</label>
               <input class="field__input" type="email" id="paymentEmail" placeholder="you@example.com" autocomplete="email">
@@ -262,57 +241,66 @@
               <input type="checkbox" id="agreeTerms">
               <span>Согласен с условиями использования и политикой конфиденциальности</span>
             </label>
-            <button class="btn btn--primary btn--lg" id="payBtn" onclick="handlePayment()" style="width:100%">
+            <div class="order-line"><span>Открытка «<span id="orderTemplate">—</span>»</span><span>10 BYN</span></div>
+            <div class="order-line order-line--total"><span>Итого</span><span>10 BYN</span></div>
+            <button class="btn btn--primary btn--lg pay-submit" id="payBtn" onclick="handlePayment()">
               <span data-icon="lock"></span> Оплатить 10 BYN
             </button>
           </div>
-        </div>
 
-        <aside class="order sticker">
-          <h3>Ваш заказ</h3>
-          <div class="order-tpl" id="orderTemplate"></div>
-          <div class="order-line"><span>Открытка</span><span>10 BYN</span></div>
-          <div class="order-line order-line--total"><span>Итого</span><span>10 BYN</span></div>
-        </aside>
-      </div>
-      <div class="editor-nav">
-        <button class="btn" onclick="goStep(4)"><span data-icon="arrow-left"></span> Назад</button>
-      </div>
-    </section>
-
-    <!-- УСПЕХ -->
-    <section class="editor-step hidden" id="stepSuccess">
-      <div class="success-wrap">
-        <div class="success-badge" data-icon="check" data-icon-size="34"></div>
-        <h2>Открытка готова!</h2>
-        <p>Ссылка и QR-код уже работают. Отправьте их получателю — или сохраните до нужного момента.</p>
-
-        <div class="success-qr sticker"><div id="successQr"></div></div>
-
-        <div class="link-row">
-          <input class="field__input" type="text" id="successLinkInput" readonly aria-label="Ссылка на открытку">
-          <button class="btn" id="btnCopyLink"><span data-icon="copy"></span> Копировать</button>
-        </div>
-
-        <div class="invite-block sticker hidden" id="groupInviteBlock">
-          <h3>Ссылка-приглашение для участников</h3>
-          <p>Отправьте её друзьям — каждый добавит своё фото и пожелание.</p>
-          <div class="link-row">
-            <input class="field__input" type="text" id="groupLinkInput" readonly aria-label="Ссылка-приглашение">
-            <button class="btn" id="btnCopyGroup"><span data-icon="copy"></span> Копировать</button>
+          <div class="editor-nav">
+            <button class="linkback" onclick="goStep(4)"><span data-icon="arrow-left" data-icon-size="16"></span> Назад</button>
           </div>
-        </div>
+        </section>
 
-        <div class="share-row">
-          <button class="btn" id="shareTg">Telegram</button>
-          <button class="btn" id="shareWa">WhatsApp</button>
-          <button class="btn" id="shareVk">ВКонтакте</button>
-        </div>
+        <!-- УСПЕХ -->
+        <section class="editor-step hidden" id="stepSuccess">
+          <div class="success-wrap">
+            <span class="util success-eyebrow">Отправлено в печать</span>
+            <h2>Открытка готова</h2>
+            <p class="success-sub">Ссылка и QR-код уже работают. Отправьте их получателю — или сохраните до нужного момента.</p>
 
-        <a class="btn btn--primary btn--lg" id="openCardLink" href="#">Открыть открытку <span data-icon="arrow-right"></span></a>
+            <div class="success-qr panel"><div id="successQr"></div></div>
+
+            <div class="link-row">
+              <input class="field__input" type="text" id="successLinkInput" readonly aria-label="Ссылка на открытку">
+              <button class="btn" id="btnCopyLink"><span data-icon="copy"></span> Копировать</button>
+            </div>
+
+            <div class="invite-block panel hidden" id="groupInviteBlock">
+              <h3>Ссылка-приглашение для участников</h3>
+              <p>Отправьте её друзьям — каждый добавит своё фото и пожелание.</p>
+              <div class="link-row">
+                <input class="field__input" type="text" id="groupLinkInput" readonly aria-label="Ссылка-приглашение">
+                <button class="btn" id="btnCopyGroup"><span data-icon="copy"></span> Копировать</button>
+              </div>
+            </div>
+
+            <div class="share-row">
+              <button class="btn" id="shareTg">Telegram</button>
+              <button class="btn" id="shareWa">WhatsApp</button>
+              <button class="btn" id="shareVk">ВКонтакте</button>
+            </div>
+
+            <a class="btn btn--primary btn--lg" id="openCardLink" href="#">Открыть открытку <span data-icon="arrow-right"></span></a>
+          </div>
+        </section>
+
       </div>
-    </section>
 
+      <!-- Превью: видно на любом шаге -->
+      <aside class="editor-side" id="editorSide">
+        <button class="editor-side__toggle" id="previewToggle" aria-expanded="false">
+          <span class="util">Превью открытки</span>
+          <span class="cap">развернуть</span>
+        </button>
+        <div class="editor-side__stage">
+          <div class="pcard-box" id="editorPreview"></div>
+        </div>
+        <p class="cap editor-side__hint">Так открытку увидит получатель</p>
+      </aside>
+
+    </div>
   </main>
 
   <script src="js/icons.js"></script>

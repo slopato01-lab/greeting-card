@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Добавить поздравление — Открыточка</title>
   <meta name="robots" content="noindex">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%273%27 y=%273%27 width=%2726%27 height=%2726%27 rx=%277%27 fill=%27%23C9366F%27 stroke=%27%2324202B%27 stroke-width=%272.5%27 transform=%27rotate(-6 16 16)%27/%3E%3Cpath d=%27M20 16h6v6c-3.5-.5-5.5-2.5-6-6z%27 fill=%27%23FCFBFD%27/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23FAF9F7%27/%3E%3Crect x=%277%27 y=%277%27 width=%2718%27 height=%2718%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27 stroke-dasharray=%272.5 2.5%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%273%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/globals.css">
   <style>
     .join-main { max-width: 560px; margin-inline: auto; padding: var(--sp-12) var(--sp-4) var(--sp-24); }
@@ -13,89 +13,70 @@
       padding: var(--sp-8) var(--sp-6);
       text-align: center;
       margin-bottom: var(--sp-8);
-      --shadow-color: var(--plum);
     }
     .join-info__icon {
-      width: 56px; height: 56px;
+      width: 48px; height: 48px;
       margin: 0 auto var(--sp-4);
       display: grid; place-items: center;
-      border: 2px solid var(--ink);
-      border-radius: var(--r-s);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       background: var(--paper);
-      color: var(--raspberry);
-      transform: rotate(-4deg);
+      color: var(--ink);
     }
-    .join-info h1 { font-size: var(--fs-400); margin-bottom: var(--sp-3); }
-    .join-info p { color: var(--slate); font-size: var(--fs-100); }
+    .join-info__icon .motif { width: 26px; height: 26px; }
+    .join-info h1 { font-size: var(--fs-h2); margin-bottom: var(--sp-3); }
+    .join-info p { color: var(--ink-mute); font-size: var(--fs-cap); }
     .join-organizer {
       display: inline-flex;
       align-items: center;
       gap: var(--sp-2);
       margin-top: var(--sp-4);
       padding: var(--sp-1) var(--sp-4);
-      border: 2px solid var(--ink);
-      border-radius: var(--r-full);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       background: var(--paper);
-      font-size: var(--fs-100);
-      font-weight: 700;
+      font-size: var(--fs-cap);
     }
     .join-participants { margin-top: var(--sp-6); }
     .join-participants h2 {
       font-family: var(--font-text);
-      font-size: var(--fs-100);
-      font-weight: 700;
-      letter-spacing: .08em;
+      font-size: var(--fs-util);
+      font-weight: 500;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--slate);
+      color: var(--ink-mute);
       margin-bottom: var(--sp-3);
     }
     .join-avatars { display: flex; justify-content: center; }
     .join-avatar {
-      width: 38px; height: 38px;
+      width: 36px; height: 36px;
       display: grid; place-items: center;
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: var(--fs-100);
-      color: var(--vinyl);
-      background: var(--avatar-accent, var(--raspberry));
-      border: 2px solid var(--ink);
-      border-radius: var(--r-s);
+      font-weight: 300;
+      font-size: var(--fs-cap);
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       margin-left: -6px;
-      transform: rotate(-4deg);
     }
-    .join-avatar:nth-child(even) { transform: rotate(4deg); }
     .join-avatar:first-child { margin-left: 0; }
-    .join-count { font-size: var(--fs-100); color: var(--slate); margin-top: var(--sp-2); }
-    .join-form { padding: var(--sp-6); --shadow-color: var(--occ-birthday); }
-    .join-form h2 { font-size: var(--fs-300); margin-bottom: var(--sp-6); }
+    .join-count { font-size: var(--fs-cap); color: var(--ink-mute); margin-top: var(--sp-2); }
+    .join-form { padding: var(--sp-6); }
+    .join-form h2 { font-family: var(--font-text); font-weight: 500; font-size: var(--fs-h3); margin-bottom: var(--sp-6); }
     .join-success { text-align: center; padding: var(--sp-8) var(--sp-4); }
-    .join-success__badge {
-      width: 64px; height: 64px;
-      margin: 0 auto var(--sp-4);
-      display: grid; place-items: center;
-      background: var(--ok);
-      color: var(--vinyl);
-      border: 2px solid var(--ink);
-      border-radius: var(--r-m);
-      box-shadow: var(--shadow-1);
-      transform: rotate(-5deg);
-      animation: join-badge-in var(--dur-2) var(--ease);
-    }
-    @keyframes join-badge-in { from { transform: rotate(-5deg) scale(.5); opacity: 0; } }
-    .join-success h2 { font-size: var(--fs-400); margin-bottom: var(--sp-3); }
-    .join-success p { color: var(--slate); font-size: var(--fs-100); margin-bottom: var(--sp-6); }
+    .join-success h2 { font-size: var(--fs-h2); margin-bottom: var(--sp-3); }
+    .join-success p { color: var(--ink-mute); font-size: var(--fs-cap); margin-bottom: var(--sp-6); }
+    .join-success__eyebrow { display: block; color: var(--ink-mute); margin-bottom: var(--sp-3); }
     .join-state { text-align: center; padding: var(--sp-16) var(--sp-4); }
-    .join-state p { color: var(--slate); margin-block: var(--sp-3) var(--sp-6); }
+    .join-state p { color: var(--ink-mute); margin-block: var(--sp-3) var(--sp-6); }
   </style>
 </head>
 <body>
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a class="logo" href="index.html">
-        <span class="logo__mark" data-icon="peel" data-icon-size="18"></span>
-        Открыточка
-      </a>
+      <a class="logo" href="index.html">Открыточка</a>
     </div>
   </header>
 
@@ -112,7 +93,7 @@
     </div>
 
     <div class="hidden" id="joinContent">
-      <div class="join-info sticker">
+      <div class="join-info panel">
         <div class="join-info__icon" id="infoIcon" data-icon="users" data-icon-size="26"></div>
         <h1 id="infoTitle">Групповая открытка</h1>
         <p id="infoDesc">Добавьте фото и пожелание — получатель увидит всех в общей галерее.</p>
@@ -127,7 +108,7 @@
         </div>
       </div>
 
-      <div class="join-form sticker" id="joinFormWrap">
+      <div class="join-form panel" id="joinFormWrap">
         <h2>Ваше поздравление</h2>
         <div class="field">
           <label class="field__label" for="participantName">Ваше имя</label>
@@ -154,9 +135,9 @@
         </button>
       </div>
 
-      <div class="join-form sticker hidden" id="joinSuccessWrap">
+      <div class="join-form panel hidden" id="joinSuccessWrap">
         <div class="join-success">
-          <div class="join-success__badge" data-icon="check" data-icon-size="30"></div>
+          <span class="util join-success__eyebrow">Принято</span>
           <h2>Поздравление добавлено!</h2>
           <p>Ваши слова попали в открытку. Когда все соберутся, организатор отправит её получателю.</p>
           <a class="btn btn--primary" href="index.html">Создать свою открытку <span data-icon="arrow-right"></span></a>
@@ -193,7 +174,7 @@
       function render() {
         show('joinContent');
         const t = getTemplate(cardData.templateId);
-        document.getElementById('infoIcon').innerHTML = icon(OCCASIONS[t.occ].icon, 26);
+        document.getElementById('infoIcon').innerHTML = motif(OCCASIONS[t.occ].motif, 'motif motif--sm');
         if (cardData.cardTitle) document.getElementById('infoTitle').textContent = cardData.cardTitle;
         document.getElementById('infoDesc').textContent =
           `Вас пригласили поздравить ${cardData.recipientName || 'получателя'}. Добавьте фото и пожелание — это бесплатно.`;
@@ -205,9 +186,8 @@
         const participants = JSON.parse(localStorage.getItem(`group_${cardId}`) || '[]');
         if (participants.length === 0) return;
         show('participantsPreview');
-        const accents = ['var(--occ-other)', 'var(--occ-birthday)', 'var(--occ-newyear)', 'var(--occ-graduation)', 'var(--occ-mar8)', 'var(--occ-feb23)'];
-        document.getElementById('participantList').innerHTML = participants.slice(0, 10).map((p, i) =>
-          `<span class="join-avatar" style="--avatar-accent: ${accents[i % accents.length]}">${escHtml((p.name || '?')[0].toUpperCase())}</span>`
+        document.getElementById('participantList').innerHTML = participants.slice(0, 10).map(p =>
+          `<span class="join-avatar">${escHtml((p.name || '?')[0].toUpperCase())}</span>`
         ).join('');
         document.getElementById('participantCount').textContent =
           `${participants.length} из 20 участников добавили поздравление`;

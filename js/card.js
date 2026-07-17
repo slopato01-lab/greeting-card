@@ -109,19 +109,18 @@ function showCountdown(unlockTime) {
   countdownInterval = setInterval(tick, 1000);
 }
 
-/* ——— Запечатанный стикер ——— */
+/* ——— Запечатанный конверт ——— */
 function showSealed() {
   const t = getTemplate(cardData.templateId);
   document.getElementById('cardMain').classList.remove('hidden');
 
   const cover = document.getElementById('peelCover');
-  cover.classList.add(...tplClasses(t).split(' '));
-  document.getElementById('coverIcon').innerHTML = icon(OCCASIONS[t.occ].icon, 30);
+  document.getElementById('coverStamp').innerHTML = motif(OCCASIONS[t.occ].motif);
   if (cardData.recipientName) {
     document.getElementById('coverName').textContent = cardData.recipientName;
   }
 
-  document.getElementById('cardFrame').innerHTML = renderCardFace(t);
+  document.getElementById('cardFrame').innerHTML = renderCard(t, cardData);
 
   cover.addEventListener('click', openCard, { once: true });
 }
@@ -130,19 +129,6 @@ function openCard() {
   document.getElementById('peelStage').classList.add('peel-stage--open');
   document.getElementById('cardActions').classList.add('card-actions--show');
   bindCardControls();
-}
-
-function renderCardFace(t) {
-  const occ = OCCASIONS[t.occ];
-  return `
-    <div class="card-face ${tplClasses(t)}">
-      <span class="card-face__icon">${icon(occ.icon, 28)}</span>
-      ${cardData.recipientName ? `<span class="card-face__recipient">Для: ${escHtml(cardData.recipientName)}</span>` : ''}
-      <span class="card-face__title">${escHtml(cardData.cardTitle || 'Открытка для тебя')}</span>
-      ${cardData.photoUrl ? `<img class="card-face__photo" src="${cardData.photoUrl}" alt="Фото в открытке">` : ''}
-      ${cardData.cardText ? `<span class="card-face__text">${escHtml(cardData.cardText)}</span>` : ''}
-      ${cardData.cardSignature ? `<span class="card-face__signature">— ${escHtml(cardData.cardSignature)}</span>` : ''}
-    </div>`;
 }
 
 /* ——— Кнопки под открыткой ——— */
@@ -174,7 +160,7 @@ function bindCardControls() {
   document.getElementById('btnShare').addEventListener('click', () => {
     const url = location.href;
     document.getElementById('shareUrlInput').value = url;
-    QRCode.generate(url, document.getElementById('shareQr'), { width: 148, height: 148, colorDark: '#24202B', colorLight: '#FCFBFD' });
+    QRCode.generate(url, document.getElementById('shareQr'), { width: 148, height: 148, colorDark: '#191814', colorLight: '#FAF9F7' });
     showOverlay('shareOverlay');
     document.getElementById('shareTg').onclick = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Тебе открытка!')}`, '_blank');
     document.getElementById('shareWa').onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent('Тебе открытка! ' + url)}`, '_blank');
@@ -207,9 +193,8 @@ function renderGroupGallery() {
     gallery.innerHTML = '<div class="group-empty">Пока никто не добавил поздравление.<br>Организатор ещё собирает компанию.</div>';
     return;
   }
-  const accents = ['var(--occ-other)', 'var(--occ-birthday)', 'var(--occ-newyear)', 'var(--occ-graduation)', 'var(--occ-mar8)', 'var(--occ-feb23)'];
-  gallery.innerHTML = participants.map((p, i) => `
-    <div class="group-card" style="--group-accent: ${accents[i % accents.length]}">
+  gallery.innerHTML = participants.map(p => `
+    <div class="group-card">
       ${p.photo
         ? `<img class="group-card__photo" src="${p.photo}" alt="Фото: ${escHtml(p.name)}">`
         : `<div class="group-card__initial">${escHtml((p.name || '?')[0].toUpperCase())}</div>`}
@@ -236,12 +221,13 @@ function runGame(type, t) {
   document.getElementById('gameScore').textContent = '0';
   document.getElementById('gameTimer').textContent = '30';
 
+  /* Игра печатается теми же красками: оттиск, чернила, приглушённые чернила */
   const styles = getComputedStyle(document.documentElement);
   startGame(type, document.getElementById('gameCanvas'), {
-    accent: styles.getPropertyValue(`--occ-${t.occ}`).trim(),
-    accentLt: styles.getPropertyValue(`--occ-${t.occ}-lt`).trim(),
+    accent: styles.getPropertyValue('--stamp').trim(),
+    accentLt: styles.getPropertyValue('--ink-mute').trim(),
     ink: styles.getPropertyValue('--ink').trim(),
-    vinyl: styles.getPropertyValue('--vinyl').trim(),
+    vinyl: styles.getPropertyValue('--paper').trim(),
     onScore: s => { document.getElementById('gameScore').textContent = s; },
     onTimer: sec => { document.getElementById('gameTimer').textContent = sec; },
     onEnd: score => {

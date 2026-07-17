@@ -9,7 +9,7 @@
   <meta property="og:description" content="Кто-то приготовил для вас интерактивную открытку. Нажмите, чтобы открыть.">
   <meta property="og:image" content="assets/og-image.png">
   <meta name="robots" content="noindex">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%273%27 y=%273%27 width=%2726%27 height=%2726%27 rx=%277%27 fill=%27%23C9366F%27 stroke=%27%2324202B%27 stroke-width=%272.5%27 transform=%27rotate(-6 16 16)%27/%3E%3Cpath d=%27M20 16h6v6c-3.5-.5-5.5-2.5-6-6z%27 fill=%27%23FCFBFD%27/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23FAF9F7%27/%3E%3Crect x=%277%27 y=%277%27 width=%2718%27 height=%2718%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27 stroke-dasharray=%272.5 2.5%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%273%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/globals.css">
   <link rel="stylesheet" href="css/card.css">
 </head>
@@ -31,7 +31,7 @@
 
     <!-- Отсчёт -->
     <div class="countdown hidden" id="cardCountdown">
-      <div class="countdown__seal sticker">
+      <div class="countdown__seal panel">
         <div class="countdown__icon" data-icon="clock" data-icon-size="26"></div>
         <h1>Открытка запечатана</h1>
         <p class="countdown__date">Откроется <span id="countdownDateLabel">—</span></p>
@@ -46,16 +46,16 @@
     </div>
 
     <!-- Открытка -->
-    <div class="hidden" id="cardMain" style="width: min(440px, 100%)">
+    <div class="hidden card-main" id="cardMain">
       <div class="peel-stage" id="peelStage">
         <button class="peel-cover" id="peelCover" aria-label="Открыть открытку">
-          <span class="peel-cover__icon" id="coverIcon"></span>
-          <span class="peel-cover__for">Открытка для</span>
+          <span class="peel-cover__stamp" id="coverStamp"></span>
+          <span class="peel-cover__for util">Открытка для</span>
           <span class="peel-cover__name" id="coverName">тебя</span>
           <span class="peel-cover__hint"><span data-icon="peel" data-icon-size="16"></span> Потяни за уголок</span>
         </button>
         <div class="card-view" id="cardView">
-          <div class="card-frame" id="cardFrame"></div>
+          <div class="pcard-box" id="cardFrame"></div>
         </div>
       </div>
       <div class="card-actions" id="cardActions">
@@ -111,7 +111,7 @@
       </div>
       <div class="share-qr"><div id="shareQr"></div></div>
       <div class="link-row" style="display:flex; gap: var(--sp-2)">
-        <input class="field__input" type="text" id="shareUrlInput" readonly aria-label="Ссылка на открытку" style="flex:1; font-size: var(--fs-100)">
+        <input class="field__input" type="text" id="shareUrlInput" readonly aria-label="Ссылка на открытку" style="flex:1; font-size: var(--fs-cap)">
         <button class="btn" id="shareCopy" aria-label="Скопировать ссылку"><span data-icon="copy"></span></button>
       </div>
       <div class="share-buttons">

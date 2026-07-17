@@ -74,9 +74,7 @@ function setStep(n) {
     el.classList.toggle('ep-step--done', num < n);
     el.classList.toggle('ep-step--active', num === n);
   });
-  document.querySelectorAll('.ep-line').forEach((el, i) => {
-    el.classList.toggle('ep-line--done', i + 1 < n);
-  });
+  updateLivePreview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -93,14 +91,11 @@ function renderTemplatePicker() {
   const list = activeCat === 'all' ? TEMPLATES : TEMPLATES.filter(t => t.cat === activeCat);
   picker.innerHTML = list.map(t => `
     <button type="button" class="tpl-card${state.templateId === t.id ? ' tpl-card--selected' : ''}"
-            data-id="${t.id}" style="--shadow-color: var(--occ-${t.occ})" aria-pressed="${state.templateId === t.id}">
-      <span class="tpl-card__preview ${tplClasses(t)}">
-        <span class="tpl-card__icon">${icon(OCCASIONS[t.occ].icon, 24)}</span>
-        <span class="tpl-card__name">${t.name}</span>
-      </span>
-      <span class="tpl-card__footer">
+            data-id="${t.id}" aria-pressed="${state.templateId === t.id}">
+      <span class="tpl-card__mini">${renderMini(t)}</span>
+      <span class="tpl-card__meta">
         <span class="tpl-card__occ">${OCCASIONS[t.occ].label}</span>
-        <span class="tpl-card__cta">${state.templateId === t.id ? icon('check', 16) : ''}</span>
+        <span class="tpl-card__name">${t.name}</span>
       </span>
     </button>`).join('');
 }
@@ -108,7 +103,8 @@ function renderTemplatePicker() {
 /* ——— Шаг 3: сетки радио-опций ——— */
 function renderGameGrid() {
   const grid = document.getElementById('gameGrid');
-  grid.innerHTML = Object.entries(GAMES).map(([id, g]) => `
+  /* «Без игры» — это выключенный тумблер, в сетке не нужен */
+  grid.innerHTML = Object.entries(GAMES).filter(([id]) => id !== 'none').map(([id, g]) => `
     <label class="radio-card">
       <input type="radio" name="game" value="${id}" ${state.game === id ? 'checked' : ''}>
       <span class="radio-card__box">${g.icon ? icon(g.icon, 22) : icon('spark', 22)}${g.label}</span>
@@ -124,30 +120,17 @@ function renderMusicGrid() {
     </label>`).join('');
 }
 
-/* ——— Общий рендер открытки (превью шагов 2 и 4) ——— */
-function cardFaceHTML(t) {
-  const occ = OCCASIONS[t.occ];
-  return `
-    <div class="card-face ${tplClasses(t)}">
-      <span class="card-face__icon">${icon(occ.icon, 28)}</span>
-      ${state.recipientName ? `<span class="card-face__recipient">Для: ${escHtml(state.recipientName)}</span>` : ''}
-      <span class="card-face__title">${escHtml(state.cardTitle) || 'Заголовок открытки'}</span>
-      ${state.photoUrl ? `<img class="card-face__photo" src="${state.photoUrl}" alt="Фото в открытке">` : ''}
-      ${state.cardText ? `<span class="card-face__text">${escHtml(state.cardText)}</span>` : ''}
-      ${state.cardSignature ? `<span class="card-face__signature">— ${escHtml(state.cardSignature)}</span>` : ''}
-    </div>`;
-}
-
+/* ——— Постоянное превью: видно на любом шаге ——— */
 function updateLivePreview() {
-  const lp = document.getElementById('livePreview');
-  if (!lp || !state.templateId) return;
-  lp.innerHTML = cardFaceHTML(getTemplate(state.templateId));
+  const lp = document.getElementById('editorPreview');
+  if (!lp) return;
+  const t = getTemplate(state.templateId || TEMPLATES[0].id);
+  lp.innerHTML = renderCard(t, state);
 }
 
-/* ——— Шаг 4: превью и сводка ——— */
+/* ——— Шаг 4: сводка ——— */
 function renderPreviewStep() {
   const t = getTemplate(state.templateId);
-  document.getElementById('previewFrame').innerHTML = cardFaceHTML(t);
   document.getElementById('pvTemplate').textContent = `${t.name} · ${OCCASIONS[t.occ].label}`;
   document.getElementById('pvRecipient').textContent = state.recipientName || 'не указан';
 
@@ -170,12 +153,7 @@ function formatDateTime(date, time) {
 /* ——— Шаг 5: оплата ——— */
 function renderPaymentStep() {
   const t = getTemplate(state.templateId);
-  document.getElementById('orderTemplate').innerHTML = `
-    <span class="order-tpl__thumb ${tplClasses(t)}"><span style="color:var(--tpl-title);position:relative;display:inline-flex">${icon(OCCASIONS[t.occ].icon, 22)}</span></span>
-    <span>
-      <span class="order-tpl__name">${t.name}</span><br>
-      <span class="order-tpl__occ">${OCCASIONS[t.occ].label}</span>
-    </span>`;
+  document.getElementById('orderTemplate').textContent = `${t.name} · ${OCCASIONS[t.occ].label}`;
   if (state.notifyEmail) document.getElementById('paymentEmail').value = state.notifyEmail;
   document.getElementById('erpCode').textContent = generateCode();
 }
@@ -224,7 +202,7 @@ function completePayment(email) {
   document.querySelectorAll('.editor-step').forEach(el => el.classList.add('hidden'));
   document.getElementById('stepSuccess').classList.remove('hidden');
   document.querySelectorAll('.ep-step').forEach(el => { el.classList.remove('ep-step--active'); el.classList.add('ep-step--done'); });
-  document.querySelectorAll('.ep-line').forEach(el => el.classList.add('ep-line--done'));
+  document.getElementById('editorGrid').classList.add('editor-grid--success');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   document.getElementById('successLinkInput').value = cardUrl;
@@ -234,7 +212,7 @@ function completePayment(email) {
     document.getElementById('groupLinkInput').value = groupUrl;
   }
 
-  QRCode.generate(cardUrl, document.getElementById('successQr'), { width: 168, height: 168, colorDark: '#24202B', colorLight: '#FCFBFD' });
+  QRCode.generate(cardUrl, document.getElementById('successQr'), { width: 168, height: 168, colorDark: '#191814', colorLight: '#FAF9F7' });
 
   document.getElementById('shareTg').onclick = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(cardUrl)}&text=${encodeURIComponent('Тебе открытка!')}`, '_blank');
   document.getElementById('shareWa').onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent('Тебе открытка! ' + cardUrl)}`, '_blank');
@@ -294,14 +272,27 @@ function bindEvents() {
   document.getElementById('gameGrid').addEventListener('change', e => { state.game = e.target.value; });
   document.getElementById('musicGrid').addEventListener('change', e => { state.musicTrack = e.target.value; });
 
-  // Тумблеры
-  bindToggle('toggleMoment', 'momentBody', v => { state.openMoment = v; });
-  bindToggle('toggleGroup', 'groupBody', v => { state.isGroup = v; });
-  bindToggle('toggleMusic', 'musicBody', v => { state.hasMusic = v; });
-  bindToggle('toggleNotify', 'notifyBody', () => {});
+  // Тумблеры-аккордеон
+  bindToggle('toggleGame', 'optGame', v => {
+    state.game = v ? 'auto' : 'none';
+    if (v) renderGameGrid();
+  });
+  bindToggle('toggleMoment', 'optMoment', v => { state.openMoment = v; updateLivePreview(); });
+  bindToggle('toggleGroup', 'optGroup', v => { state.isGroup = v; });
+  bindToggle('toggleMusic', 'optMusic', v => { state.hasMusic = v; });
+  bindToggle('toggleNotify', 'optNotify', () => {});
 
-  document.getElementById('openDate').addEventListener('change', e => { state.openDate = e.target.value; });
+  document.getElementById('openDate').addEventListener('change', e => { state.openDate = e.target.value; updateLivePreview(); });
   document.getElementById('openTime').addEventListener('change', e => { state.openTime = e.target.value; });
+
+  // Мобайл: свернуть/развернуть превью
+  const side = document.getElementById('editorSide');
+  const previewToggle = document.getElementById('previewToggle');
+  previewToggle.addEventListener('click', () => {
+    const open = side.classList.toggle('editor-side--open');
+    previewToggle.setAttribute('aria-expanded', open);
+    previewToggle.querySelector('.cap').textContent = open ? 'свернуть' : 'развернуть';
+  });
   document.getElementById('organizerName').addEventListener('input', e => { state.organizerName = e.target.value; });
   document.getElementById('notifyEmail').addEventListener('input', e => { state.notifyEmail = e.target.value; });
 
@@ -346,11 +337,11 @@ function bindEvents() {
   });
 }
 
-function bindToggle(toggleId, bodyId, apply) {
+function bindToggle(toggleId, optId, apply) {
   const toggle = document.getElementById(toggleId);
   toggle.addEventListener('change', e => {
     apply(e.target.checked);
-    document.getElementById(bodyId).classList.toggle('hidden', !e.target.checked);
+    document.getElementById(optId).classList.toggle('opt--on', e.target.checked);
   });
 }
 
@@ -391,12 +382,13 @@ function restoreFields() {
     document.getElementById('photoPreview').classList.remove('hidden');
     document.getElementById('photoUpload').classList.add('hidden');
   }
-  [['toggleMoment', 'momentBody', state.openMoment],
-   ['toggleGroup', 'groupBody', state.isGroup],
-   ['toggleMusic', 'musicBody', state.hasMusic],
-   ['toggleNotify', 'notifyBody', Boolean(state.notifyEmail)]].forEach(([tid, bid, on]) => {
+  [['toggleGame', 'optGame', state.game !== 'none'],
+   ['toggleMoment', 'optMoment', state.openMoment],
+   ['toggleGroup', 'optGroup', state.isGroup],
+   ['toggleMusic', 'optMusic', state.hasMusic],
+   ['toggleNotify', 'optNotify', Boolean(state.notifyEmail)]].forEach(([tid, oid, on]) => {
     document.getElementById(tid).checked = on;
-    document.getElementById(bid).classList.toggle('hidden', !on);
+    document.getElementById(oid).classList.toggle('opt--on', on);
   });
   document.getElementById('openDate').value = state.openDate;
   document.getElementById('openTime').value = state.openTime;

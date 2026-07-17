@@ -9,7 +9,7 @@
   <meta property="og:description" content="Открытка как подарок: мини-игра, музыка и групповые поздравления по одной ссылке.">
   <meta property="og:image" content="assets/og-image.png">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%273%27 y=%273%27 width=%2726%27 height=%2726%27 rx=%277%27 fill=%27%23C9366F%27 stroke=%27%2324202B%27 stroke-width=%272.5%27 transform=%27rotate(-6 16 16)%27/%3E%3Cpath d=%27M20 16h6v6c-3.5-.5-5.5-2.5-6-6z%27 fill=%27%23FCFBFD%27/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23FAF9F7%27/%3E%3Crect x=%277%27 y=%277%27 width=%2718%27 height=%2718%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27 stroke-dasharray=%272.5 2.5%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%273%27 fill=%27none%27 stroke=%27%23B4271F%27 stroke-width=%272%27/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/globals.css">
   <link rel="stylesheet" href="css/main.css">
 </head>
@@ -17,10 +17,7 @@
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a class="logo" href="index.html">
-        <span class="logo__mark" data-icon="peel" data-icon-size="18"></span>
-        Открыточка
-      </a>
+      <a class="logo" href="index.html">Открыточка</a>
       <nav class="site-nav" aria-label="Основная навигация">
         <a href="#how-it-works">Как это работает</a>
         <a href="#templates">Шаблоны</a>
@@ -35,32 +32,16 @@
     <!-- HERO -->
     <section class="hero" id="hero">
       <div class="container hero__inner">
-        <div>
-          <span class="hero__eyebrow">Открытка, которую хочется отправить</span>
-          <h1 class="hero__title">Не просто открытка. <em>Маленький подарок</em> по ссылке</h1>
+        <div class="hero__copy">
+          <span class="util hero__eyebrow">Открытка, которую хочется отправить</span>
+          <h1 class="hero__title">Не просто открытка. Маленький подарок по&nbsp;ссылке</h1>
           <p class="hero__sub">Соберите персональную интерактивную открытку за пару минут: мини-игра, музыка, общие поздравления от компании друзей. Получатель откроет её с телефона — по ссылке или QR-коду.</p>
           <div class="hero__actions">
             <a class="btn btn--primary btn--lg" href="editor.html">Создать открытку <span data-icon="arrow-right"></span></a>
-            <span class="hero__price">10 BYN за открытку, без подписок</span>
+            <span class="cap">10 BYN за открытку, без подписок</span>
           </div>
         </div>
-        <div class="hero__collage" aria-hidden="true">
-          <div class="hero-card hero-card--1 tpl tpl--occ-birthday tpl--light tpl--pat-dots">
-            <div class="hero-card__icon" data-icon="cake" data-icon-size="22"></div>
-            <div class="hero-card__title">С днём рождения, Лера!</div>
-            <div class="hero-card__text">Открой — внутри игра и кое-что ещё…</div>
-          </div>
-          <div class="hero-card hero-card--2 tpl tpl--occ-valentine tpl--accent tpl--pat-rays">
-            <div class="hero-card__icon" data-icon="heart" data-icon-size="22"></div>
-            <div class="hero-card__title">Для самого любимого человека</div>
-            <div class="hero-card__text">— и это только начало</div>
-          </div>
-          <div class="hero-card hero-card--3 tpl tpl--occ-newyear tpl--dark tpl--pat-grid">
-            <div class="hero-card__icon" data-icon="snowflake" data-icon-size="22"></div>
-            <div class="hero-card__title">С Новым годом!</div>
-            <div class="hero-card__text">Откроется ровно в полночь</div>
-          </div>
-        </div>
+        <div class="hero__collage" id="heroCollage" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -68,22 +49,23 @@
     <section class="section" id="how-it-works">
       <div class="container">
         <div class="section-head">
+          <span class="util section-eyebrow">Как это работает</span>
           <h2 class="section-title">Три шага до открытки</h2>
           <p class="section-sub">Никаких дизайнерских навыков — редактор ведёт за руку.</p>
         </div>
         <div class="hiw__grid">
-          <div class="hiw-step sticker">
-            <span class="hiw-step__num">1</span>
+          <div class="hiw-step">
+            <span class="util hiw-step__num">Шаг 1</span>
             <h3>Выберите шаблон</h3>
-            <p>25 шаблонов для восьми поводов — от Нового года до «просто так». Все выглядят как одна семья, а не случайный набор.</p>
+            <p>Пять макетов, восемь поводов — сорок открыток, и все родственники. От Нового года до «просто так».</p>
           </div>
-          <div class="hiw-step sticker">
-            <span class="hiw-step__num">2</span>
+          <div class="hiw-step">
+            <span class="util hiw-step__num">Шаг 2</span>
             <h3>Наполните смыслом</h3>
             <p>Имя получателя, тёплые слова, фото. Добавьте мини-игру, музыку или соберите поздравления от всей компании.</p>
           </div>
-          <div class="hiw-step sticker">
-            <span class="hiw-step__num">3</span>
+          <div class="hiw-step">
+            <span class="util hiw-step__num">Шаг 3</span>
             <h3>Отправьте ссылку</h3>
             <p>Получите ссылку и QR-код. Отправьте в мессенджере или распечатайте QR и вложите в настоящий конверт.</p>
           </div>
@@ -95,8 +77,9 @@
     <section class="section" id="templates">
       <div class="container">
         <div class="section-head">
+          <span class="util section-eyebrow">Каталог</span>
           <h2 class="section-title">Дизайн для каждого повода</h2>
-          <p class="section-sub">Один характер, восемь поводов. У каждого праздника — свой фирменный цвет.</p>
+          <p class="section-sub">Один характер, восемь поводов. Разница — в мотиве, не в цвете.</p>
         </div>
         <div class="tpl-filter" id="tplFilter" role="tablist" aria-label="Фильтр по поводу"></div>
         <div class="tpl-grid" id="tplGrid"></div>
@@ -107,26 +90,11 @@
     <section class="section" id="gallery">
       <div class="container">
         <div class="section-head">
+          <span class="util section-eyebrow">Примеры</span>
           <h2 class="section-title">Как это выглядит у получателя</h2>
           <p class="section-sub">Три живых примера — нажмите и откройте, как настоящую открытку.</p>
         </div>
-        <div class="gallery__grid">
-          <a class="gallery-card tpl tpl--occ-birthday tpl--dark tpl--pat-stripes" href="card.html?demo=bday_party">
-            <span class="gallery-card__title">Тебе уже 25, Макс!</span>
-            <span class="gallery-card__text">Внутри — игра «Лопни шарики» и подписи от всей нашей банды.</span>
-            <span class="gallery-card__from">— твои коллеги</span>
-          </a>
-          <a class="gallery-card tpl tpl--occ-valentine tpl--light tpl--pat-dots" href="card.html?demo=val_watercolor">
-            <span class="gallery-card__title">Насте, которая терпит меня 3 года</span>
-            <span class="gallery-card__text">С музыкой и очень важным вопросом в конце.</span>
-            <span class="gallery-card__from">— Дима</span>
-          </a>
-          <a class="gallery-card tpl tpl--occ-graduation tpl--accent tpl--pat-rays" href="card.html?demo=grad_gradient">
-            <span class="gallery-card__title">Выпуск-2026, мы сделали это!</span>
-            <span class="gallery-card__text">Открытка от всей группы — 18 поздравлений внутри.</span>
-            <span class="gallery-card__from">— староста</span>
-          </a>
-        </div>
+        <div class="gallery__grid" id="galleryGrid"></div>
       </div>
     </section>
 
@@ -134,36 +102,37 @@
     <section class="section" id="features">
       <div class="container">
         <div class="section-head">
+          <span class="util section-eyebrow">Возможности</span>
           <h2 class="section-title">Больше, чем просто открытка</h2>
           <p class="section-sub">Каждая деталь работает на одну секунду — когда получатель откроет ссылку.</p>
         </div>
         <div class="features__grid">
-          <div class="feature sticker" style="--feature-accent: var(--occ-birthday)">
+          <div class="feature">
             <div class="feature__icon" data-icon="users" data-icon-size="22"></div>
             <h3>Групповая открытка</h3>
             <p>До 20 человек добавят свои фото и пожелания по ссылке-приглашению. Получатель увидит всех в общей галерее.</p>
           </div>
-          <div class="feature sticker" style="--feature-accent: var(--occ-feb23)">
+          <div class="feature">
             <div class="feature__icon" data-icon="clock" data-icon-size="22"></div>
             <h3>Открытие в нужный момент</h3>
             <p>Открытка «запечатана» до даты, которую вы выберете. До этого получатель видит обратный отсчёт.</p>
           </div>
-          <div class="feature sticker" style="--feature-accent: var(--occ-newyear)">
+          <div class="feature">
             <div class="feature__icon" data-icon="gamepad" data-icon-size="22"></div>
             <h3>Мини-игры внутри</h3>
             <p>Поймать снежинки, лопнуть шарики, найти сердечки — 30 секунд игры, которые запоминаются лучше любого текста.</p>
           </div>
-          <div class="feature sticker" style="--feature-accent: var(--occ-graduation)">
+          <div class="feature">
             <div class="feature__icon" data-icon="music" data-icon-size="22"></div>
             <h3>Музыкальный фон</h3>
             <p>Мелодия начинает играть, когда получатель открывает открытку — с его разрешения, без автозапуска.</p>
           </div>
-          <div class="feature sticker" style="--feature-accent: var(--occ-mar8)">
+          <div class="feature">
             <div class="feature__icon" data-icon="image" data-icon-size="22"></div>
             <h3>Ваши фотографии</h3>
             <p>Добавьте общее фото или мем, который поймёт только получатель. Открытка станет по-настоящему личной.</p>
           </div>
-          <div class="feature sticker" style="--feature-accent: var(--occ-valentine)">
+          <div class="feature">
             <div class="feature__icon" data-icon="mail" data-icon-size="22"></div>
             <h3>Уведомление об открытии</h3>
             <p>Узнайте момент, когда открытку открыли — придёт письмо на вашу почту.</p>
@@ -176,6 +145,7 @@
     <section class="section" id="faq">
       <div class="container">
         <div class="section-head">
+          <span class="util section-eyebrow">Вопросы</span>
           <h2 class="section-title">Частые вопросы</h2>
         </div>
         <div class="faq">
@@ -218,10 +188,7 @@
   <footer class="site-footer">
     <div class="container site-footer__inner">
       <div>
-        <a class="logo" href="index.html">
-          <span class="logo__mark" data-icon="peel" data-icon-size="18"></span>
-          Открыточка
-        </a>
+        <a class="logo" href="index.html">Открыточка</a>
         <p class="site-footer__note">Интерактивные персональные открытки. Сделано, чтобы секунда открытия стоила больше, чем бумажный конверт.</p>
       </div>
       <nav class="site-footer__links" aria-label="Ссылки в подвале">
@@ -249,15 +216,12 @@
       function renderGrid(cat) {
         const list = cat === 'all' ? TEMPLATES : TEMPLATES.filter(t => t.cat === cat);
         grid.innerHTML = list.map(t => `
-          <a class="tpl-card" href="editor.html?template=${t.id}" style="--shadow-color: var(--occ-${t.occ})">
-            <div class="tpl-card__preview ${tplClasses(t)}">
-              <span class="tpl-card__icon">${icon(OCCASIONS[t.occ].icon, 24)}</span>
-              <span class="tpl-card__name">${t.name}</span>
-            </div>
-            <div class="tpl-card__footer">
+          <a class="tpl-card" href="editor.html?template=${t.id}">
+            <span class="tpl-card__mini">${renderMini(t)}</span>
+            <span class="tpl-card__meta">
               <span class="tpl-card__occ">${OCCASIONS[t.occ].label}</span>
-              <span class="tpl-card__cta">Выбрать ${icon('arrow-right', 14)}</span>
-            </div>
+              <span class="tpl-card__name">${t.name}</span>
+            </span>
           </a>`).join('');
       }
 
@@ -270,6 +234,33 @@
 
       renderFilter('all');
       renderGrid('all');
+
+      /* Коллаж в hero: три архетипа, три повода — одна краска */
+      const collageSpec = [
+        { id: 'birthday_editorial', cls: 'hero-card--1' },
+        { id: 'valentine_poster',   cls: 'hero-card--2' },
+        { id: 'newyear_motif',      cls: 'hero-card--3' }
+      ];
+      document.getElementById('heroCollage').innerHTML = collageSpec.map(({ id, cls }) => {
+        const t = getTemplate(id);
+        return `<div class="hero-card ${cls}"><div class="pcard-box">${renderCard(t, { recipientName: 'Лера', ...MINI_DEMO[t.occ] })}</div></div>`;
+      }).join('');
+
+      /* Галерея примеров */
+      const gallerySpec = [
+        { id: 'birthday_poster',    from: '— твои коллеги', note: 'Внутри — игра «Лопни шарики» и подписи от всей нашей банды.' },
+        { id: 'valentine_note',     from: '— Дима',         note: 'С музыкой и очень важным вопросом в конце.' },
+        { id: 'graduation_motif',   from: '— староста',     note: 'Открытка от всей группы — 18 поздравлений внутри.' }
+      ];
+      document.getElementById('galleryGrid').innerHTML = gallerySpec.map(({ id, from, note }) => {
+        const t = getTemplate(id);
+        return `
+          <a class="gallery-card" href="card.html?demo=${id}">
+            <span class="gallery-card__mini">${renderMini(t)}</span>
+            <span class="gallery-card__note">${note}</span>
+            <span class="gallery-card__from util">${from}</span>
+          </a>`;
+      }).join('');
     })();
   </script>
 </body>

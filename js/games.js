@@ -129,7 +129,7 @@ function draw(gs) {
       ctx.fill();
     });
     if (b.life > .5) {
-      ctx.font = '700 14px Onest, sans-serif';
+      ctx.font = "500 14px 'Golos Text', sans-serif";
       ctx.textAlign = 'center';
       ctx.fillStyle = b.color;
       ctx.fillText('+1', b.x, b.y - 26 * (1 - b.life));
