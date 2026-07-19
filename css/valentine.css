@@ -1,0 +1,354 @@
+/* ============================================================
+   «Футляр» — скин шаблона valentine_case: футляр для украшения
+   и музейное паспарту. Токены в globals.css (--val-*), рантайм
+   в js/valentine.js, разметка в js/templates.js.
+   Люкс — это воздух вокруг объекта: фото небольшое, поля большие,
+   латунь только линиями. Одна траектория открытия, ничего не
+   пружинит. Три состояния: по умолчанию (каталог, редактор) —
+   раскрыто; .val--sealed — запечатано лентой; .val--opening —
+   жест открытия ~1.6 с; .val--open — финал на странице получателя.
+   ============================================================ */
+
+/* ——— Паспарту ——— */
+.pcard--valentine {
+  background: var(--val-bone);
+  border-color: var(--val-parchment);
+  font-family: var(--val-font-text);
+  color: var(--val-sepia);
+}
+/* скос паспарту: волосяная рамка внутри полей */
+.pcard--valentine .val__mat {
+  position: absolute;
+  inset: 4.5cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--val-parchment);
+  padding: 5cqw;
+}
+
+/* Фото — отпечаток в паспарту: небольшое, тёплый монохром, виньетка */
+.pcard--valentine .val__frame {
+  position: relative;
+  width: 46cqw;
+  aspect-ratio: 4 / 5;
+  margin-top: 6.5cqh;
+  border: 1px solid var(--val-parchment);
+  padding: 1.6cqw;
+  background: var(--val-bone);
+  overflow: hidden;
+}
+.pcard--valentine .val__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) sepia(.22) contrast(1.02) brightness(1.03);
+}
+/* без фото — одно абстрагированное сердце латунным штрихом */
+.pcard--valentine .val__photo--empty {
+  display: grid;
+  place-items: center;
+  background: var(--val-parchment);
+}
+.pcard--valentine .val__photo--empty .motif {
+  width: 38%;
+  height: 38%;
+  stroke: var(--val-brass);
+}
+.pcard--valentine .val__vignette {
+  position: absolute;
+  inset: 1.6cqw;
+  background: radial-gradient(ellipse at center, transparent 52%, color-mix(in srgb, var(--val-smoke), transparent 62%) 100%);
+  pointer-events: none;
+}
+
+/* Подпись мелким кеглем под снимком — музейная этикетка */
+.pcard--valentine .val__caption {
+  margin-top: 2.6cqh;
+  font-size: max(2.6cqw, 8px);
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--val-patina);
+}
+.pcard--valentine .val__rule {
+  width: 12cqw;
+  height: 1px;
+  margin-top: 1.6cqh;
+  background: var(--val-brass);
+  transform-origin: center;
+}
+
+/* Послание */
+.pcard--valentine .val__message {
+  margin-top: 3cqh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.8cqh;
+  text-align: center;
+  min-height: 0;
+}
+.pcard--valentine .val__title {
+  font-family: var(--val-font-display);
+  font-weight: 300;
+  font-size: 7.5cqw;
+  line-height: 1.08;
+  letter-spacing: .01em;
+  max-width: 100%;
+}
+.pcard--valentine .val__text {
+  font-family: var(--val-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: max(3.7cqw, 10px);
+  line-height: 1.5;
+  white-space: pre-line;
+  max-width: 46ch;
+  overflow: hidden;
+}
+.pcard--valentine .val__signature {
+  font-size: max(2.7cqw, 9px);
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--val-patina);
+}
+
+/* Кнопка звука: латунный штрих, виден всегда в раскрытом футляре */
+.pcard--valentine .val__sound {
+  position: absolute;
+  right: 3cqw;
+  bottom: 3cqw;
+  width: 9cqw;
+  height: 9cqw;
+  min-width: 26px;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--val-patina);
+  border: 1px solid var(--val-brass);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+.pcard--valentine .val__sound svg { width: 42%; height: 42%; min-width: 11px; min-height: 11px; }
+.pcard--valentine .val__sound:hover { color: var(--val-sepia); border-color: var(--val-patina); }
+.pcard--valentine .val__sound:focus-visible { outline: 1px solid var(--val-patina); outline-offset: 2px; }
+.pcard--valentine .val__sound[aria-pressed="true"] { color: var(--val-sepia); border-color: var(--val-sepia); }
+
+/* ——— Створки футляра и лента: в каталоге и редакторе их нет ——— */
+.pcard--valentine .val__leaf,
+.pcard--valentine .val__ribbon,
+.pcard--valentine .val__seal-name,
+.pcard--valentine .val__hint { display: none; }
+
+/* ——— Запечатано (только страница получателя, ставит valentine.js) ——— */
+.pcard--valentine.val--sealed .val__leaf,
+.pcard--valentine.val--sealed .val__ribbon,
+.pcard--valentine.val--sealed .val__seal-name,
+.pcard--valentine.val--sealed .val__hint,
+.pcard--valentine.val--opening .val__leaf,
+.pcard--valentine.val--opening .val__ribbon,
+.pcard--valentine.val--opening .val__seal-name,
+.pcard--valentine.val--opening .val__hint { display: block; }
+
+/* фон под створками тоже тёмный: кость не просвечивает по кромке */
+.pcard--valentine.val--sealed {
+  background: var(--val-velvet);
+  border-color: var(--val-velvet);
+  cursor: pointer;
+}
+
+/* створки: оксбладовая крышка с латунной волосяной кромкой */
+.pcard--valentine .val__leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  z-index: 2;
+  background: linear-gradient(160deg, var(--val-oxblood), var(--val-velvet) 82%);
+  will-change: transform;
+}
+.pcard--valentine .val__leaf--l { left: 0; box-shadow: inset 1px 1px 0 color-mix(in srgb, var(--val-brass), transparent 65%); }
+.pcard--valentine .val__leaf--r { right: 0; box-shadow: inset -1px 1px 0 color-mix(in srgb, var(--val-brass), transparent 65%); }
+
+/* лента: латунные полосы + узел штрихом патины */
+.pcard--valentine .val__ribbon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  color: var(--val-brass);
+  cursor: grab;
+}
+.pcard--valentine .val__ribbon:active { cursor: grabbing; }
+.pcard--valentine .val__ribbon:focus-visible { outline: 1px solid var(--val-brass); outline-offset: 2px; }
+.pcard--valentine .val__band,
+.pcard--valentine .val__knot {
+  will-change: transform;
+  transform-box: view-box; /* проценты трансформаций — от viewBox ленты */
+}
+.pcard--valentine .val__knot {
+  stroke: color-mix(in srgb, var(--val-brass), var(--val-bone) 28%);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+/* натяжение во время жеста: --val-pull (0–4, % высоты) ведёт valentine.js.
+   Правило живёт и в .val--opening: лента плавно доигрывает натяжение,
+   пока не начнётся развязывание */
+.pcard--valentine.val--sealed .val__band,
+.pcard--valentine.val--sealed .val__knot,
+.pcard--valentine.val--opening .val__band,
+.pcard--valentine.val--opening .val__knot {
+  transform: translateY(calc(var(--val-pull, 0) * 1%));
+  transition: transform 240ms var(--val-ease);
+}
+.pcard--valentine.val--sealed .val__ribbon.val--dragging .val__band,
+.pcard--valentine.val--sealed .val__ribbon.val--dragging .val__knot { transition: none; }
+
+/* имя на крышке и подсказка */
+.pcard--valentine .val__seal-name {
+  position: absolute;
+  top: 12cqh;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  text-align: center;
+  font-family: var(--val-font-display);
+  font-weight: 300;
+  font-size: 7cqw;
+  color: var(--val-bone);
+  pointer-events: none;
+}
+.pcard--valentine .val__hint {
+  position: absolute;
+  bottom: 6cqh;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  text-align: center;
+  font-size: max(2.6cqw, 9px);
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--val-brass), var(--val-bone) 30%);
+  pointer-events: none;
+}
+
+/* ——— Запечатанное содержимое: паспарту ждёт под створками ——— */
+.pcard--valentine.val--sealed .val__frame,
+.pcard--valentine.val--sealed .val__caption,
+.pcard--valentine.val--sealed .val__rule,
+.pcard--valentine.val--sealed .val__message,
+.pcard--valentine.val--sealed .val__sound { opacity: 0; }
+
+/* ——— Открытие: одна траектория ~1.6 с, длинное затухание ———
+   лента развязывается → створки разъезжаются → фото садится →
+   подпись и послание проявляются. Ничего не пружинит. */
+.pcard--valentine.val--opening { pointer-events: none; }
+.pcard--valentine.val--opening .val__knot {
+  animation: val-untie .55s var(--val-ease) .05s forwards;
+}
+.pcard--valentine.val--opening .val__band--top {
+  animation: val-band-up .6s var(--val-ease) .3s forwards;
+}
+.pcard--valentine.val--opening .val__band--btm {
+  animation: val-band-down .6s var(--val-ease) .3s forwards;
+}
+.pcard--valentine.val--opening .val__seal-name,
+.pcard--valentine.val--opening .val__hint {
+  animation: val-fade .3s var(--val-ease) forwards;
+}
+.pcard--valentine.val--opening .val__leaf--l {
+  animation: val-leaf-l .75s var(--val-ease) .45s forwards;
+}
+.pcard--valentine.val--opening .val__leaf--r {
+  animation: val-leaf-r .75s var(--val-ease) .45s forwards;
+}
+.pcard--valentine.val--opening .val__frame {
+  animation: val-settle .6s var(--val-ease) .8s both;
+}
+.pcard--valentine.val--opening .val__rule {
+  animation: val-rule .45s var(--val-ease) 1.15s both;
+}
+.pcard--valentine.val--opening .val__caption {
+  animation: val-rise .45s var(--val-ease) 1.2s both;
+}
+.pcard--valentine.val--opening .val__message {
+  animation: val-rise .5s var(--val-ease) 1.3s both;
+}
+.pcard--valentine.val--opening .val__sound {
+  animation: val-rise .4s var(--val-ease) 1.45s both;
+}
+
+@keyframes val-untie { to { stroke-dashoffset: 1; } }
+@keyframes val-band-up { to { transform: translateY(-110%); } }
+@keyframes val-band-down { to { transform: translateY(110%); } }
+@keyframes val-fade { to { opacity: 0; } }
+@keyframes val-leaf-l { to { transform: translateX(-101%); } }
+@keyframes val-leaf-r { to { transform: translateX(101%); } }
+@keyframes val-settle {
+  from { opacity: 0; transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes val-rule {
+  from { opacity: 0; transform: scaleX(0); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+@keyframes val-rise {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ——— Страница получателя: футляр на оксбладовом сукне ——— */
+.card-page--valentine {
+  background:
+    radial-gradient(120% 90% at 50% 8%, color-mix(in srgb, var(--val-oxblood), var(--val-bone) 6%), transparent 60%),
+    var(--val-oxblood);
+  color: var(--val-bone);
+}
+.card-page--valentine .btn {
+  border-color: color-mix(in srgb, var(--val-brass), transparent 35%);
+  color: var(--val-bone);
+}
+.card-page--valentine .btn:hover { background: var(--val-velvet); }
+.card-page--valentine .btn:active { background: color-mix(in srgb, var(--val-velvet), var(--val-brass) 12%); }
+.card-page--valentine .btn--primary {
+  background: var(--val-brass);
+  border-color: var(--val-brass);
+  color: var(--val-velvet);
+}
+.card-page--valentine .btn--primary:hover {
+  background: color-mix(in srgb, var(--val-brass), var(--val-bone) 16%);
+  border-color: color-mix(in srgb, var(--val-brass), var(--val-bone) 16%);
+}
+/* кнопки появляются сразу после жеста: своя задержка уже отыграна */
+.card-page--valentine .card-actions { transition-delay: 150ms; }
+.card-page--valentine .card-made-by { color: color-mix(in srgb, var(--val-bone), transparent 45%); }
+.card-page--valentine .card-made-by a { color: var(--val-bone); }
+.card-page--valentine :focus-visible { outline-color: var(--val-brass); }
+
+/* Стандартный конверт-peel уступает место собственному жесту ленты */
+.card-page--valentine .peel-cover { display: none; }
+.card-page--valentine .card-view {
+  transition: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* ——— Reduced motion: лента исчезает без анимации, всё видно сразу.
+   Запечатанного состояния нет — valentine.js его не включает. ——— */
+@media (prefers-reduced-motion: reduce) {
+  .pcard--valentine .val__leaf,
+  .pcard--valentine .val__ribbon,
+  .pcard--valentine .val__seal-name,
+  .pcard--valentine .val__hint { display: none !important; }
+  .pcard--valentine .val__frame,
+  .pcard--valentine .val__caption,
+  .pcard--valentine .val__rule,
+  .pcard--valentine .val__message,
+  .pcard--valentine .val__sound { opacity: 1 !important; animation: none !important; }
+}

@@ -120,7 +120,26 @@ function showSealed() {
     document.getElementById('coverName').textContent = cardData.recipientName;
   }
 
-  document.getElementById('cardFrame').innerHTML = renderCard(t, cardData);
+  const frame = document.getElementById('cardFrame');
+  frame.innerHTML = renderCard(t, cardData);
+
+  /* Скин Y2K: страница темнеет, плеер получает управление */
+  if (t.arch === 'y2k') {
+    document.body.classList.add('card-page--y2k');
+    Y2K.init(frame, cardData);
+  }
+
+  /* Скин «Футляр»: конверт-peel уступает место собственной ленте —
+     жест открытия ведёт valentine.js, кнопки появляются после него */
+  if (t.arch === 'valentine') {
+    document.body.classList.add('card-page--valentine');
+    document.getElementById('peelStage').classList.add('peel-stage--open');
+    VAL.init(frame, cardData, () => {
+      document.getElementById('cardActions').classList.add('card-actions--show');
+      bindCardControls();
+    });
+    return;
+  }
 
   cover.addEventListener('click', openCard, { once: true });
 }
@@ -151,7 +170,8 @@ function bindCardControls() {
     document.getElementById('groupClose').addEventListener('click', () => hideOverlay('groupOverlay'));
   }
 
-  if (cardData.hasMusic) {
+  /* У «Плеера» и «Футляра» музыка встроена в сам шаблон — общая кнопка не нужна */
+  if (cardData.hasMusic && t.arch !== 'y2k' && t.arch !== 'valentine') {
     const btnMusic = document.getElementById('btnMusic');
     btnMusic.classList.remove('hidden');
     btnMusic.addEventListener('click', () => toggleMusic(btnMusic));

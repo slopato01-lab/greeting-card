@@ -54,6 +54,110 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
 }
 
+/* Шрифты скина Y2K (шаблон «Плеер»): display + моно, кириллица обязательна */
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/unbounded-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/unbounded-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/jetbrainsmono-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/jetbrainsmono-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+
+/* Шрифты скина «Футляр» (валентинка): контрастный сериф + гуманистический
+   гротеск, кириллица обязательна */
+@font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../assets/fonts/cormorant-light-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../assets/fonts/cormorant-light-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/cormorant-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/cormorant-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('../assets/fonts/onest-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('../assets/fonts/onest-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+
+/* Шрифт скина «Полночь» (Новый год): геометричный гротеск с табличными
+   цифрами для отсчёта, кириллица обязательна */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../assets/fonts/manrope-light-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../assets/fonts/manrope-light-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212;
+}
+
 /* ——— Токены ——— */
 :root {
   /* Цвет: ровно шесть значений */
@@ -107,6 +211,56 @@
   /* Перфорация марки: шаг 8px, глубина 3px */
   --perf-x: radial-gradient(circle 3px at 4px 50%, transparent 98%, #191814 100%);
   --perf-y: radial-gradient(circle 3px at 50% 4px, transparent 98%, #191814 100%);
+
+  /* ——— Скин Y2K (шаблон «Плеер», день рождения) ———
+     Жидкий металл и ранний цифровой оптимизм. Иридесцентная пара —
+     только на бликах, краях и спектре, заливок ею нет. Розового нет. */
+  --y2k-chrome-hi: #E6EAEF;  /* верхняя грань бевела, текст на тёмном */
+  --y2k-chrome:    #C4CAD3;  /* корпус кнопок и рамок */
+  --y2k-chrome-dk: #878F9B;  /* нижняя грань бевела, вторичные подписи */
+  --y2k-window:    #1B1E24;  /* дисплей визуализатора и строка marquee */
+  --y2k-void:      #0E1116;  /* фон страницы за окном плеера */
+  --y2k-cobalt:    #1E3A8A;  /* активные состояния транспорта */
+  --y2k-cyan:      #2BD4EE;  /* иридесцентный сдвиг: старт */
+  --y2k-violet:    #B331D6;  /* иридесцентный сдвиг: конец */
+  --y2k-font-display: 'Unbounded', var(--font-text);
+  --y2k-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --y2k-radius: 6px; /* пластик плеера круглее бумаги; внутри скина — только он */
+
+  /* ——— Скин «Футляр» (валентинка valentine_case) ———
+     Футляр для украшения и музейное паспарту. Чистого красного нет:
+     валентинность держится на оксбладе как среде. Латунь — только
+     линиями и мелким кеглем, заливок ею нет. */
+  --val-oxblood:   #4A1520;  /* фон-футляр, внешняя среда открытки */
+  --val-velvet:    #330E17;  /* глубина футляра: тень, внутренние края */
+  --val-bone:      #F0E9DF;  /* поле паспарту */
+  --val-parchment: #E3D9C9;  /* скос паспарту, рамка фото, границы */
+  --val-brass:     #A8865A;  /* лента, волосяные линейки, штрихи */
+  --val-patina:    #6E5432;  /* латунь для текста: подпись, кнопка звука */
+  --val-sepia:     #2A1A1C;  /* основной текст на кости */
+  --val-smoke:     #8A7B70;  /* самый тихий слой: подсказки, виньетка */
+  --val-font-display: 'Cormorant', serif;
+  --val-font-text: 'Onest', var(--font-text);
+  /* один жест открытия: длинный выход, ощущение веса */
+  --val-ease: cubic-bezier(.2, .8, .2, 1);
+  --val-open: 1600ms;
+
+  /* ——— Скин «Полночь» (Новый год newyear_midnight) ———
+     Момент перехода: та же темнота, меняется только температура.
+     Холод — сине-чёрная ночь и лёд, тепло — янтарь и тёплый белый.
+     Золота нет; свет — радиальный градиент dawn→amber, не частицы. */
+  --mn-night:  #0C1220;  /* ночной фон, холодная фаза */
+  --mn-frost:  #1E3352;  /* морозный оверлей поверх фото */
+  --mn-ice:    #7DA3C9;  /* цифры отсчёта, холодный акцент */
+  --mn-fog:    #93A3BC;  /* вторичный текст холодной фазы */
+  --mn-hearth: #21150D;  /* тёплый ночной фон после перехода */
+  --mn-dawn:   #FFF4E0;  /* тёплый белый: ядро света, текст послания */
+  --mn-amber:  #E8A94B;  /* янтарь: акценты, кнопка звука, линии */
+  --mn-font-display: 'Manrope', var(--font-text);
+  --mn-font-text: 'Onest', var(--font-text);
+  /* переход холод→тепло: одно событие, длинный тёплый выход */
+  --mn-ease: cubic-bezier(.3, .6, .2, 1);
+  --mn-open: 1800ms;
 }
 
 /* ——— База ——— */

@@ -1,0 +1,345 @@
+/* ============================================================
+   Y2K «Плеер» — скин шаблона birthday_y2k: окно аудиоплеера
+   с хромовыми бевелами и живым спектром. Токены в globals.css
+   (--y2k-*), рантайм в js/y2k.js, разметка в js/templates.js.
+   Хромовый объём — слоями теней: светлая грань сверху, тёмная
+   снизу. Иридесценция — только на краях, бликах и спектре.
+   ============================================================ */
+
+/* ——— Окно плеера ——— */
+.pcard--y2k {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--y2k-chrome-hi), var(--y2k-chrome) 42%, var(--y2k-chrome-dk));
+  border: 1px solid color-mix(in srgb, var(--y2k-chrome-dk), var(--y2k-window) 40%);
+  border-radius: var(--y2k-radius);
+  padding: 2.4cqw;
+  gap: 2cqw;
+  font-family: var(--y2k-font-mono);
+  color: var(--y2k-window);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .75),
+    inset 0 -1px 0 color-mix(in srgb, var(--y2k-window), transparent 55%);
+}
+/* Иридесцентная кромка: тонкое кольцо по периметру корпуса */
+.pcard--y2k::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from 210deg,
+    var(--y2k-cyan), transparent 22%,
+    transparent 45%, var(--y2k-violet) 58%,
+    transparent 70%, var(--y2k-cyan));
+  opacity: .35;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ——— Титлбар: имя получателя как «имя исполнителя» ——— */
+.y2k__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqw;
+  min-height: 9cqw;
+  padding: 1.2cqw 2cqw;
+  overflow: hidden;
+}
+.y2k__tl-name {
+  font-family: var(--y2k-font-display);
+  font-weight: 500;
+  font-size: max(4.2cqw, 11px);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.y2k__tl-tag {
+  font-size: max(2.8cqw, 8px);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--y2k-window), var(--y2k-chrome-dk) 35%);
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* ——— Дисплей: спектр + фото + LCD ——— */
+.y2k__display {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  background: var(--y2k-window);
+  border-radius: calc(var(--y2k-radius) - 2px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .55),
+    inset 0 -1px 0 rgba(255, 255, 255, .08);
+  overflow: hidden;
+}
+
+.y2k__bars {
+  position: absolute;
+  inset: auto 3cqw 2.4cqw;
+  height: 38%;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+.y2k__bars i {
+  flex: 1;
+  height: 100%;
+  transform: scaleY(var(--lv, .15));
+  transform-origin: bottom;
+  background: linear-gradient(to top, var(--y2k-cyan), var(--y2k-violet));
+  border-radius: 1px;
+  opacity: .9;
+  will-change: transform;
+}
+/* Фолбэк без Web Audio: спектр живёт по фиксированному паттерну */
+.pcard--y2k.y2k--anim .y2k__bars i {
+  animation: y2k-eq 1.15s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * -.09s);
+}
+@keyframes y2k-eq {
+  from { transform: scaleY(.12); }
+  to   { transform: scaleY(var(--hi, .9)); }
+}
+
+/* Фото: круглая маска, сканлайн и хроматическая аберрация по кромке.
+   Пульс по басу — scale через --pulse из y2k.js */
+.y2k__stage {
+  position: relative;
+  z-index: 1;
+  width: 44cqw;
+  height: 44cqw;
+  margin-bottom: 8cqw;
+  border-radius: 50%;
+  overflow: hidden;
+  transform: scale(var(--pulse, 1));
+  will-change: transform;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--y2k-window), var(--y2k-window)) padding-box,
+    conic-gradient(from 210deg, var(--y2k-cyan), var(--y2k-violet), var(--y2k-cyan)) border-box;
+  box-shadow:
+    -3px 0 9px color-mix(in srgb, var(--y2k-cyan), transparent 55%),
+    3px 0 9px color-mix(in srgb, var(--y2k-violet), transparent 55%);
+}
+.y2k__stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, .22) 2px 3px);
+  pointer-events: none;
+}
+.y2k__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.92) contrast(1.05);
+}
+.y2k__photo--empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.y2k__photo--empty .motif {
+  width: 40%;
+  height: 40%;
+  stroke: var(--y2k-cyan);
+  opacity: .8;
+}
+
+.y2k__lcd {
+  position: absolute;
+  top: 2cqw;
+  left: 3cqw;
+  font-size: max(3cqw, 9px);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--y2k-cyan);
+  font-variant-numeric: tabular-nums;
+}
+.y2k__lcd--trk {
+  left: auto;
+  right: 3cqw;
+  color: color-mix(in srgb, var(--y2k-cyan), var(--y2k-chrome-dk) 45%);
+}
+
+/* ——— Бегущая строка поздравления ——— */
+.y2k__marquee {
+  display: block;
+  overflow: hidden;
+  background: var(--y2k-window);
+  border-radius: calc(var(--y2k-radius) - 2px);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, .5);
+  padding-block: 1.6cqw;
+}
+.y2k__reel {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: y2k-marquee var(--mq-dur, 18s) linear infinite;
+  will-change: transform;
+}
+.y2k__reel > span {
+  padding-inline: 3cqw 9cqw;
+  font-size: max(3.4cqw, 10px);
+  line-height: 1.4;
+  letter-spacing: .04em;
+  color: var(--y2k-cyan);
+}
+@keyframes y2k-marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* ——— Транспорт ——— */
+.y2k__transport {
+  display: flex;
+  align-items: center;
+  gap: 2cqw;
+  padding: .6cqw 1cqw;
+}
+.y2k__transport-label {
+  margin-left: auto;
+  font-size: max(2.8cqw, 8px);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--y2k-window), var(--y2k-chrome-dk) 35%);
+}
+
+/* Хромовая клавиша: бевел слоями, иридесцентный блик при наведении */
+.y2k__key {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12cqw;
+  height: 9cqw;
+  min-width: 26px;
+  min-height: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  color: var(--y2k-window);
+  background: linear-gradient(180deg, var(--y2k-chrome-hi), var(--y2k-chrome) 55%, var(--y2k-chrome-dk));
+  border: 1px solid color-mix(in srgb, var(--y2k-chrome-dk), var(--y2k-window) 30%);
+  border-radius: calc(var(--y2k-radius) - 2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .8),
+    inset 0 -1px 0 color-mix(in srgb, var(--y2k-window), transparent 60%);
+  transition: transform var(--dur-1) var(--ease);
+}
+.y2k__key svg { width: 38%; height: 38%; min-width: 10px; min-height: 10px; }
+/* блик проезжает по хрому */
+.y2k__key::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg,
+    transparent 30%,
+    color-mix(in srgb, var(--y2k-cyan), transparent 55%) 46%,
+    color-mix(in srgb, var(--y2k-violet), transparent 55%) 54%,
+    transparent 70%);
+  transform: translateX(-101%);
+  transition: transform var(--dur-1) var(--ease);
+  pointer-events: none;
+}
+.y2k__key:hover::after { transform: translateX(0); }
+.y2k__key:active { transform: translateY(1px); }
+.y2k__key:focus-visible { outline: 1px solid var(--y2k-cyan); outline-offset: 2px; }
+.y2k__key[aria-pressed="true"] {
+  color: var(--y2k-chrome-hi);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--y2k-cobalt), var(--y2k-chrome-hi) 18%),
+    var(--y2k-cobalt) 55%,
+    color-mix(in srgb, var(--y2k-cobalt), var(--y2k-window) 35%));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .25),
+    inset 0 -1px 0 rgba(0, 0, 0, .4);
+}
+.y2k__key--sound { width: 9cqw; height: 7.5cqw; }
+
+/* ——— Страница получателя в скине Y2K: окно светится на глухом фоне ——— */
+.card-page--y2k {
+  background: var(--y2k-void);
+  color: var(--y2k-chrome-hi);
+}
+.card-page--y2k .btn {
+  border-color: var(--y2k-chrome-dk);
+  color: var(--y2k-chrome-hi);
+}
+.card-page--y2k .btn:hover { background: var(--y2k-window); }
+.card-page--y2k .btn:active { background: color-mix(in srgb, var(--y2k-window), var(--y2k-chrome-dk) 25%); }
+.card-page--y2k .btn--primary {
+  background: var(--y2k-cobalt);
+  border-color: var(--y2k-cobalt);
+  color: var(--y2k-chrome-hi);
+}
+.card-page--y2k .btn--primary:hover {
+  background: color-mix(in srgb, var(--y2k-cobalt), var(--y2k-chrome-hi) 12%);
+  border-color: color-mix(in srgb, var(--y2k-cobalt), var(--y2k-chrome-hi) 12%);
+}
+/* Конверт остаётся бумажным: чернила не наследуют светлый хром страницы */
+.card-page--y2k .peel-cover { color: var(--ink); }
+.card-page--y2k .card-made-by { color: var(--y2k-chrome-dk); }
+.card-page--y2k .card-made-by a { color: var(--y2k-chrome-hi); }
+.card-page--y2k :focus-visible { outline-color: var(--y2k-cyan); }
+
+/* ——— Открытие: окно собирается после жеста, суммарно ~1.8 с ———
+   Стандартный фейд card-view уступает место сборке по слоям */
+.card-view:has(.pcard--y2k) {
+  transition: none;
+  opacity: 1;
+  transform: none;
+}
+.peel-stage:not(.peel-stage--open) .card-view:has(.pcard--y2k) .pcard--y2k > * { opacity: 0; }
+.peel-stage--open .pcard--y2k .y2k__titlebar {
+  animation: y2k-in-tl .35s var(--ease) both;
+}
+.peel-stage--open .pcard--y2k .y2k__display {
+  animation: y2k-in-body .55s var(--ease) .3s both;
+  transform-origin: top;
+}
+.peel-stage--open .pcard--y2k .y2k__display .y2k__stage {
+  animation: y2k-in-photo .45s var(--ease) .9s both;
+}
+.peel-stage--open .pcard--y2k .y2k__marquee,
+.peel-stage--open .pcard--y2k .y2k__transport {
+  animation: y2k-in-rise .4s var(--ease) 1.35s both;
+}
+@keyframes y2k-in-tl {
+  from { opacity: 0; transform: scaleX(.6); }
+}
+@keyframes y2k-in-body {
+  from { opacity: 0; transform: scaleY(0); }
+}
+@keyframes y2k-in-photo {
+  0% { opacity: 0; }
+  55% { opacity: .4; }
+  70% { opacity: .2; } /* мигание трубки веб-камеры */
+  100% { opacity: 1; }
+}
+@keyframes y2k-in-rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* ——— Reduced motion: движение честно выключается ———
+   Глобальное правило гасит сборку и блики; здесь — контент:
+   бегущая строка останавливается и показывает текст целиком */
+@media (prefers-reduced-motion: reduce) {
+  .y2k__reel {
+    animation: none;
+    white-space: normal;
+  }
+  .y2k__reel > span:last-child { display: none; }
+  .y2k__stage { transform: none; }
+  .pcard--y2k.y2k--anim .y2k__bars i { animation: none; }
+}
