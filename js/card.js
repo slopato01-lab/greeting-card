@@ -227,6 +227,7 @@ function renderGroupGallery() {
 function openGame(type, t) {
   showOverlay('gameOverlay');
   document.getElementById('gameTitle').textContent = GAMES[type].label;
+  document.getElementById('gameHint').textContent = GAMES[type].hint || '';
   runGame(type, t);
 
   document.getElementById('gameClose').onclick = () => {
@@ -253,7 +254,7 @@ function runGame(type, t) {
     onEnd: score => {
       const texts = ['В следующий раз получится!', 'Неплохо!', 'Хороший результат!', 'Отлично!', 'Невероятно!'];
       document.getElementById('gameResultScore').textContent = score;
-      document.getElementById('gameResultText').textContent = texts[Math.min(Math.floor(score / 8), texts.length - 1)];
+      document.getElementById('gameResultText').textContent = texts[Math.min(Math.floor(score / (GAMES[type].par || 8)), texts.length - 1)];
       document.getElementById('gameResult').classList.remove('hidden');
     }
   });

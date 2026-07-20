@@ -11,10 +11,10 @@ const OCCASIONS = {
   newyear:    { label: 'Новый год',      motif: 'snowflake', game: 'snowflakes' },
   birthday:   { label: 'День рождения',  motif: 'candle',    game: 'balloons' },
   valentine:  { label: '14 февраля',     motif: 'heart',     game: 'hearts' },
-  mar8:       { label: '8 Марта',        motif: 'mimosa',    game: 'hearts' },
-  feb23:      { label: '23 Февраля',     motif: 'star',      game: 'coins' },
-  wedding:    { label: 'Свадьба',        motif: 'rings',     game: 'coins' },
-  graduation: { label: 'Выпускной',      motif: 'laurel',    game: 'balloons' },
+  mar8:       { label: '8 Марта',        motif: 'mimosa',    game: 'bouquet' },
+  feb23:      { label: '23 Февраля',     motif: 'star',      game: 'salute' },
+  wedding:    { label: 'Свадьба',        motif: 'rings',     game: 'rings' },
+  graduation: { label: 'Выпускной',      motif: 'laurel',    game: 'caps' },
   other:      { label: 'Просто так',     motif: 'raydot',    game: 'balloons' }
 };
 
@@ -56,12 +56,17 @@ TEMPLATES.unshift({ id: 'birthday_y2k', name: 'Плеер', occ: 'birthday', arc
 TEMPLATES.unshift({ id: 'valentine_case', name: 'Футляр', occ: 'valentine', arch: 'valentine', cat: 'valentine' });
 TEMPLATES.unshift({ id: 'newyear_midnight', name: 'Полночь', occ: 'newyear', arch: 'midnight', cat: 'newyear' });
 
+/* par — цена одной ступени похвалы в итоговом тексте (по умолчанию 8) */
 const GAMES = {
   auto:       { label: 'По теме открытки' },
-  snowflakes: { label: 'Поймай снежинки', icon: 'snowflake' },
-  balloons:   { label: 'Лопни шарики',    icon: 'balloon' },
-  hearts:     { label: 'Найди сердечки',  icon: 'heart' },
-  coins:      { label: 'Лови монеты',     icon: 'coin' },
+  snowflakes: { label: 'Поймай снежинки',  icon: 'snowflake', hint: 'Тапай по снежинкам' },
+  balloons:   { label: 'Лопни шарики',     icon: 'balloon',   hint: 'Тапай по шарикам' },
+  hearts:     { label: 'Найди сердечки',   icon: 'heart',     hint: 'Тапай по сердечкам' },
+  coins:      { label: 'Лови монеты',      icon: 'coin',      hint: 'Тапай по монетам' },
+  bouquet:    { label: 'Собери букет',     icon: 'bouquet',   hint: 'Веди вазу пальцем — лови веточки мимозы', par: 6 },
+  salute:     { label: 'Дай салют',        icon: 'salute',    hint: 'Тапни, когда залп будет между линиями', par: 6 },
+  rings:      { label: 'Надень кольцо',    icon: 'rings',     hint: 'Тапни — кольцо упадёт на стойку', par: 3 },
+  caps:       { label: 'Подбрось шапочку', icon: 'cap',       hint: 'Подбивай шапочку, не давая ей упасть', par: 5 },
   none:       { label: 'Без игры' }
 };
 
