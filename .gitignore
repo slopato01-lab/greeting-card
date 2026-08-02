@@ -1,3 +1,18 @@
-.claude/
-.DS_Store
+# Локальные настройки Claude Code — содержат пути и разрешения этой машины
+.claude/settings.local.json
+
+# Зависимости и сборка
 node_modules/
+.next/
+out/
+dist/
+.wrangler/
+
+# Секреты
+.env
+.env.local
+.env.*.local
+
+# Прочее
+.DS_Store
+*.log

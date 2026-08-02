@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Открыточка — интерактивные персональные открытки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ОТКРЫТОЧКА — перенос макета из Figma (node 324:246)
+   Холст 1920×6550. Позиции соответствуют координатам макета.
+   Все размеры округлены до целых чисел.
+   Трекинг в макете везде равен 1% от кегля — вынесен в 0.01em,
+   чтобы не тащить дробные пиксели.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #000;
+}
+
+/* Холст фиксированной ширины: макет десктопный, адаптива в нём нет.
+   На узких экранах масштабируется целиком, чтобы ничего не разъехалось. */
+.viewport {
+  width: 100%;
+  overflow-x: hidden;
+}
+.canvas {
+  position: relative;
+  width: 1920px;
+  height: 6550px;
+  margin: 0 auto;
+  background: #fff;
+  transform-origin: top left;
+}
+
+/* --- Типографика ------------------------------------------- */
+.ma      { font-family: 'Montserrat Alternates', sans-serif; letter-spacing: 0.01em; }
+.inter   { font-family: 'Inter', sans-serif; letter-spacing: 0.01em; }
+.w400    { font-weight: 400; }
+.w500    { font-weight: 500; }
+.w700    { font-weight: 700; }
+.lh      { line-height: 1.15; }
+.nowrap  { white-space: nowrap; }
+p        { margin: 0; }
+
+/* --- Утилиты ------------------------------------------------ */
+.abs     { position: absolute; }
+.col     { display: flex; flex-direction: column; }
+.row     { display: flex; flex-direction: row; }
+.center  { align-items: center; justify-content: center; }
+.items-c { align-items: center; }
+
+/* --- Кнопки ------------------------------------------------- */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c9356f;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 18px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 29px;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.btn-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c9356f;
+  color: #fff;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* --- Пилюли-фильтры ----------------------------------------- */
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  border-radius: 47px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  white-space: nowrap;
+  flex: none;
+}
+.pill--on      { background: #c9356f; color: #fff; }
+.pill--offGray { border: 1px solid #7a7a7a; color: #7a7a7a; }
+.pill--offDark { border: 1px solid #000;    color: #6c6c6c; }
+
+/* --- Розовые полосы-секции ---------------------------------- */
+.band {
+  position: absolute;
+  left: 0;
+  width: 1920px;
+  background: rgba(255, 61, 137, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* --- Карточки ----------------------------------------------- */
+.card-pink {
+  background: #ffecf3;
+  border: 2px solid #000;
+  border-radius: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: none;
+}
+.card-white {
+  position: absolute;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 30px;
+  width: 390px;
+  height: 410px;
+}
+.card-soft {
+  position: absolute;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 0 31px 0 rgba(126, 126, 126, 0.05);
+  width: 390px;
+  height: 530px;
+}
+.card-photo {
+  position: absolute;
+  background: #909090;
+  border-radius: 20px 20px 0 0;
+  width: 390px;
+  height: 220px;
+}
+
+/* --- Нижняя плашка карточки шаблона ------------------------- */
+.choose-bar {
+  position: absolute;
+  width: 388px;
+  height: 55px;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 0 0 28px 28px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.choose-bar .title  { position: absolute; left: 24px;  top: 16px; font-size: 18px; color: #000; letter-spacing: 0.01em; }
+.choose-bar .action { position: absolute; left: 286px; top: 17px; font-size: 16px; color: #5a5a5a; opacity: 0.8; letter-spacing: 0.01em; }
+
+/* --- Номерной бейдж этапа ----------------------------------- */
+.step { position: relative; flex: none; }
+.step__badge {
+  position: absolute;
+  top: 0;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step__badge i {
+  display: block;
+  width: 68px;
+  height: 68px;
+  background: #23202b;
+  border-radius: 8px;
+  transform: rotate(-3.46deg);
+}
+.step__badge span {
+  position: absolute;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 500;
+  font-size: 43px;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  color: #fff;
+  transform: rotate(-4.12deg);
+}
+
+/* --- Чек-строка --------------------------------------------- */
+.check {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  color: #5a5a5a;
+  white-space: nowrap;
+}
+.check img { width: 22px; height: 22px; display: block; }
+
+/* --- Платёжная плашка (кроп общего спрайта) ----------------- */
+.pay {
+  position: absolute;
+  height: 80px;
+  background: #fff;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 16px;
+  padding-bottom: 12px;
+}
+.pay__crop { position: relative; height: 52px; overflow: hidden; }
+.pay__crop img { position: absolute; top: 0; height: 100%; max-width: none; }
+
+/* --- Масштабирование холста под узкие экраны ---------------- */
+@media (max-width: 1920px) {
+  .canvas { transform: scale(calc(100vw / 1920)); }
+  .viewport { height: calc(6550 * 100vw / 1920); }
+}
+</style>
+</head>
+<body>
+<div class="viewport">
+<div class="canvas">
+
+  <!-- ============================ ШАПКА ============================ -->
+  <p class="abs ma w500 lh nowrap" style="left:150px; top:32px; font-size:32px; color:#000;">Открыточка</p>
+
+  <p class="abs inter w400 lh nowrap" style="left:594px;  top:37px; font-size:24px; color:#3a3a3a;">Открытки</p>
+  <p class="abs inter w400 lh nowrap" style="left:813px;  top:37px; font-size:24px; color:#3a3a3a;">Игры</p>
+  <p class="abs inter w400 lh nowrap" style="left:976px;  top:37px; font-size:24px; color:#3a3a3a;">FAQ</p>
+  <p class="abs inter w400 lh nowrap" style="left:1123px; top:37px; font-size:24px; color:#3a3a3a;">Как это работает</p>
+
+  <div class="btn-header abs" style="left:1452px; top:20px; width:318px; height:62px;">Создать открытку</div>
+
+  <img class="abs" src="https://www.figma.com/api/mcp/asset/dff14613-c4e3-4c9b-a149-b43fbb897ab1.svg" alt=""
+       style="left:-23px; top:107px; width:1943px; height:2px;">
+
+  <!-- ======================= ДЕКОР: ПЛАНЕТА ======================= -->
+  <img class="abs" src="https://www.figma.com/api/mcp/asset/10ca6c65-50e0-40ba-bc59-cee6e49d6d08.svg" alt=""
+       style="left:1497px; top:201px; width:722px; height:722px; opacity:0.02;">
+
+  <!-- ========================== ГЕРОЙ ============================= -->
+  <!-- Наклонная плашка-подзаголовок -->
+  <div class="abs center" style="left:152px; top:200px; width:559px; height:83px; display:flex;">
+    <div style="transform:rotate(-2.19deg); width:557px; height:61px; background:#fff; border:1px solid #000; border-radius:36px; display:flex; align-items:center; padding:0 49px;">
+      <p class="inter w400 lh nowrap" style="font-size:24px; color:#000;">Открытка, которую хочется отправить</p>
+    </div>
+  </div>
+
+  <!-- Розовая подложка под вторую строку заголовка -->
+  <div class="abs" style="left:140px; top:406px; width:1070px; height:108px; background:#c9356f; border-radius:9px;"></div>
+
+  <div class="abs" style="left:152px; top:298px;">
+    <p class="ma w500 lh nowrap" style="font-size:90px; color:#000;">Не просто открытка.</p>
+    <p class="ma w700 lh nowrap" style="font-size:90px; color:#fff;">Маленький подарок</p>
+    <p class="ma w500 lh nowrap" style="font-size:90px; color:#000;">по ссылке</p>
+  </div>
+
+  <div class="abs col" style="left:152px; top:640px; width:1031px; gap:60px;">
+    <div class="inter w400" style="font-size:32px; color:#7a7a7a;">
+      <p class="lh">Собери персональную интерактивную открытку за пару минут:</p>
+      <p class="lh">мини-игра, музыка, общие поздравления от компании друзей.</p>
+      <p class="lh">Получатель откроет ее с телефона - по ссылке или QR-коду.</p>
+    </div>
+    <div class="btn-primary" style="width:450px; height:75px;">Создать открытку</div>
+  </div>
+
+  <!-- ======================= ТРИ ЭТАПА ============================ -->
+  <div class="band" style="top:1016px; height:483px; padding:100px 151px 101px;">
+    <div class="row items-c" style="gap:20px;">
+
+      <div class="step">
+        <div class="card-pink" style="margin-top:21px; width:525px; height:261px; padding:73px 110px 68px 40px;">
+          <div class="col" style="gap:14px; width:375px;">
+            <p class="ma w500 lh" style="font-size:32px; color:#000;">Выберите шаблон</p>
+            <div class="ma w400" style="font-size:20px; color:#5c5c5c;">
+              <p class="lh">Оставляете ссылку или скрин</p>
+              <p class="lh">сертификата, мы засекречиваем</p>
+              <p class="lh">его и закладываем в открытку.</p>
+            </div>
+          </div>
+        </div>
+        <div class="step__badge" style="left:40px;"><i></i><span>1</span></div>
+      </div>
+
+      <div class="step">
+        <div class="card-pink" style="margin-top:21px; width:526px; height:261px; padding:73px 69px 45px 40px;">
+          <div class="col" style="gap:14px; width:417px;">
+            <p class="ma w500 lh" style="font-size:32px; color:#000;">Наполните смыслом</p>
+            <div class="ma w400" style="font-size:20px; color:#5c5c5c;">
+              <p class="lh">Имя получаетля, теплые слова,</p>
+              <p class="lh">фото. Добавьте мини-игру, музыку</p>
+              <p class="lh">или соберите поздравления от всей</p>
+              <p class="lh">компании.</p>
+            </div>
+          </div>
+        </div>
+        <div class="step__badge" style="left:40px;"><i></i><span>2</span></div>
+      </div>
+
+      <div class="step">
+        <div class="card-pink" style="margin-top:21px; width:527px; height:261px; padding:73px 113px 67px 39px;">
+          <div class="col" style="gap:15px; width:375px;">
+            <p class="ma w500 lh" style="font-size:32px; color:#000;">Отправьте ссылку</p>
+            <div class="ma w400" style="font-size:20px; color:#5c5c5c;">
+              <p class="lh">Оставляете ссылку или скрин</p>
+              <p class="lh">сертификата, мы засекречиваем</p>
+              <p class="lh">его и закладываем в открытку.</p>
+            </div>
+          </div>
+        </div>
+        <div class="step__badge" style="left:39px;"><i></i><span>3</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ КАКИЕ ПОЗДРАВЛЕНИЯ МОЖНО СДЕЛАТЬ ================ -->
+  <div class="abs col" style="left:150px; top:1639px; width:1620px; gap:70px;">
+
+    <div class="ma w500 nowrap" style="font-size:48px; color:#000;">
+      <p class="lh">Какие поздравления/открытки</p>
+      <p class="lh">можно сделать?</p>
+    </div>
+
+    <div class="col" style="gap:50px; width:100%;">
+
+      <div class="row items-c" style="gap:15px;">
+        <div class="pill pill--on"      style="width:345px; font-size:22px;">Признаться в любви?</div>
+        <div class="pill pill--offGray" style="width:324px; font-size:22px;">Друг за границей?</div>
+        <div class="pill pill--offGray" style="width:380px; font-size:22px;">Родители соскучились?</div>
+        <div class="pill pill--offGray" style="width:365px; font-size:22px;">Поделится новостью?</div>
+      </div>
+
+      <div class="col" style="width:100%; height:580px; background:#fff; border:1px solid #000; border-radius:12px; padding:55px 145px 57px 70px; filter:drop-shadow(0 0 16px rgba(0,0,0,0.03));">
+        <div class="row items-c" style="gap:223px;">
+
+          <div class="col" style="gap:70px; width:817px;">
+            <div class="col" style="gap:45px; width:100%;">
+              <p class="ma w500 lh" style="font-size:32px; color:#000;">Как поздравить друга за границей?</p>
+
+              <div class="col" style="gap:35px; align-items:center; width:100%;">
+                <p class="ma w500 lh" style="font-size:20px; color:#000; width:100%;">Расстояние - не помеха для крутого подарка! Вот что можно сделать:</p>
+
+                <div class="col" style="gap:35px; width:797px;">
+                  <div class="row items-c" style="gap:20px;">
+                    <img src="https://www.figma.com/api/mcp/asset/ac6f2d49-d18c-4f5b-9f98-f99647d42462.svg" alt="" style="width:10px; height:10px; flex:none;">
+                    <p class="ma w400 lh nowrap" style="font-size:20px; color:#000;">Купите подарочный сертификат в онлайн-магазине страны друга.</p>
+                  </div>
+                  <div class="row items-c" style="gap:20px;">
+                    <img src="https://www.figma.com/api/mcp/asset/ac6f2d49-d18c-4f5b-9f98-f99647d42462.svg" alt="" style="width:10px; height:10px; flex:none;">
+                    <p class="ma w400 lh nowrap" style="font-size:20px; color:#000;">Создайте игру с вашими общими фотографиями и воспоминаниями.</p>
+                  </div>
+                  <div class="row items-c" style="gap:20px;">
+                    <img src="https://www.figma.com/api/mcp/asset/ac6f2d49-d18c-4f5b-9f98-f99647d42462.svg" alt="" style="width:10px; height:10px; flex:none;">
+                    <p class="ma w400 lh nowrap" style="font-size:20px; color:#000;">Добавьте музыку которая напомнит другу о прошлом.</p>
+                  </div>
+                  <div class="row items-c" style="gap:20px;">
+                    <img src="https://www.figma.com/api/mcp/asset/ac6f2d49-d18c-4f5b-9f98-f99647d42462.svg" alt="" style="width:10px; height:10px; flex:none;">
+                    <p class="ma w400 lh nowrap" style="font-size:20px; color:#000;">В финале игры - ссылка на сертификат.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row items-c" style="gap:20px;">
+              <div class="row center" style="width:360px; height:61px; background:#c9356f; border-radius:14px;">
+                <p class="inter w400 lh nowrap" style="font-size:24px; color:#fff;">Попробовать бесплатно</p>
+              </div>
+              <div class="row center" style="width:360px; height:61px; border-radius:14px;">
+                <p class="inter w400 lh nowrap" style="font-size:24px; color:#000;">Смотреть шаблоны</p>
+              </div>
+            </div>
+          </div>
+
+          <img src="https://www.figma.com/api/mcp/asset/98023e5d-91d2-4077-b1cb-07c093d2259c.svg" alt=""
+               style="width:365px; height:365px; opacity:0.05; flex:none;">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== ЧТО СПРЯТАТЬ ВНУТРИ ===================== -->
+  <div class="band" style="top:2669px; height:550px; padding:72px 150px 63px;">
+    <div class="col" style="gap:70px; width:1620px;">
+      <p class="ma w500 lh" style="font-size:48px; color:#000; width:100%;">Что спрятать внутри?</p>
+
+      <div class="row items-c" style="gap:20px; width:100%;">
+
+        <div class="card-pink" style="width:390px; height:290px; padding:34px 56px 36px 54px;">
+          <div class="col" style="gap:12px; align-items:center; width:280px;">
+            <img src="https://www.figma.com/api/mcp/asset/93a689e1-d2b5-46db-84a7-7e05427d09f8.svg" alt="" style="width:92px; height:92px;">
+            <div class="col" style="gap:10px; align-items:center; width:100%; text-align:center;">
+              <p class="ma w500 lh" style="font-size:32px; color:#000; width:100%;">Сертификат</p>
+              <div class="ma w400" style="font-size:20px; color:#5c5c5c; width:100%;">
+                <p class="lh">Оставляете ссылку или</p>
+                <p class="lh">скрин сертификата, мы</p>
+                <p class="lh">засекречиваем.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-pink" style="width:390px; height:290px; padding:37px 56px 36px 54px;">
+          <div class="col" style="gap:15px; align-items:center; width:280px;">
+            <img src="https://www.figma.com/api/mcp/asset/e82de199-cf7f-4ad3-897e-a23c0c93899a.svg" alt="" style="width:86px; height:86px;">
+            <div class="col" style="gap:10px; align-items:center; width:100%; text-align:center;">
+              <p class="ma w500 lh" style="font-size:32px; color:#000; width:100%;">Признание</p>
+              <div class="ma w400" style="font-size:20px; color:#5c5c5c; width:100%;">
+                <p class="lh">Оставляете ссылку или</p>
+                <p class="lh">скрин сертификата, мы</p>
+                <p class="lh">засекречиваем.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-pink" style="width:390px; height:290px; padding:40px 56px 36px 54px;">
+          <div class="col" style="gap:18px; align-items:center; width:280px;">
+            <img src="https://www.figma.com/api/mcp/asset/e44b4910-ba57-4ed7-9508-b80a25d88f81.svg" alt="" style="width:80px; height:80px;">
+            <div class="col" style="gap:10px; align-items:center; width:100%; text-align:center;">
+              <p class="ma w500 lh" style="font-size:32px; color:#000; width:100%;">Перевод</p>
+              <div class="ma w400" style="font-size:20px; color:#5c5c5c; width:100%;">
+                <p class="lh">Оставляете ссылку или</p>
+                <p class="lh">скрин сертификата, мы</p>
+                <p class="lh">засекречиваем.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-pink" style="width:390px; height:290px; padding:40px 55px 36px 55px;">
+          <div class="col" style="gap:18px; align-items:center; width:280px;">
+            <img src="https://www.figma.com/api/mcp/asset/58541e5b-f241-4e07-8325-8061bcc88495.svg" alt="" style="width:80px; height:80px;">
+            <div class="col" style="gap:10px; align-items:center; width:100%; text-align:center;">
+              <p class="ma w500 lh" style="font-size:32px; color:#000; width:100%;">Билет</p>
+              <div class="ma w400" style="font-size:20px; color:#5c5c5c; width:100%;">
+                <p class="lh">Оставляете ссылку или</p>
+                <p class="lh">скрин сертификата, мы</p>
+                <p class="lh">засекречиваем.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ДИЗАЙН ДЛЯ КАЖДОГО СЛУЧАЯ ================== -->
+  <div class="abs col" style="left:152px; top:3359px; width:1435px; gap:80px;">
+    <div class="col" style="gap:25px; width:738px;">
+      <p class="ma w500 lh" style="font-size:48px; color:#000; width:100%;">Дизайн для каждого случая</p>
+      <div class="ma w400 nowrap" style="font-size:24px; color:#7a7a7a;">
+        <p class="lh">Один характер, восемь поводов, короче топововые</p>
+        <p class="lh">открытки и шаблоны к ним</p>
+      </div>
+    </div>
+
+    <div class="row items-c" style="gap:20px; width:100%;">
+      <div class="pill pill--on"      style="width:100px; font-size:24px;">Все</div>
+      <div class="pill pill--offDark" style="width:270px; font-size:24px;">День рождения</div>
+      <div class="pill pill--offDark" style="width:215px; font-size:24px;">Новый год</div>
+      <div class="pill pill--offDark" style="width:300px; font-size:24px;">Хорошие новости</div>
+      <div class="pill pill--offDark" style="width:170px; font-size:24px;">8 марта</div>
+      <div class="pill pill--offDark" style="width:280px; font-size:24px; color:#7a7a7a;">Собрать свой&nbsp;&nbsp; +</div>
+    </div>
+  </div>
+
+  <!-- ================== СЕТКА ШАБЛОНОВ (8 штук) =================== -->
+  <div class="card-white" style="left:150px;  top:3675px;"></div>
+  <div class="card-white" style="left:560px;  top:3675px;"></div>
+  <div class="card-white" style="left:970px;  top:3675px;"></div>
+  <div class="card-white" style="left:1380px; top:3675px;"></div>
+  <div class="card-white" style="left:150px;  top:4115px;"></div>
+  <div class="card-white" style="left:560px;  top:4115px;"></div>
+  <div class="card-white" style="left:970px;  top:4115px;"></div>
+  <div class="card-white" style="left:1380px; top:4115px;"></div>
+
+  <div class="choose-bar" style="left:151px;  top:4028px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+  <div class="choose-bar" style="left:561px;  top:4028px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+  <div class="choose-bar" style="left:971px;  top:4028px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+  <div class="choose-bar" style="left:1381px; top:4028px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+  <div class="choose-bar" style="left:151px;  top:4468px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+  <div class="choose-bar" style="left:561px;  top:4468px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+  <div class="choose-bar" style="left:971px;  top:4468px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+  <div class="choose-bar" style="left:1381px; top:4468px;"><p class="title">Для второй половинки</p><p class="action">Выбрать</p></div>
+
+  <!-- ============== БОЛЬШЕ, ЧЕМ ПРОСТО ОТКРЫТКА =================== -->
+  <div class="abs col" style="left:152px; top:4693px; width:854px; gap:25px;">
+    <p class="ma w500 lh" style="font-size:48px; color:#000; width:100%;">Больше, чем просто открытка</p>
+    <div class="ma w400 nowrap" style="font-size:24px; color:#7a7a7a;">
+      <p class="lh">Каждая деталь продумана до мелочей, чтобы момент</p>
+      <p class="lh">открытия запомнился надолго</p>
+    </div>
+  </div>
+
+  <!-- ================ ЧЕТЫРЕ КАРТОЧКИ ПРЕИМУЩЕСТВ ================= -->
+  <div class="card-soft"  style="left:150px;  top:4879px;"></div>
+  <div class="card-soft"  style="left:560px;  top:4879px;"></div>
+  <div class="card-soft"  style="left:970px;  top:4879px;"></div>
+  <div class="card-soft"  style="left:1380px; top:4879px;"></div>
+  <div class="card-photo" style="left:150px;  top:4879px;"></div>
+  <div class="card-photo" style="left:560px;  top:4879px;"></div>
+  <div class="card-photo" style="left:970px;  top:4879px;"></div>
+  <div class="card-photo" style="left:1380px; top:4879px;"></div>
+
+  <p class="abs ma w700 lh nowrap" style="left:182px;  top:5125px; font-size:20px; color:#000;">Эмоции, которые не купишь</p>
+  <p class="abs ma w700 lh nowrap" style="left:613px;  top:5125px; font-size:20px; color:#000;">Групповое поздравление</p>
+  <p class="abs ma w700 lh nowrap" style="left:1038px; top:5125px; font-size:20px; color:#000;">Подарок живет вечно</p>
+  <p class="abs ma w700 lh nowrap" style="left:1463px; top:5125px; font-size:20px; color:#000;">Интерактивность</p>
+
+  <div class="abs ma w500 nowrap" style="left:346px; top:5166px; transform:translateX(-50%); font-size:16px; color:#5a5a5a; text-align:center;">
+    <p class="lh">Обычный подарок - это вещь. А</p>
+    <p class="lh">персонализированная игра - это</p>
+    <p class="lh">непередаваемые чувства</p>
+    <p class="lh">благодарности и любви.</p>
+  </div>
+  <div class="abs ma w500 nowrap" style="left:756px; top:5166px; transform:translateX(-50%); font-size:16px; color:#5a5a5a; text-align:center;">
+    <p class="lh">До 20 человек добавят свои фотки</p>
+    <p class="lh">и пожелания в одну общую</p>
+    <p class="lh">открытку по ссылке-приглашению</p>
+  </div>
+  <div class="abs ma w500 nowrap" style="left:1166px; top:5166px; transform:translateX(-50%); font-size:16px; color:#5a5a5a; text-align:center;">
+    <p class="lh">Обычный подарок - это вещь. А</p>
+    <p class="lh">персонализированная игра - это</p>
+    <p class="lh">непередаваемые чувства</p>
+    <p class="lh">благодарности и любви.</p>
+  </div>
+  <div class="abs ma w500 nowrap" style="left:1575px; top:5166px; transform:translateX(-50%); font-size:16px; color:#5a5a5a; text-align:center;">
+    <p class="lh">Вместо пассивного сценария</p>
+    <p class="lh">подарка - активное участие в игре.</p>
+    <p class="lh">Каждый клик создает новые эиоции</p>
+    <p class="lh">и воспоминания.</p>
+  </div>
+
+  <div class="check" style="left:212px;  top:5284px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоими личными фото</span></div>
+  <div class="check" style="left:622px;  top:5284px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоими личными фото</span></div>
+  <div class="check" style="left:1032px; top:5284px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоими личными фото</span></div>
+  <div class="check" style="left:1442px; top:5284px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоими личными фото</span></div>
+
+  <div class="check" style="left:212px;  top:5317px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С собственным текстом</span></div>
+  <div class="check" style="left:622px;  top:5317px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С собственным текстом</span></div>
+  <div class="check" style="left:1032px; top:5317px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С собственным текстом</span></div>
+  <div class="check" style="left:1442px; top:5317px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С собственным текстом</span></div>
+
+  <div class="check" style="left:212px;  top:5349px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоей музыкой</span></div>
+  <div class="check" style="left:622px;  top:5349px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоей музыкой</span></div>
+  <div class="check" style="left:1032px; top:5349px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоей музыкой</span></div>
+  <div class="check" style="left:1442px; top:5349px;"><img src="https://www.figma.com/api/mcp/asset/a4ff8ba0-0980-4b0f-ad83-c059010e8f5c.svg" alt=""><span>С твоей музыкой</span></div>
+
+  <!-- ====================== ТЁМНЫЙ БЛОК CTA ======================= -->
+  <div class="abs" style="left:267px; top:5589px; width:1386px; height:386px; background:#2d2b32; border-radius:22px;"></div>
+  <p class="abs ma w500 lh nowrap" style="left:529px; top:5659px; font-size:48px; color:#fff;">Готовы сделать кому-то день?</p>
+  <div class="abs ma w500 nowrap" style="left:960px; top:5739px; transform:translateX(-50%); font-size:20px; color:#fff; text-align:center;">
+    <p class="lh">Всего пара минут на создание и вы получите необычный</p>
+    <p class="lh">подарок, который запомнится надолго</p>
+  </div>
+  <div class="btn-primary abs" style="left:735px; top:5830px; width:450px; height:75px;">Создать открытку</div>
+
+  <!-- =========================== ПОДВАЛ =========================== -->
+  <div class="abs" style="left:0; top:6145px; width:1920px; height:405px; background:#2d2b32;"></div>
+
+  <p class="abs ma w500 lh nowrap" style="left:149px; top:6205px; font-size:32px; color:#fff;">Открыточка</p>
+  <div class="abs ma w400 nowrap" style="left:149px; top:6263px; font-size:20px; color:#fff;">
+    <p class="lh">Интерактивные персональные открытки.</p>
+    <p class="lh">Сделано, чтобы момент открытия стоил</p>
+    <p class="lh">больше, чем бумажный конверт.</p>
+  </div>
+
+  <p class="abs ma w500 lh nowrap" style="left:833px;  top:6205px; font-size:32px; color:#fff;">Навигация</p>
+  <p class="abs ma w500 lh nowrap" style="left:1243px; top:6205px; font-size:32px; color:#fff;">Способы оплаты</p>
+
+  <p class="abs ma w500 lh nowrap" style="left:835px; top:6267px; font-size:24px; color:#fff;">FAQ</p>
+  <p class="abs ma w500 lh nowrap" style="left:833px; top:6315px; font-size:24px; color:#fff;">Открытки</p>
+  <p class="abs ma w500 lh nowrap" style="left:835px; top:6363px; font-size:24px; color:#fff;">Как это работает?</p>
+
+  <!-- Платёжные логотипы: кропы одного спрайта, как в макете -->
+  <div class="pay" style="left:1243px; top:6266px; width:164px; padding-left:37px; padding-right:37px;">
+    <div class="pay__crop" style="width:90px;"><img src="https://www.figma.com/api/mcp/asset/b50d59f6-492b-49c3-9cb6-c1e95b359866.png" alt="" style="left:0; width:1324%;"></div>
+  </div>
+  <div class="pay" style="left:1243px; top:6361px; width:164px; padding-left:36px; padding-right:38px;">
+    <div class="pay__crop" style="width:90px;"><img src="https://www.figma.com/api/mcp/asset/b50d59f6-492b-49c3-9cb6-c1e95b359866.png" alt="" style="left:-780%; width:1324%;"></div>
+  </div>
+  <div class="pay" style="left:1425px; top:6266px; width:163px; padding-left:37px; padding-right:36px;">
+    <div class="pay__crop" style="width:90px;"><img src="https://www.figma.com/api/mcp/asset/b50d59f6-492b-49c3-9cb6-c1e95b359866.png" alt="" style="left:-397%; width:1324%;"></div>
+  </div>
+  <div class="pay" style="left:1425px; top:6361px; width:163px; padding-left:35px; padding-right:38px;">
+    <div class="pay__crop" style="width:90px;"><img src="https://www.figma.com/api/mcp/asset/b50d59f6-492b-49c3-9cb6-c1e95b359866.png" alt="" style="left:-881%; width:1324%;"></div>
+  </div>
+  <div class="pay" style="left:1606px; top:6266px; width:164px;">
+    <div class="pay__crop" style="width:164px;"><img src="https://www.figma.com/api/mcp/asset/b50d59f6-492b-49c3-9cb6-c1e95b359866.png" alt="" style="left:-269%; width:727%;"></div>
+  </div>
+  <div class="pay" style="left:1606px; top:6361px; width:164px; padding-left:30px; padding-right:34px;">
+    <div class="pay__crop" style="width:100px;"><img src="https://www.figma.com/api/mcp/asset/b50d59f6-492b-49c3-9cb6-c1e95b359866.png" alt="" style="left:-899%; width:1192%;"></div>
+  </div>
+
+  <!-- Соцсети -->
+  <div class="abs row items-c" style="left:149px; top:6362px; gap:25px; height:45px;">
+    <img src="https://www.figma.com/api/mcp/asset/03f208c2-6db3-416b-917c-c5f646b3818f.svg" alt="Instagram" style="width:44px; height:44px;">
+    <div style="width:44px; height:44px; background:#c9356f; border-radius:28px; position:relative; overflow:hidden; flex:none;">
+      <div style="position:absolute; left:10px; top:9px; width:25px; height:25px; overflow:hidden;">
+        <img src="https://www.figma.com/api/mcp/asset/1e1bafbb-de97-41d1-977a-74c656d90284.svg" alt="Facebook"
+             style="position:absolute; left:11px; top:2px; width:11px; height:21px;">
+      </div>
+    </div>
+    <img src="https://www.figma.com/api/mcp/asset/28a3362d-ab89-413b-a2a8-190cbdff0723.svg" alt="Twitter" style="width:44px; height:44px;">
+  </div>
+
+  <img class="abs" src="https://www.figma.com/api/mcp/asset/de180c3e-31f2-420e-9b69-f1fefe3d5d14.svg" alt=""
+       style="left:150px; top:6490px; width:1620px; height:1px;">
+
+</div>
+</div>
+</body>
+</html>
