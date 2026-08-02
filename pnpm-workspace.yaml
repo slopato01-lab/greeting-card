@@ -1,0 +1,8 @@
+# pnpm 11 читает настройки отсюда, а не из поля "pnpm" в package.json.
+# Разрешаем postinstall только этим пакетам: без него не распакуются
+# бинарники сборщика, обработчика картинок и локального рантайма Workers.
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+  workerd: true

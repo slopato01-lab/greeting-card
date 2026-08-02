@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "greeting-card",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-02",
+  // nodejs_compat обязателен: Next тянет часть Node-API даже в edge-сборке
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "observability": {
+    "enabled": true,
+  },
+  // Привязки R2, KV и D1 добавляются вместе с загрузкой фото и базой,
+  // не раньше. Секреты сюда не пишутся — только `wrangler secret put`.
+}

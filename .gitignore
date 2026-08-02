@@ -4,14 +4,20 @@
 # Зависимости и сборка
 node_modules/
 .next/
+.open-next/
 out/
 dist/
 .wrangler/
+*.tsbuildinfo
+next-env.d.ts
+cloudflare-env.d.ts
 
 # Секреты
 .env
 .env.local
 .env.*.local
+.dev.vars
+.dev.vars.*
 
 # Прочее
 .DS_Store

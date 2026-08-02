@@ -1,14 +1,11 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare Workers
 
 # ВНИМАНИЕ: автодеплой по push отключён намеренно.
 #
-# Воркфлоу выкладывает корень репозитория как есть, без сборки. После
-# сброса проекта в корне лежит только документация, поэтому запуск по
-# push обнулил бы прод. Cloudflare Pages продолжает отдавать последний
-# успешный деплой, пока нового не было.
-#
-# Триггер push возвращается вместе с каркасом Next.js — тогда же команда
-# ниже меняется на сборку и деплой готовой директории, а не корня.
+# Пока в приложении нет ни одной страницы, выкладывать нечего: на проде
+# сейчас живёт последний деплой старого статического сайта. Триггер
+# `push: branches: [main]` возвращается вместе с первой свёрстанной
+# секцией — см. запрос 5 в START-HERE.md.
 on:
   workflow_dispatch:
 
@@ -22,7 +19,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
+
+      - name: Включить pnpm
+        run: corepack enable
+
+      - name: Установить зависимости
+        run: pnpm install --frozen-lockfile
 
       - name: Проверка секретов
         run: |
@@ -30,9 +33,12 @@ jobs:
             echo "::error::Секрет CLOUDFLARE_API_TOKEN пуст или не задан (Settings → Secrets and variables → Actions)"; exit 1
           fi
 
-      - name: Deploy to Cloudflare Pages
+      - name: Сборка воркера
+        run: pnpm run build:worker
+
+      - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 0d6efe3fc70e82760b76c47fd63ee406
-          command: pages deploy . --project-name=greeting-card --branch=main
+          command: deploy

@@ -1,0 +1,37 @@
+name: Проверки
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Включить pnpm
+        run: corepack enable
+
+      - name: Установить зависимости
+        run: pnpm install --frozen-lockfile
+
+      - name: Типы
+        run: pnpm run typecheck
+
+      - name: Линтер
+        run: pnpm run lint
+
+      - name: Форматирование
+        run: pnpm run format:check
+
+      - name: Сборка
+        run: pnpm run build
