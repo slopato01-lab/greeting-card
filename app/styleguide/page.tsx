@@ -1,5 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 
+import { Icon } from "@/components/Icon";
+import { icons, type IconName } from "@/lib/icons/generated";
+
 // Служебная страница. Тексты здесь — названия токенов и подписи
 // состояний, в словарь docs/PRODUCT.md они не идут: пользователь
 // эту страницу не видит, из навигации она не линкуется.
@@ -374,6 +377,26 @@ export default function StyleguidePage() {
               ))}
             </div>
           </div>
+        </Section>
+
+        <Section
+          id="icons"
+          title="Иконки"
+          note="Одиннадцать иконок из docs/FIGMA.md, скачаны в public/assets/icons и вставляются прямо в разметку. Монохромные красятся токеном — показаны чёрной и розовой. Цветные иллюстрации перекрасить нельзя. Бургер, декор FAQ и планета заменены на аналоги из Tabler: в макете стояли наборы под CC BY, а она требует указания авторства на видном месте."
+        >
+          <ul className="grid grid-cols-2 gap-6 sm:grid-cols-3 xl:grid-cols-4">
+            {(Object.keys(icons) as IconName[]).map((name) => (
+              <li key={name} className="flex flex-col gap-2">
+                <span className="flex items-center gap-3">
+                  <Icon name={name} size={32} />
+                  {icons[name].mono ? <Icon name={name} size={32} className="text-pink" /> : null}
+                </span>
+                <span className="font-ui text-[13px]">{name}</span>
+                <span className="font-ui text-muted text-[12px]">{icons[name].source}</span>
+                <span className="font-ui text-body text-[12px]">{icons[name].where}</span>
+              </li>
+            ))}
+          </ul>
         </Section>
 
         <Section

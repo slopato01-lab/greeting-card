@@ -32,23 +32,41 @@ Figma и перестанут работать примерно через не�
 Их нужно заменить на локальные файлы в `public/assets/` до того,
 как это станет проблемой.
 
-Все иконки — из открытых наборов Iconify, забираются по имени
-навсегда:
+Все иконки — из открытых наборов Iconify. Скачаны в
+`public/assets/icons/` скриптом `scripts/fetch-icons.mjs`
+(`pnpm icons:fetch`) и лежат в репозитории: прод не зависит
+от чужого API. Список в скрипте и таблица ниже меняются вместе.
 
-| Где используется | Имя в Iconify |
-|---|---|
-| Сертификат | `fluent-color:gift-card-16` |
-| Признание | `fluent-emoji-flat:e-mail` |
-| Перевод | `noto:money-bag` |
-| Билет | `noto-v1:ticket` |
-| Галочки в карточках преимуществ | `hugeicons:tick-04` |
-| Instagram | `line-md:instagram` |
-| Twitter | `line-md:twitter` |
-| Facebook (внутри розового круга) | `ri:facebook-fill` |
-| Бургер-меню (мобильный) | `solar:hamburger-menu-outline` |
-| Декор в карточке FAQ | `game-icons:path-distance` |
-| Декор-планета в герое (десктоп) | `pepicons-print:planet-ring-circle` |
-| Маркер списка | простой круг, рисуется CSS |
+| Где используется | Имя в Iconify | Имя в коде |
+|---|---|---|
+| Сертификат | `fluent-color:gift-card-16` | `certificate` |
+| Признание | `fluent-emoji-flat:e-mail` | `confession` |
+| Перевод | `noto:money-bag` | `transfer` |
+| Билет | `noto-v1:ticket` | `ticket` |
+| Галочки в карточках преимуществ | `hugeicons:tick-04` | `tick` |
+| Instagram | `line-md:instagram` | `instagram` |
+| Twitter | `line-md:twitter` | `twitter` |
+| Facebook (внутри розового круга) | `ri:facebook-fill` | `facebook` |
+| Бургер-меню (мобильный) | `tabler:menu-2` | `burger` |
+| Декор в карточке FAQ | `tabler:route` | `path` |
+| Декор-планета в герое (десктоп) | `tabler:planet` | `planet` |
+| Маркер списка | простой круг, рисуется CSS | — |
+
+**Три иконки заменены 02.08.2026.** В макете стояли
+`solar:hamburger-menu-outline`, `game-icons:path-distance`
+и `pepicons-print:planet-ring-circle` — наборы Solar, Game Icons
+и Pepicons Print распространяются под CC BY, а она требует указания
+авторства там, где это видит пользователь. Взяты аналоги из Tabler
+Icons под MIT. Стиль штриха у всех трёх одинаковый, но начертание
+отличается от макета — сверить на `/styleguide`.
+
+**Анимация вырезана** у `line-md:instagram` и `line-md:twitter`.
+Обе рисовались штрихом при появлении через SMIL внутри SVG, а его
+не выключает `prefers-reduced-motion`. Осталась та же форма без
+прорисовки.
+
+Наборы, авторы и лицензии — `public/assets/icons/CREDITS.md`,
+файл генерируется тем же скриптом.
 
 Разделительные линии в шапке и подвале — обычные `<div>` с фоном,
 не картинки.

@@ -1,0 +1,36 @@
+# Иконки: наборы, авторы, лицензии
+
+Сгенерировано `scripts/fetch-icons.mjs`. Руками не править.
+
+Наборы под CC BY здесь намеренно отсутствуют: они требуют указания
+авторства там, где это видит пользователь. Бургер-меню, декор в карточке
+FAQ и планета в герое заменены на аналоги из Tabler Icons под MIT.
+
+## Наборы
+
+| Набор | Автор | Лицензия |
+|---|---|---|
+| Fluent UI System Color Icons (`fluent-color`) | [Microsoft Corporation](https://github.com/microsoft/fluentui-system-icons) | [MIT](https://github.com/microsoft/fluentui-system-icons/blob/main/LICENSE) |
+| Fluent Emoji Flat (`fluent-emoji-flat`) | [Microsoft Corporation](https://github.com/microsoft/fluentui-emoji) | [MIT](https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE) |
+| Noto Emoji (`noto`) | [Google Inc](https://github.com/googlefonts/noto-emoji) | [Apache 2.0](https://github.com/googlefonts/noto-emoji/blob/main/svg/LICENSE) |
+| Noto Emoji (v1) (`noto-v1`) | [Google Inc](https://github.com/googlefonts/noto-emoji) | [Apache 2.0](https://github.com/googlefonts/noto-emoji/blob/main/svg/LICENSE) |
+| Huge Icons (`hugeicons`) | [Hugeicons](https://icon-sets.iconify.design/icon-sets/hugeicons/) | MIT |
+| Material Line Icons (`line-md`) | [Vjacheslav Trushkin](https://github.com/cyberalien/line-md) | [MIT](https://github.com/cyberalien/line-md/blob/main/license.txt) |
+| Remix Icon (`ri`) | [Remix Design](https://github.com/cyberalien/RemixIcon) | [Apache 2.0](https://github.com/cyberalien/RemixIcon/blob/master/License) |
+| Tabler Icons (`tabler`) | [Paweł Kuna](https://github.com/tabler/tabler-icons) | [MIT](https://github.com/tabler/tabler-icons/blob/master/LICENSE) |
+
+## Иконки
+
+| Файл | Источник | Где используется |
+|---|---|---|
+| `certificate.svg` | `fluent-color:gift-card-16` | карточка «Сертификат» |
+| `confession.svg` | `fluent-emoji-flat:e-mail` | карточка «Признание» |
+| `transfer.svg` | `noto:money-bag` | карточка «Перевод» |
+| `ticket.svg` | `noto-v1:ticket` | карточка «Билет» |
+| `tick.svg` | `hugeicons:tick-04` | галочки в карточках преимуществ |
+| `instagram.svg` | `line-md:instagram` | подвал |
+| `twitter.svg` | `line-md:twitter` | подвал |
+| `facebook.svg` | `ri:facebook-fill` | подвал, внутри розового круга |
+| `burger.svg` | `tabler:menu-2` | бургер-меню, мобильный |
+| `path.svg` | `tabler:route` | декор в карточке FAQ |
+| `planet.svg` | `tabler:planet` | декор в герое, десктоп |
