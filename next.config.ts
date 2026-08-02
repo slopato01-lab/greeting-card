@@ -1,12 +1,17 @@
 import type { NextConfig } from "next";
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+
+  // Статический экспорт в out/ и выкладка на Cloudflare Pages.
+  // Серверных роутов пока нет; когда дойдём до вебхука оплаты,
+  // решение придётся пересматривать — статика вебхук не примет.
+  output: "export",
+
+  // Оптимизатор картинок Next требует сервер, в экспорте он недоступен
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
-
-// Даёт `next dev` доступ к привязкам Cloudflare через getCloudflareContext().
-// Без этой строки локальная разработка не видит R2, D1 и переменные воркера.
-void initOpenNextCloudflareForDev();

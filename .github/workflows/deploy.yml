@@ -1,12 +1,8 @@
-name: Deploy to Cloudflare Workers
+name: Deploy to Cloudflare Pages
 
-# ВНИМАНИЕ: автодеплой по push отключён намеренно.
-#
-# Пока в приложении нет ни одной страницы, выкладывать нечего: на проде
-# сейчас живёт последний деплой старого статического сайта. Триггер
-# `push: branches: [main]` возвращается вместе с первой свёрстанной
-# секцией — см. запрос 5 в START-HERE.md.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -33,12 +29,12 @@ jobs:
             echo "::error::Секрет CLOUDFLARE_API_TOKEN пуст или не задан (Settings → Secrets and variables → Actions)"; exit 1
           fi
 
-      - name: Сборка воркера
-        run: pnpm run build:worker
+      - name: Сборка
+        run: pnpm run build
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 0d6efe3fc70e82760b76c47fd63ee406
-          command: deploy
+          command: pages deploy out --project-name=greeting-card --branch=main
