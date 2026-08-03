@@ -36,6 +36,18 @@
   /* ── Типографическая шкала ──────────────────────────────
      Мобильный H1 идёт с интерлиньяжем 1.1, а не 1.15 — иначе
      пять строк не помещаются в первый экран. Так в макете. */
+  --text-logo: 20px; /* логотип в шапке */
+  --text-logo-d: 32px;
+
+  /* Пункт меню назвать --text-nav нельзя: рядом живёт --color-nav,
+     и утилита text-nav отдаёт цвет, а размер молча пропадает.
+     Та же ловушка, что с --text-base ниже. */
+  --text-menu: 16px; /* пункт в панели мобильного меню */
+  --text-nav-d: 24px; /* навигация шапки на десктопе */
+
+  --text-badge: 11px; /* наклонная плашка-подзаголовок героя */
+  --text-badge-d: 24px;
+
   --text-h1: 52px;
   --text-h1--line-height: 1.1;
   --text-h1-d: 90px;
@@ -144,6 +156,76 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Полоса страницы: контент центрируется и упирается в 1620px,
+     по краям остаётся боковое поле сетки. На 1920 это ровно макет.
+     768–1279 — мобильная раскладка с удвоенным полем: планшетных
+     фреймов нет, поэтому значение выведено из токена, а не придумано. */
+  .page-shell {
+    width: 100%;
+    max-width: calc(var(--container-content) + 2 * var(--spacing-gutter-d));
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  @media (min-width: 768px) {
+    .page-shell {
+      padding-inline: calc(var(--spacing-gutter) * 2);
+    }
+  }
+
+  /* 1280–1919 в макете не нарисован. Боковое поле не прыгает с 40 на
+     150, а растёт линейно: 40px на 1280 и ровно макетные 150px на 1920.
+     Коэффициент 11/64 — это (150 − 40) / (1920 − 1280). Выше 1920
+     полосу держит max-width, поле замирает на 150. */
+  @media (min-width: 1280px) {
+    .page-shell {
+      padding-inline: clamp(
+        calc(var(--spacing-gutter) * 2),
+        calc(var(--spacing-gutter) * 2 + (100vw - 1280px) * 11 / 64),
+        var(--spacing-gutter-d)
+      );
+    }
+  }
+
+  /* Навигация шапки. В макете 1920 от логотипа до первого пункта
+     264px, шаг между пунктами 110px. Оба значения текут по тому же
+     правилу, что и боковое поле: 40px на 1280, макетные значения
+     на 1920. Коэффициенты — (264 − 40) / 640 и (110 − 40) / 640. */
+  @media (min-width: 1280px) {
+    .header-nav {
+      margin-inline-start: clamp(40px, calc(40px + (100vw - 1280px) * 7 / 20), 264px);
+    }
+
+    .header-nav ul {
+      gap: clamp(40px, calc(40px + (100vw - 1280px) * 7 / 64), 110px);
+    }
+  }
+
+  /* Розовая подложка выделенных строк H1. Строчный элемент, а не
+     прямоугольник из макета: подложка обнимает текст и переживает
+     любой перенос. box-decoration-break: clone даёт каждой строке
+     свой скруглённый прямоугольник, отрицательное поле возвращает
+     текст на общую левую границу. */
+  .h1-mark {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding: 2px 7px;
+    margin-inline: -7px;
+    border-radius: var(--radius-h1);
+    background: var(--color-pink);
+    color: var(--color-white);
+  }
+
+  @media (min-width: 1280px) {
+    .h1-mark {
+      padding: 2px 12px;
+      margin-inline: -12px;
+      border-radius: var(--radius-h1-d);
     }
   }
 }

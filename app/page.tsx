@@ -1,6 +1,15 @@
-// Заглушка каркаса. Пустая намеренно: ни одной строки, видимой
-// пользователю, пока нет словаря в коде и вёрстки из design/.
-// Первая секция появляется по запросу 5 из START-HERE.md.
+import { Header } from "@/components/site/Header";
+import { Hero } from "@/components/site/Hero";
+
+// Главная страница собирается секция за секцией снизу списка
+// в docs/FIGMA.md. Сейчас на ней шапка и герой.
 export default function Page() {
-  return null;
+  return (
+    <>
+      <Header />
+      <main>
+        <Hero />
+      </main>
+    </>
+  );
 }
