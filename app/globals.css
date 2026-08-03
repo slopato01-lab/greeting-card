@@ -238,6 +238,13 @@
     scrollbar-width: none;
     margin-inline: calc(-1 * var(--shell-pad));
     padding-inline: var(--shell-pad);
+    /* Без этой строки первая карточка встаёт вплотную к краю экрана.
+       scroll-snap-align: start равняет карточку по краю окна прокрутки,
+       а окно по умолчанию — padding-box: браузер сам прокручивает ленту
+       на ширину поля и съедает его. scroll-padding сдвигает окно внутрь,
+       и поле возвращается. Видно только в браузере: padding при этом
+       посчитан правильно, поэтому в CSS ошибка незаметна. */
+    scroll-padding-inline: var(--shell-pad);
   }
 
   .carousel::-webkit-scrollbar {
