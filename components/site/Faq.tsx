@@ -65,7 +65,7 @@ export function Faq() {
           <div className="relative xl:max-w-[817px]">
             <h3 className="font-display text-h3 xl:text-h3-d font-medium">{t("faq.card.title")}</h3>
 
-            <p className="font-display text-card xl:text-body-d mt-[52px] font-medium xl:mt-[45px]">
+            <p className="font-display text-card xl:text-card-d mt-[52px] font-medium xl:mt-[45px]">
               {t("faq.card.lead")}
             </p>
 
@@ -79,7 +79,7 @@ export function Faq() {
                     aria-hidden="true"
                     className="bg-ink mt-[6px] size-[6px] shrink-0 rounded-full xl:mt-0 xl:size-[10px]"
                   />
-                  <span className="font-display text-caption xl:text-body-d leading-[1.15]">
+                  <span className="font-display text-note xl:text-card-d leading-[1.15]">
                     {t(key)}
                   </span>
                 </li>

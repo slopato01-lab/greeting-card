@@ -63,8 +63,9 @@ export function Steps() {
                 см. DESIGN.md. */}
             <div className="border-ink bg-pink-card rounded-step xl:rounded-card-d h-full min-h-[205px] border-2 px-[24px] pt-[66px] pb-[42px] xl:min-h-[261px] xl:px-10 xl:pt-[73px] xl:pb-[45px]">
               <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t(step.title)}</h2>
-              {/* text-card — размер, text-body — цвет: --color-body
-                  перекрывает одноимённый --text-body, см. globals.css */}
+              {/* text-card — размер, text-body — цвет. Одноимённого
+                  размера больше нет: он переименован в --text-sub
+                  как раз из-за этой ловушки, см. globals.css */}
               <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15] xl:mt-[14px]">
                 {t(step.body)}
               </p>

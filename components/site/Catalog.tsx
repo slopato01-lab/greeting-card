@@ -41,7 +41,7 @@ export function Catalog() {
     <section className="pt-[59px] pb-[70px] xl:pt-[140px] xl:pb-[120px]">
       <div className="page-shell">
         <h2 className="font-display text-h2 xl:text-h2-d font-medium">{t("catalog.title")}</h2>
-        <p className="font-display text-body xl:text-body-d text-muted mt-[14px] leading-[1.15] xl:mt-[25px] xl:max-w-[738px]">
+        <p className="font-display text-sub xl:text-sub-d text-muted mt-[14px] leading-[1.15] xl:mt-[25px] xl:max-w-[738px]">
           {t("catalog.lead")}
         </p>
 

@@ -20,7 +20,7 @@ export function Cta() {
             {t("cta.title")}
           </h2>
 
-          <p className="font-display text-card xl:text-body-d mt-[43px] leading-[1.15] font-medium text-white xl:mt-[30px] xl:max-w-[820px]">
+          <p className="font-display text-card xl:text-card-d mt-[43px] leading-[1.15] font-medium text-white xl:mt-[30px] xl:max-w-[820px]">
             {t("cta.lead")}
           </p>
 

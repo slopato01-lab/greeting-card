@@ -32,7 +32,7 @@ export function Benefits() {
     <section className="pt-[57px] pb-[70px] xl:pt-[100px] xl:pb-[110px]">
       <div className="page-shell">
         <h2 className="font-display text-h2 xl:text-h2-d font-medium">{t("benefits.title")}</h2>
-        <p className="font-display text-body xl:text-body-d text-muted mt-[14px] leading-[1.15] xl:mt-[25px] xl:max-w-[854px]">
+        <p className="font-display text-sub xl:text-sub-d text-muted mt-[14px] leading-[1.15] xl:mt-[25px] xl:max-w-[854px]">
           {t("benefits.lead")}
         </p>
 
@@ -49,7 +49,7 @@ export function Benefits() {
 
               <div className="flex flex-1 flex-col items-center px-[20px] pt-[23px] pb-[30px] text-center xl:px-[25px] xl:pt-[26px] xl:pb-[35px]">
                 <h3 className="font-display text-feat xl:text-feat-d font-bold">{t(card.title)}</h3>
-                <p className="font-display text-caption xl:text-caption-d text-caption mt-[14px] leading-[1.15] font-medium">
+                <p className="font-display text-note xl:text-note-d text-caption mt-[14px] leading-[1.15] font-medium">
                   {t(card.body)}
                 </p>
 
@@ -59,7 +59,7 @@ export function Benefits() {
                   {CHECKS.map((key) => (
                     <li key={key} className="flex items-center gap-[13px] xl:gap-4">
                       <Icon name="tick" size={20} className="text-pink shrink-0 xl:size-[22px]" />
-                      <span className="font-display text-pill xl:text-caption-d text-caption font-medium">
+                      <span className="font-display text-pill xl:text-note-d text-caption font-medium">
                         {t(key)}
                       </span>
                     </li>

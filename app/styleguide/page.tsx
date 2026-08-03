@@ -72,7 +72,7 @@ const TYPE_SCALE: ReadonlyArray<{
     role: "Основной текст",
     mobile: "20",
     desktop: "24",
-    className: "text-body xl:text-body-d",
+    className: "text-sub xl:text-sub-d",
     font: "display",
   },
   {
@@ -86,7 +86,7 @@ const TYPE_SCALE: ReadonlyArray<{
     role: "Подпись, чек-строка",
     mobile: "14–15",
     desktop: "16",
-    className: "text-caption xl:text-caption-d",
+    className: "text-note xl:text-note-d",
     font: "display",
   },
   {

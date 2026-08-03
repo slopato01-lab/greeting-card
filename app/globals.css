@@ -69,16 +69,22 @@
   --text-lead: 15px; /* вводный абзац героя, Inter */
   --text-lead-d: 32px;
 
-  /* Именно --text-body, а не --text-base: иначе перекрывается
-     встроенная утилита Tailwind text-base и 16px молча станут 20px */
-  --text-body: 20px; /* основной текст */
-  --text-body-d: 24px;
+  /* Размер и цвет делят одно пространство имён: при --text-foo и
+     --color-foo утилита text-foo отдаёт ЦВЕТ, а размер молча
+     пропадает. Поэтому у ролей, где рядом живёт одноимённый цвет,
+     размер назван иначе. Уже наступали на это с --text-nav.
+
+     --text-sub  вместо --text-body    (рядом --color-body)
+     --text-note вместо --text-caption (рядом --color-caption)
+     --text-card вместо --text-base    (перекрывала утилита Tailwind) */
+  --text-sub: 20px; /* основной текст, подзаголовок секции */
+  --text-sub-d: 24px;
 
   --text-card: 16px; /* текст карточки */
   --text-card-d: 20px;
 
-  --text-caption: 14px; /* подпись, чек-строка: 14–15 на мобильном */
-  --text-caption-d: 16px;
+  --text-note: 14px; /* подпись, чек-строка: 14–15 на мобильном */
+  --text-note-d: 16px;
 
   --text-btn: 16px; /* кнопка */
   --text-btn-d: 29px; /* главная кнопка */

@@ -46,7 +46,7 @@ export function Footer() {
             <p className="font-display text-logo xl:text-logo-d font-medium text-white">
               {t("brand.name")}
             </p>
-            <p className="font-display text-caption xl:text-body-d mt-[13px] leading-[1.15] text-white xl:mt-[16px]">
+            <p className="font-display text-note xl:text-card-d mt-[13px] leading-[1.15] text-white xl:mt-[16px]">
               {t("footer.about")}
             </p>
 
