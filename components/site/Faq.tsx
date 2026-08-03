@@ -3,6 +3,7 @@
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
 import { Button } from "@/components/Button";
+import { GhostButton } from "@/components/GhostButton";
 import { Icon } from "@/components/Icon";
 import { pillVisual, scrollBehavior } from "@/components/site/pill";
 import { type TextKey, t } from "@/lib/i18n";
@@ -180,15 +181,10 @@ export function Faq() {
 
             <div className="mt-[46px] flex flex-col gap-[5px] xl:mt-[70px] xl:flex-row xl:gap-5">
               <Button href="/create" labelKey="cta.create" className="xl:w-[360px]" />
-              {/* Вторичная кнопка: в макете без заливки и обводки.
-                  Фокус и наведение приходят от токенов — без них
-                  она неотличима от простого текста. */}
-              <a
-                href="/templates"
-                className="font-ui text-btn xl:text-btn-header-d rounded-btn xl:rounded-faq-btn-d text-btn-ghost min-h-tap hover:bg-pink-card flex h-[45px] w-full items-center justify-center font-medium transition-colors xl:h-[61px] xl:w-[360px]"
-              >
-                {t("cta.templates")}
-              </a>
+              {/* Каталог живёт на /cards. Раньше здесь стоял /templates —
+                  маршрута с таким именем не появилось, а «Открытки»
+                  в шапке ведут именно на /cards. */}
+              <GhostButton href="/cards" labelKey="cta.templates" className="xl:w-[360px]" />
             </div>
           </div>
         </div>

@@ -18,8 +18,6 @@ import { t, type TextKey } from "@/lib/i18n";
  * описание в docs/DESIGN.md, раздел «Панель мобильного меню».
  * Панель раскрывается в потоке и сдвигает содержимое вниз: так не нужны
  * ни оверлей, ни блокировка прокрутки, ни ловушка фокуса.
- *
- * Страниц по этим адресам пока нет, см. docs/PRODUCT.md.
  */
 const NAV: ReadonlyArray<{ href: string; key: TextKey }> = [
   { href: "/cards", key: "nav.cards" },
@@ -79,9 +77,6 @@ export function Header() {
   return (
     <header ref={headerRef} className="border-ink border-b-2">
       <div className="page-shell flex min-h-16 items-center xl:min-h-[107px]">
-        {/* Единственный существующий маршрут — он и идёт через Link.
-            Остальные ссылки остаются обычными <a>: предзагружать
-            страницы, которых ещё нет, незачем. */}
         <Link
           href="/"
           className="font-display text-logo xl:text-logo-d min-h-tap inline-flex items-center font-medium"
@@ -96,12 +91,12 @@ export function Header() {
           <ul className="flex items-center">
             {NAV.map((item) => (
               <li key={item.href}>
-                <a
+                <Link
                   href={item.href}
                   className={`${NAV_LINK} text-nav-d min-h-tap inline-flex items-center`}
                 >
                   {t(item.key)}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -133,13 +128,13 @@ export function Header() {
             <ul>
               {NAV.map((item) => (
                 <li key={item.href} className="border-muted border-t">
-                  <a
+                  <Link
                     href={item.href}
                     onClick={() => setOpen(false)}
                     className={`${NAV_LINK} text-menu min-h-tap flex items-center`}
                   >
                     {t(item.key)}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Icon } from "@/components/Icon";
 import { type TextKey, t } from "@/lib/i18n";
 
@@ -19,11 +21,7 @@ import { type TextKey, t } from "@/lib/i18n";
  * поэтому у плашек нет подписей: назвать банк, которого может
  * не оказаться в списке, хуже, чем не назвать никого.
  */
-/**
- * Маршрутов ещё нет, но ссылки ведут на них, а не на «#»: с «#»
- * нажатие подбрасывает страницу вверх и ничего не делает, а так
- * человек попадает на осмысленную 404 с выходом обратно.
- */
+/** Соцсети внешние и остаются `<a>`, свои страницы идут через Link. */
 const NAV = [
   { href: "/faq", key: "nav.faq" },
   { href: "/cards", key: "nav.cards" },
@@ -103,12 +101,12 @@ export function Footer() {
             <ul role="list" className="flex flex-col gap-[16px] xl:mt-[16px] xl:gap-[24px]">
               {NAV.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
                     className="font-display text-card xl:text-nav-d min-h-tap inline-flex items-center font-medium text-white transition-opacity hover:opacity-80"
                   >
                     {t(item.key)}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

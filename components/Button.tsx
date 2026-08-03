@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { t, type TextKey } from "@/lib/i18n";
 
 /**
@@ -15,6 +17,10 @@ import { t, type TextKey } from "@/lib/i18n";
  * состояние и состояние загрузки. Состояний в макете нет, они
  * спроектированы от токенов: наведение и нажатие затемняют розовый
  * подмешиванием чёрного, фокус приходит из globals.css.
+ *
+ * Внутренние адреса идут через `next/link`, внешние остаются `<a>`:
+ * переход по своему сайту не должен перезагружать страницу и терять
+ * несохранённый черновик конструктора.
  */
 type ButtonCommon = {
   labelKey: TextKey;
@@ -29,6 +35,7 @@ type ButtonProps =
       type?: "button" | "submit";
       disabled?: boolean;
       loading?: boolean;
+      onClick?: () => void;
     });
 
 const BASE =
@@ -38,19 +45,41 @@ const BASE =
   "active:bg-[color-mix(in_oklab,var(--color-pink)_80%,var(--color-ink))]";
 
 const BY_VARIANT = {
-  primary:
-    "rounded-btn xl:rounded-btn-d text-btn xl:text-btn-d border-ink h-[45px] w-full border " +
-    "xl:h-[75px] xl:w-[450px]",
+  primary: "rounded-btn xl:rounded-btn-d text-btn xl:text-btn-d border-ink h-[45px] w-full border xl:h-[75px]",
   header: "rounded-btn-header-d text-btn-header-d h-[62px] w-[318px]",
 } as const;
+
+/**
+ * Десктопная ширина главной кнопки из макета. Отдельно от варианта,
+ * потому что её перебивают: два `xl:w-[…]` в одной строке классов
+ * разрешаются порядком в собранном CSS, а не порядком в строке, —
+ * и выигрывал не тот, кого просили. Поэтому макетную ширину
+ * не подставляем вовсе, если вызывающий задал свою.
+ *
+ * Мобильная `w-full` остаётся всегда: во всю ширину кнопка стоит
+ * и в макете, и у всех, кто передаёт только десктопную ширину.
+ */
+const PRIMARY_WIDTH_D = "xl:w-[450px]";
 
 const DISABLED = "disabled:bg-muted disabled:cursor-not-allowed disabled:hover:bg-muted";
 
 export function Button(props: ButtonProps) {
   const { labelKey, variant = "primary", className } = props;
-  const classes = [BASE, BY_VARIANT[variant], className].filter(Boolean).join(" ");
+
+  const widthGiven = className !== undefined && /(^|\s)xl:w-/.test(className);
+  const width = variant === "primary" && !widthGiven ? PRIMARY_WIDTH_D : "";
+
+  const classes = [BASE, BY_VARIANT[variant], width, className].filter(Boolean).join(" ");
 
   if (props.href !== undefined) {
+    if (props.href.startsWith("/")) {
+      return (
+        <Link href={props.href} className={classes}>
+          {t(labelKey)}
+        </Link>
+      );
+    }
+
     return (
       <a href={props.href} className={classes}>
         {t(labelKey)}
@@ -58,11 +87,12 @@ export function Button(props: ButtonProps) {
     );
   }
 
-  const { type = "button", disabled = false, loading = false } = props;
+  const { type = "button", disabled = false, loading = false, onClick } = props;
 
   return (
     <button
       type={type}
+      onClick={onClick}
       className={`${classes} ${DISABLED}`}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
