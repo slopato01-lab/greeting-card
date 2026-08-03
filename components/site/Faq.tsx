@@ -34,9 +34,16 @@ export function Faq() {
   return (
     <section className="pt-[61px] pb-[60px] xl:pt-[140px] xl:pb-[130px]">
       <div className="page-shell">
-        <h2 className="font-display text-h2 xl:text-h2-d font-medium">{t("faq.title")}</h2>
+        <h2 id="faq-title" className="font-display text-h2 xl:text-h2-d font-medium">
+          {t("faq.title")}
+        </h2>
 
-        <ul role="list" className="carousel mt-[81px] gap-[10px] xl:mt-[70px] xl:gap-[15px]">
+        <ul
+          role="list"
+          tabIndex={0}
+          aria-labelledby="faq-title"
+          className="carousel mt-[81px] gap-[10px] xl:mt-[70px] xl:gap-[15px]"
+        >
           {PILLS.map((key, index) => (
             <li
               key={key}

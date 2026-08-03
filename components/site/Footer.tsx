@@ -19,7 +19,16 @@ import { type TextKey, t } from "@/lib/i18n";
  * поэтому у плашек нет подписей: назвать банк, которого может
  * не оказаться в списке, хуже, чем не назвать никого.
  */
-const NAV = ["nav.faq", "nav.cards", "nav.how"] as const satisfies ReadonlyArray<TextKey>;
+/**
+ * Маршрутов ещё нет, но ссылки ведут на них, а не на «#»: с «#»
+ * нажатие подбрасывает страницу вверх и ничего не делает, а так
+ * человек попадает на осмысленную 404 с выходом обратно.
+ */
+const NAV = [
+  { href: "/faq", key: "nav.faq" },
+  { href: "/cards", key: "nav.cards" },
+  { href: "/how", key: "nav.how" },
+] as const satisfies ReadonlyArray<{ href: string; key: TextKey }>;
 
 const SOCIAL = [
   { icon: "instagram", label: "footer.social.instagram", href: "https://instagram.com" },
@@ -56,16 +65,15 @@ export function Footer() {
             >
               {SOCIAL.map((item) => (
                 <li key={item.icon}>
+                  {/* Подпись висит на ссылке, а не на иконке внутри.
+                      Имя вложенного role="img" тоже поднялось бы наверх,
+                      но называть имеет смысл то, что нажимают. */}
                   <a
                     href={item.href}
+                    aria-label={t(item.label)}
                     className="min-h-tap flex size-[37px] items-center justify-center rounded-full text-white transition-opacity hover:opacity-80 xl:size-[44px]"
                   >
-                    <Icon
-                      name={item.icon}
-                      size={37}
-                      labelKey={item.label}
-                      className="xl:size-[44px]"
-                    />
+                    <Icon name={item.icon} size={37} className="xl:size-[44px]" />
                   </a>
                 </li>
               ))}
@@ -75,14 +83,10 @@ export function Footer() {
               <li>
                 <a
                   href="https://facebook.com"
+                  aria-label={t("footer.social.facebook")}
                   className="bg-pink min-h-tap flex size-[37px] items-center justify-center rounded-full text-white transition-opacity hover:opacity-80 xl:size-[44px]"
                 >
-                  <Icon
-                    name="facebook"
-                    size={21}
-                    labelKey="footer.social.facebook"
-                    className="xl:size-[25px]"
-                  />
+                  <Icon name="facebook" size={21} className="xl:size-[25px]" />
                 </a>
               </li>
             </ul>
@@ -97,13 +101,13 @@ export function Footer() {
               {t("footer.nav.title")}
             </p>
             <ul role="list" className="flex flex-col gap-[16px] xl:mt-[16px] xl:gap-[24px]">
-              {NAV.map((key) => (
-                <li key={key}>
+              {NAV.map((item) => (
+                <li key={item.href}>
                   <a
-                    href="#"
+                    href={item.href}
                     className="font-display text-card xl:text-nav-d min-h-tap inline-flex items-center font-medium text-white transition-opacity hover:opacity-80"
                   >
-                    {t(key)}
+                    {t(item.key)}
                   </a>
                 </li>
               ))}

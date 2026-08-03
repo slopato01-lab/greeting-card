@@ -40,12 +40,19 @@ export function Catalog() {
   return (
     <section className="pt-[59px] pb-[70px] xl:pt-[140px] xl:pb-[120px]">
       <div className="page-shell">
-        <h2 className="font-display text-h2 xl:text-h2-d font-medium">{t("catalog.title")}</h2>
+        <h2 id="catalog-title" className="font-display text-h2 xl:text-h2-d font-medium">
+          {t("catalog.title")}
+        </h2>
         <p className="font-display text-sub xl:text-sub-d text-muted mt-[14px] leading-[1.15] xl:mt-[25px] xl:max-w-[738px]">
           {t("catalog.lead")}
         </p>
 
-        <ul role="list" className="carousel mt-[38px] gap-[10px] xl:mt-20 xl:gap-5">
+        <ul
+          role="list"
+          tabIndex={0}
+          aria-labelledby="catalog-title"
+          className="carousel mt-[38px] gap-[10px] xl:mt-20 xl:gap-5"
+        >
           {FILTERS.map((key, index) => (
             <li
               key={key}

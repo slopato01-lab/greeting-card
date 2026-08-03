@@ -61,10 +61,14 @@ export function Inside() {
   return (
     <section className="bg-pink-tint/10 pt-[50px] pb-[63px] xl:pt-[72px] xl:pb-[63px]">
       <div className="page-shell">
-        <h2 className="font-display text-h2 xl:text-h2-d font-medium">{t("inside.title")}</h2>
+        <h2 id="inside-title" className="font-display text-h2 xl:text-h2-d font-medium">
+          {t("inside.title")}
+        </h2>
 
         <ul
           role="list"
+          tabIndex={0}
+          aria-labelledby="inside-title"
           className="carousel mt-[68px] gap-[15px] xl:mt-[70px] xl:grid xl:grid-cols-4 xl:gap-5 xl:overflow-visible"
         >
           {CARDS.map((card) => (

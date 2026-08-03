@@ -31,13 +31,17 @@ export function Benefits() {
   return (
     <section className="pt-[57px] pb-[70px] xl:pt-[100px] xl:pb-[110px]">
       <div className="page-shell">
-        <h2 className="font-display text-h2 xl:text-h2-d font-medium">{t("benefits.title")}</h2>
+        <h2 id="benefits-title" className="font-display text-h2 xl:text-h2-d font-medium">
+          {t("benefits.title")}
+        </h2>
         <p className="font-display text-sub xl:text-sub-d text-muted mt-[14px] leading-[1.15] xl:mt-[25px] xl:max-w-[854px]">
           {t("benefits.lead")}
         </p>
 
         <ul
           role="list"
+          tabIndex={0}
+          aria-labelledby="benefits-title"
           className="carousel mt-[62px] items-stretch gap-[25px] xl:mt-[80px] xl:grid xl:grid-cols-4 xl:gap-5 xl:overflow-visible"
         >
           {CARDS.map((card) => (
