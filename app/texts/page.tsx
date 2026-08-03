@@ -95,6 +95,7 @@ const GROUPS: ReadonlyArray<{ title: string; keys: readonly TextKey[] }> = [
       "cta.retry",
       "cta.start",
       "cta.templates",
+      "cta.home",
     ],
   },
   {
@@ -126,6 +127,8 @@ const GROUPS: ReadonlyArray<{ title: string; keys: readonly TextKey[] }> = [
       "error.cardNotFound",
       "error.cardExpired",
       "error.gameFailed",
+      "error.pageNotFound",
+      "error.pageNotFoundBody",
     ],
   },
   { title: "Пустые состояния", keys: ["empty.photos", "empty.drafts"] },
