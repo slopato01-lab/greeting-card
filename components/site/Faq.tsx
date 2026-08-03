@@ -1,36 +1,107 @@
+"use client";
+
+import { useId, useRef, useState, type KeyboardEvent } from "react";
+
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
+import { pillVisual, scrollBehavior } from "@/components/site/pill";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
  * Секция «Какие поздравления/открытки можно сделать».
  *
- * Ряд пилюль-поводов и белая карточка с ответом. Пилюли в макете
- * статичны: активна первая, остальные выключены. Переключение поводов
- * — отдельная задача с состоянием, здесь их роль чисто визуальная,
- * поэтому это `ul`, а не набор кнопок: нажимать пока не на что,
- * а фальшивая кнопка ломает клавиатурную навигацию.
+ * Ряд пилюль-поводов и белая карточка с ответом. Пилюля переключает
+ * карточку под собой — это вкладки, поэтому role="tablist" и блуждающий
+ * tabindex, а не набор переключателей: выбран всегда ровно один повод.
+ *
+ * В макете нарисована одна карточка, «Друг за границей». Она встала
+ * на повод 2, которому отвечает по смыслу; три остальные написаны,
+ * см. docs/PRODUCT.md. Подсвечена в макете при этом первая пилюля —
+ * расхождение разрешено в пользу подсветки, по умолчанию открыт повод 1.
  *
  * На мобильном ряд пилюль шире экрана и прокручивается пальцем.
- *
- * Пилюля в макете 33px высотой — этого мало для пальца. Область
- * нажатия добирается невидимым полем до 44px, см. DESIGN.md.
+ * Пилюля в макете 33px — этого мало для пальца, до 44px её добирает
+ * невидимое поле кнопки, класс .pill-tap в globals.css.
  */
-const PILLS = [
-  "faq.pill.1",
-  "faq.pill.2",
-  "faq.pill.3",
-  "faq.pill.4",
-] as const satisfies ReadonlyArray<TextKey>;
+type Occasion = {
+  pill: TextKey;
+  title: TextKey;
+  lead: TextKey;
+  items: readonly [TextKey, TextKey, TextKey, TextKey];
+};
 
-const ITEMS = [
-  "faq.card.item.1",
-  "faq.card.item.2",
-  "faq.card.item.3",
-  "faq.card.item.4",
-] as const satisfies ReadonlyArray<TextKey>;
+const OCCASIONS = [
+  {
+    pill: "faq.pill.1",
+    title: "faq.card.1.title",
+    lead: "faq.card.1.lead",
+    items: ["faq.card.1.item.1", "faq.card.1.item.2", "faq.card.1.item.3", "faq.card.1.item.4"],
+  },
+  {
+    pill: "faq.pill.2",
+    title: "faq.card.2.title",
+    lead: "faq.card.2.lead",
+    items: ["faq.card.2.item.1", "faq.card.2.item.2", "faq.card.2.item.3", "faq.card.2.item.4"],
+  },
+  {
+    pill: "faq.pill.3",
+    title: "faq.card.3.title",
+    lead: "faq.card.3.lead",
+    items: ["faq.card.3.item.1", "faq.card.3.item.2", "faq.card.3.item.3", "faq.card.3.item.4"],
+  },
+  {
+    pill: "faq.pill.4",
+    title: "faq.card.4.title",
+    lead: "faq.card.4.lead",
+    items: ["faq.card.4.item.1", "faq.card.4.item.2", "faq.card.4.item.3", "faq.card.4.item.4"],
+  },
+] as const satisfies ReadonlyArray<Occasion>;
+
+const LAST = OCCASIONS.length - 1;
 
 export function Faq() {
+  const [active, setActive] = useState(0);
+  const baseId = useId();
+  const tabs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const tabId = (index: number) => `${baseId}-tab-${index}`;
+  const panelId = `${baseId}-panel`;
+  const current = OCCASIONS[active] ?? OCCASIONS[0];
+
+  // Выбор с клавиатуры сразу уводит фокус на новую вкладку и подтягивает
+  // её в видимую часть ленты: на мобильном четвёртый повод стоит за
+  // краем экрана, и без прокрутки фокус уезжает в никуда.
+  const select = (index: number) => {
+    setActive(index);
+
+    const tab = tabs.current[index];
+    tab?.focus();
+    tab?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: scrollBehavior() });
+  };
+
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const next =
+      event.key === "ArrowRight"
+        ? active === LAST
+          ? 0
+          : active + 1
+        : event.key === "ArrowLeft"
+          ? active === 0
+            ? LAST
+            : active - 1
+          : event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? LAST
+              : null;
+
+    if (next === null) return;
+
+    // Иначе стрелки прокручивают саму ленту, а Home и End — страницу.
+    event.preventDefault();
+    select(next);
+  };
+
   return (
     <section className="pt-[61px] pb-[60px] xl:pt-[140px] xl:pb-[130px]">
       <div className="page-shell">
@@ -38,29 +109,43 @@ export function Faq() {
           {t("faq.title")}
         </h2>
 
-        <ul
-          role="list"
-          tabIndex={0}
+        <div
+          role="tablist"
           aria-labelledby="faq-title"
+          onKeyDown={onKeyDown}
           className="carousel mt-[81px] gap-[10px] xl:mt-[70px] xl:gap-[15px]"
         >
-          {PILLS.map((key, index) => (
-            <li
-              key={key}
-              className={
-                "min-h-tap rounded-pill xl:rounded-pill-d font-display text-pill xl:text-pill-d " +
-                "flex items-center px-[25px] font-medium xl:px-[35px] " +
-                (index === 0 ? "bg-pink text-white" : "border-muted text-muted border")
-              }
+          {OCCASIONS.map((occasion, index) => (
+            <button
+              key={occasion.pill}
+              ref={(element) => {
+                tabs.current[index] = element;
+              }}
+              type="button"
+              role="tab"
+              id={tabId(index)}
+              aria-selected={index === active}
+              aria-controls={panelId}
+              // Блуждающий tabindex: ряд вкладок — один таб-стоп,
+              // внутри ходят стрелками.
+              tabIndex={index === active ? 0 : -1}
+              onClick={() => select(index)}
+              className="pill-tap"
             >
-              {t(key)}
-            </li>
+              <span className={pillVisual("faq", index === active)}>{t(occasion.pill)}</span>
+            </button>
           ))}
-        </ul>
+        </div>
 
         {/* Карточка в макете 510px высотой на мобильном и 580 на десктопе.
-            Обе стали минимальными: список пунктов на русском переносится. */}
-        <div className="rounded-faq border-ink shadow-faq relative mt-[64px] min-h-[510px] overflow-hidden border bg-white px-[15px] pt-[35px] pb-[40px] xl:mt-[50px] xl:min-h-[580px] xl:px-[70px] xl:pt-[55px] xl:pb-[57px]">
+            Обе стали минимальными: список пунктов на русском переносится,
+            и у четырёх поводов пункты разной длины. */}
+        <div
+          role="tabpanel"
+          id={panelId}
+          aria-labelledby={tabId(active)}
+          className="rounded-faq border-ink shadow-faq relative mt-[64px] min-h-[510px] overflow-hidden border bg-white px-[15px] pt-[35px] pb-[40px] xl:mt-[50px] xl:min-h-[580px] xl:px-[70px] xl:pt-[55px] xl:pb-[57px]"
+        >
           {/* Декор из макета: маршрут с прозрачностью 0.05, только
               на десктопе — на мобильном его в макете нет. */}
           <Icon
@@ -70,14 +155,14 @@ export function Faq() {
           />
 
           <div className="relative xl:max-w-[817px]">
-            <h3 className="font-display text-h3 xl:text-h3-d font-medium">{t("faq.card.title")}</h3>
+            <h3 className="font-display text-h3 xl:text-h3-d font-medium">{t(current.title)}</h3>
 
             <p className="font-display text-card xl:text-card-d mt-[52px] font-medium xl:mt-[45px]">
-              {t("faq.card.lead")}
+              {t(current.lead)}
             </p>
 
             <ul role="list" className="mt-[35px] flex flex-col gap-[35px]">
-              {ITEMS.map((key) => (
+              {current.items.map((key) => (
                 <li key={key} className="flex items-start gap-[18px] xl:items-center xl:gap-5">
                   {/* Точка списка в макете — отдельная картинка 6/10px.
                       В коде это кружок фоном: своего рисунка у неё нет,
