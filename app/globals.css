@@ -87,6 +87,18 @@
   --text-step: 36px; /* номер этапа */
   --text-step-d: 43px;
 
+  --text-pill: 15px; /* пилюля-повод в FAQ */
+  --text-pill-d: 22px;
+  --text-pill-cat-d: 24px; /* пилюля каталога крупнее, так в макете */
+
+  --text-tpl: 16px; /* подпись карточки шаблона */
+  --text-tpl-d: 18px;
+  --text-tpl-action: 14px; /* «Выбрать» в той же плашке */
+  --text-tpl-action-d: 16px;
+
+  --text-feat: 17px; /* заголовок карточки преимущества */
+  --text-feat-d: 20px;
+
   /* ── Радиусы ────────────────────────────────────────────
      Берутся из макета как есть, унифицировать нельзя. */
   --radius-h1: 5px; /* розовая подложка H1 (мобильный) */
@@ -108,6 +120,9 @@
   --radius-badge-d: 36px; /* наклонная плашка-подзаголовок (десктоп) */
   --radius-pill: 31px; /* пилюли фильтров (мобильный) */
   --radius-pill-d: 47px; /* пилюли фильтров (десктоп) */
+  --radius-feat: 18px; /* карточка преимущества (мобильный) */
+  --radius-pay: 3px; /* платёжная плашка (мобильный) */
+  --radius-pay-d: 4px; /* платёжная плашка (десктоп) */
 
   /* ── Тени ───────────────────────────────────────────────
      Обе почти незаметные, это нормально. */
@@ -167,16 +182,22 @@
      по краям остаётся боковое поле сетки. На 1920 это ровно макет.
      768–1279 — мобильная раскладка с удвоенным полем: планшетных
      фреймов нет, поэтому значение выведено из токена, а не придумано. */
+  /* Боковое поле живёт в --shell-pad, а не в самом padding: тем же
+     значением карусели вырываются из полосы и возвращаются в неё. */
+  :root {
+    --shell-pad: var(--spacing-gutter);
+  }
+
   .page-shell {
     width: 100%;
     max-width: calc(var(--container-content) + 2 * var(--spacing-gutter-d));
     margin-inline: auto;
-    padding-inline: var(--spacing-gutter);
+    padding-inline: var(--shell-pad);
   }
 
   @media (min-width: 768px) {
-    .page-shell {
-      padding-inline: calc(var(--spacing-gutter) * 2);
+    :root {
+      --shell-pad: calc(var(--spacing-gutter) * 2);
     }
   }
 
@@ -185,12 +206,63 @@
      Коэффициент 11/64 — это (150 − 40) / (1920 − 1280). Выше 1920
      полосу держит max-width, поле замирает на 150. */
   @media (min-width: 1280px) {
-    .page-shell {
-      padding-inline: clamp(
+    :root {
+      --shell-pad: clamp(
         calc(var(--spacing-gutter) * 2),
         calc(var(--spacing-gutter) * 2 + (100vw - 1280px) * 11 / 64),
         var(--spacing-gutter-d)
       );
+    }
+  }
+
+  /* Горизонтальные ряды на мобильном. В макете они шире экрана и просто
+     обрезаны рамкой фрейма — в коде прокручиваются пальцем, иначе часть
+     карточек недостижима.
+
+     Карусель вырывается из полосы страницы отрицательным полем и
+     возвращает его себе падингом: лента идёт от края до края экрана,
+     но первая карточка стоит по сетке, а последняя не липнет к краю.
+     Значение поля общее с .page-shell через --shell-pad, иначе они
+     разъедутся на первом же изменении сетки. */
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    margin-inline: calc(-1 * var(--shell-pad));
+    padding-inline: var(--shell-pad);
+  }
+
+  .carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel > * {
+    flex: none;
+    scroll-snap-align: start;
+  }
+
+  /* Платёжная плашка в подвале. Логотипы приходят одним растровым
+     спрайтом, как в макете, поэтому каждая плашка показывает свой
+     кусок картинки. Множитель и сдвиг — доли ширины плашки, они
+     одинаковы на обоих брейкпоинтах, меняется только сама ширина.
+     Значения приезжают инлайном: это геометрия внутри картинки,
+     а не токены дизайн-системы. */
+  .pay-plate {
+    width: var(--pay-w);
+  }
+
+  .pay-plate > span {
+    background-image: url("/assets/pay-logos.png");
+    background-repeat: no-repeat;
+    background-size: calc(var(--pay-w) * var(--pay-scale)) 100%;
+    background-position-x: calc(var(--pay-w) * var(--pay-offset) * -1);
+  }
+
+  @media (min-width: 1280px) {
+    .pay-plate {
+      --pay-w: var(--pay-w-d);
     }
   }
 

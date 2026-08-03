@@ -22,16 +22,63 @@ const GROUPS: ReadonlyArray<{ title: string; keys: readonly TextKey[] }> = [
       "steps.body.2",
       "steps.body.3",
       "faq.title",
+      "faq.pill.1",
+      "faq.pill.2",
+      "faq.pill.3",
+      "faq.pill.4",
+      "faq.card.title",
+      "faq.card.lead",
+      "faq.card.item.1",
+      "faq.card.item.2",
+      "faq.card.item.3",
+      "faq.card.item.4",
       "inside.title",
       "inside.card.1",
       "inside.card.2",
       "inside.card.3",
       "inside.card.4",
+      "inside.body.1",
+      "inside.body.2",
+      "inside.body.3",
+      "inside.body.4",
       "catalog.title",
+      "catalog.lead",
+      "catalog.filter.1",
+      "catalog.filter.2",
+      "catalog.filter.3",
+      "catalog.filter.4",
+      "catalog.filter.5",
+      "catalog.filter.6",
+      "catalog.choose",
+      "catalog.card.1",
+      "catalog.card.2",
+      "catalog.card.3",
+      "catalog.card.4",
+      "catalog.card.5",
+      "catalog.card.6",
+      "catalog.card.7",
+      "catalog.card.8",
       "benefits.title",
       "benefits.lead",
+      "benefits.card.1",
+      "benefits.card.2",
+      "benefits.card.3",
+      "benefits.card.4",
+      "benefits.body.1",
+      "benefits.body.2",
+      "benefits.body.3",
+      "benefits.body.4",
+      "benefits.check.1",
+      "benefits.check.2",
+      "benefits.check.3",
       "cta.title",
+      "cta.lead",
       "footer.about",
+      "footer.nav.title",
+      "footer.pay.title",
+      "footer.social.instagram",
+      "footer.social.facebook",
+      "footer.social.twitter",
     ],
   },
   {
@@ -47,6 +94,7 @@ const GROUPS: ReadonlyArray<{ title: string; keys: readonly TextKey[] }> = [
       "cta.replacePhoto",
       "cta.retry",
       "cta.start",
+      "cta.templates",
     ],
   },
   {
@@ -85,39 +133,42 @@ const GROUPS: ReadonlyArray<{ title: string; keys: readonly TextKey[] }> = [
   { title: "После оплаты", keys: ["done.title", "done.body", "done.storage"] },
 ];
 
-/** Чего в словаре нет. Источник — docs/FIGMA.md, раздел про опечатки. */
+/**
+ * Что в словаре стоит черновиком. Строки на странице уже есть —
+ * иначе секцию нельзя было бы сверстать, — но они либо перенесены
+ * из макета как есть вместе с повторами, либо написаны вместо
+ * очевидной заглушки и ждут решения. Источник — docs/PRODUCT.md.
+ */
 const GAPS: ReadonlyArray<{ what: string; now: string; when: string }> = [
   {
-    what: "Тексты этапов 1 и 3",
-    now: "оба описывают сертификат, а не то, что в заголовке",
-    when: "нужно к вёрстке лендинга",
+    what: "Названия восьми карточек шаблонов",
+    now: "все восемь подписаны «Для второй половинки» — так в макете",
+    when: "нужны разные, до запуска каталога",
+  },
+  {
+    what: "Тексты карточек «что спрятать внутри»",
+    now: "во всех четырёх один абзац про сертификат — так в макете",
+    when: "верен только для «Сертификата», остальным нужен свой",
+  },
+  {
+    what: "Тексты преимуществ 1 и 3",
+    now: "«Эмоции, которые не купишь» и «Подарок живёт вечно» совпадают дословно",
+    when: "нужен свой текст хотя бы одному",
   },
   {
     what: "Подзаголовок каталога",
-    now: "«короче топововые»",
-    when: "нужно к вёрстке лендинга",
+    now: "написан вместо макетного «короче топововые открытки и шаблоны к ним»",
+    when: "проверить формулировку",
   },
   {
-    what: "Названия восьми карточек шаблонов",
-    now: "все восемь подписаны «Для второй половинки»",
-    when: "нужно к вёрстке лендинга",
+    what: "Подпись тёмного блока CTA",
+    now: "взят десктопный вариант, на мобильном в макете была заглушка",
+    when: "проверить формулировку",
   },
   {
-    what: "Четыре карточки преимуществ: заголовок и текст",
-    now: "три из четырёх одинаковые, там же «новые эиоции»",
-    when: "нужно к вёрстке лендинга",
-  },
-  {
-    what: "Пилюли фильтров",
-    now: "видны три, одна с опечаткой «Поделится новостью?»",
-    when: "к каталогу",
-  },
-  { what: "Навигация шапки и подвала", now: "есть в макете, в словарь не попала", when: "к шапке" },
-  { what: "Ответы FAQ", now: "есть только заголовок вопроса", when: "к блоку FAQ" },
-  {
-    what: "Тексты карточек «что спрятать внутри»",
-    now: "есть только названия: Сертификат, Признание, Перевод, Билет",
-    when: "к блоку «что внутри»",
+    what: "Состав способов оплаты",
+    now: "шесть логотипов из макета одним растровым спрайтом, без подписей",
+    when: "уточнить список до подключения платёжки",
   },
 ];
 
@@ -173,10 +224,11 @@ export default function TextsPage() {
         ) : null}
 
         <section className="border-ink/10 border-t pt-6">
-          <h2 className="font-display text-h3 xl:text-h3-d font-medium">Чего не хватает</h2>
+          <h2 className="font-display text-h3 xl:text-h3-d font-medium">Что стоит черновиком</h2>
           <p className="font-ui text-body mt-2 max-w-[70ch] text-[15px]">
-            Эти тексты в макете черновые, в словарь они не попали. Придумывать их за вас нельзя —
-            первые четыре нужны до того, как верстать лендинг.
+            Эти строки на странице уже видны, но они либо перенесены из макета вместе с повторами,
+            либо написаны вместо явной заглушки. Придумывать их за вас нельзя — посмотрите на
+            странице и поправьте в docs/PRODUCT.md.
           </p>
           <ul className="mt-4 flex flex-col gap-4">
             {GAPS.map((gap) => (
