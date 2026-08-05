@@ -11,8 +11,15 @@ import {
 } from "react";
 
 import { Button } from "@/components/Button";
+import { CardView } from "@/components/card/CardView";
 import { GhostButton } from "@/components/GhostButton";
 import { pillVisual } from "@/components/site/pill";
+import {
+  SURPRISE_KINDS,
+  type CardContent,
+  type CardPhoto,
+  type SurpriseKind,
+} from "@/lib/card/content";
 import {
   CATALOG_FILTERS,
   GAMES,
@@ -27,7 +34,15 @@ import { type TextKey, t } from "@/lib/i18n";
  *
  * Что здесь настоящее: переходы между шагами, выбор повода и игры,
  * разбор и проверка выбранных файлов, тексты, черновик в localStorage
- * каждые три секунды и сводка в финале.
+ * каждые три секунды, сводка в финале и превью — экран получателя
+ * из собранного черновика.
+ *
+ * Превью раскрывается на месте шага и подменяет его содержимое, а не
+ * накрывает страницу слоем: так не нужны ни оверлей, ни блокировка
+ * прокрутки, ни ловушка фокуса — тем же решением живёт панель меню
+ * в components/site/Header.tsx. Отдельным адресом превью быть не может:
+ * фотографии существуют только в этой вкладке (см. ниже), и по ссылке
+ * открытка приехала бы без единого снимка.
  *
  * Чего здесь нет намеренно:
  *
@@ -62,23 +77,12 @@ const ALLOWED_EXT = /\.(jpe?g|png|heic|heif|webp)$/i;
  */
 const TEMPLATE_PARAM = "t";
 
-const SURPRISE_KINDS = [
-  { id: "text", label: "create.surprise.text" },
-  { id: "link", label: "create.surprise.link" },
-  { id: "code", label: "create.surprise.code" },
-] as const satisfies ReadonlyArray<{ id: string; label: TextKey }>;
-
-type SurpriseKind = (typeof SURPRISE_KINDS)[number]["id"];
-
-/** То, что переживает перезагрузку. Файлов здесь нет намеренно. */
-type Draft = {
-  occasion: CatalogFilter | null;
-  game: GameKey | null;
-  greeting: string;
-  sign: string;
-  surpriseKind: SurpriseKind;
-  surpriseValue: string;
-};
+/**
+ * То, что переживает перезагрузку: содержимое открытки минус файлы
+ * плюс повод. Файлов здесь нет намеренно, повода нет в открытке —
+ * он выбирает тему и игру, а получателю не показывается.
+ */
+type Draft = Omit<CardContent, "photos"> & { occasion: CatalogFilter | null };
 
 const EMPTY: Draft = {
   occasion: null,
@@ -88,8 +92,6 @@ const EMPTY: Draft = {
   surpriseKind: "text",
   surpriseValue: "",
 };
-
-type Photo = { id: number; name: string; url: string };
 
 const STEP_TITLES = [
   "step.1.title",
@@ -241,9 +243,10 @@ export function Constructor() {
 
   const update = (patch: Partial<Draft>) => setEdits({ ...draft, ...patch });
 
-  const [photos, setPhotos] = useState<ReadonlyArray<Photo>>([]);
+  const [photos, setPhotos] = useState<ReadonlyArray<CardPhoto>>([]);
   const [photoError, setPhotoError] = useState<TextKey | null>(null);
   const [saved, setSaved] = useState(false);
+  const [preview, setPreview] = useState(false);
 
   const nextId = useRef(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -283,16 +286,21 @@ export function Constructor() {
   // После перехода фокус уходит на заголовок нового шага: иначе с
   // клавиатуры он остаётся на кнопке «Дальше», которая уже уехала.
   // Первый рендер пропускаем — там фокус ничего не терял.
+  //
+  // Возврат из превью — тот же случай: кнопки «Назад» на странице
+  // больше нет. Пока превью раскрыто, заголовка шага в документе нет
+  // и фокусировать нечего — фокус в это время держит сам экран
+  // получателя.
   useEffect(() => {
     if (!stepStarted.current) {
       stepStarted.current = true;
       return;
     }
     headingRef.current?.focus();
-  }, [step]);
+  }, [step, preview]);
 
   const addFiles = (files: FileList) => {
-    const accepted: Photo[] = [];
+    const accepted: CardPhoto[] = [];
     let error: TextKey | null = null;
 
     for (const file of Array.from(files)) {
@@ -372,6 +380,28 @@ export function Constructor() {
   ];
 
   const hint = STEP_HINTS[step];
+
+  // Превью занимает место шага целиком: полоса прогресса и заголовок
+  // «Всё готово» рядом с открыткой получателя только мешают — человек
+  // смотрит не на шаг конструктора, а на то, что получил адресат.
+  // Шапка сайта остаётся: выход со страницы должен быть виден всегда.
+  if (preview) {
+    return (
+      <div className="page-shell pt-[30px] pb-[70px] xl:pt-[50px] xl:pb-[120px]">
+        <CardView
+          card={{
+            game: draft.game,
+            greeting: draft.greeting,
+            sign: draft.sign,
+            surpriseKind: draft.surpriseKind,
+            surpriseValue: draft.surpriseValue,
+            photos,
+          }}
+          onExit={() => setPreview(false)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell pt-[30px] pb-[70px] xl:pt-[50px] xl:pb-[120px]">
@@ -587,6 +617,14 @@ export function Constructor() {
             </dl>
 
             <div className="mt-[30px] flex flex-col gap-[10px] xl:mt-[45px]">
+              {/* Единственное живое действие этого шага. Оплаты нет,
+                  и до неё превью — это и есть конец пути: посмотреть,
+                  что получилось, и вернуться править. */}
+              <Button
+                labelKey="cta.preview"
+                onClick={() => setPreview(true)}
+                className="xl:w-[450px]"
+              />
               <Button labelKey="cta.pay" disabled className="xl:w-[450px]" />
               <p className="font-ui text-note text-caption">{t("create.pay.soon")}</p>
             </div>
