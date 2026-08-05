@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { pillVisual } from "@/components/site/pill";
+import { TemplateCard } from "@/components/site/TemplateCard";
 import {
   CATALOG_ALL,
   CATALOG_CUSTOM,
@@ -31,9 +32,8 @@ import { t } from "@/lib/i18n";
  * не отдавал пустоту. Пустого состояния у сетки поэтому нет,
  * см. lib/catalog/templates.ts.
  *
- * Картинок шаблонов в макете нет, там пустое белое поле; в коде на
- * их месте плейсхолдер цветом --color-photo. Подставлять сюда
- * случайные картинки нельзя: их ещё не нарисовали.
+ * Сама карточка — в components/site/TemplateCard.tsx: она общая
+ * с рядом «Ещё шаблоны» на странице шаблона.
  */
 export function TemplateGrid({
   labelledBy,
@@ -91,23 +91,7 @@ export function TemplateGrid({
         className={`grid gap-[70px] xl:grid-cols-4 xl:gap-x-5 xl:gap-y-[30px] ${gridClassName}`}
       >
         {shown.map((template) => (
-          <li
-            key={template.nameKey}
-            className="rounded-card xl:rounded-card-d border-ink flex flex-col overflow-hidden border-2 bg-white"
-          >
-            {/* Картинки шаблона ещё нет — плейсхолдер держит
-                пропорции карточки из макета, 350×368 и 390×410. */}
-            <div aria-hidden="true" className="bg-photo min-h-[317px] flex-1 xl:min-h-[355px]" />
-
-            <div className="border-ink flex min-h-[49px] items-center justify-between gap-4 border-t px-[22px] py-[14px] xl:min-h-[55px] xl:px-6">
-              <span className="font-ui text-tpl xl:text-tpl-d">{t(template.nameKey)}</span>
-              {/* «Выбрать» в макете — подпись, а не кнопка. Ссылкой
-                  она станет, когда появится страница шаблона. */}
-              <span className="font-ui text-tpl-action xl:text-tpl-action-d text-caption">
-                {t("catalog.choose")}
-              </span>
-            </div>
-          </li>
+          <TemplateCard key={template.slug} template={template} />
         ))}
       </ul>
     </>

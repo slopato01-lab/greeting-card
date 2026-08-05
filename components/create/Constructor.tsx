@@ -13,7 +13,13 @@ import {
 import { Button } from "@/components/Button";
 import { GhostButton } from "@/components/GhostButton";
 import { pillVisual } from "@/components/site/pill";
-import { CATALOG_FILTERS, type CatalogFilter } from "@/lib/catalog/templates";
+import {
+  CATALOG_FILTERS,
+  GAMES,
+  type CatalogFilter,
+  type GameKey,
+  templateBySlug,
+} from "@/lib/catalog/templates";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
@@ -50,13 +56,11 @@ const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/heic", "image/heif", "image/webp"];
 const ALLOWED_EXT = /\.(jpe?g|png|heic|heif|webp)$/i;
 
-const GAMES = [
-  "games.card.1.title",
-  "games.card.2.title",
-  "games.card.3.title",
-] as const satisfies ReadonlyArray<TextKey>;
-
-type GameKey = (typeof GAMES)[number];
+/**
+ * Параметр перехода со страницы шаблона: /create?t=<slug>. Повод и игру
+ * там уже выбрали, спрашивать их второй раз незачем.
+ */
+const TEMPLATE_PARAM = "t";
 
 const SURPRISE_KINDS = [
   { id: "text", label: "create.surprise.text" },
@@ -133,6 +137,26 @@ function getServerRaw(): string | null {
   return null;
 }
 
+/**
+ * Строка запроса. Читается тем же способом, что и черновик: на сборке
+ * адреса нет, а серверный снимок обязан отличаться от клиентского без
+ * расхождения при гидратации.
+ *
+ * Не useSearchParams: тот в статическом экспорте требует обёртки
+ * в Suspense и взамен ничего не даёт — параметр всё равно приезжает
+ * только на клиенте.
+ *
+ * Подписки нет: на /create ссылок с параметром не бывает, адрес меняется
+ * только вместе с монтированием конструктора.
+ */
+function getSearch(): string {
+  return window.location.search;
+}
+
+function getServerSearch(): string {
+  return "";
+}
+
 /** Битый черновик не должен ронять конструктор. */
 function parseDraft(raw: string | null): Draft {
   if (raw === null) return EMPTY;
@@ -193,8 +217,27 @@ export function Constructor() {
   // значило бы затирать несохранённые правки последних трёх секунд.
   const storedRaw = useSyncExternalStore(subscribe, getStoredRaw, getServerRaw);
   const stored = useMemo(() => parseDraft(storedRaw), [storedRaw]);
+
+  // Переход со страницы шаблона: /create?t=<slug> ставит повод и игру.
+  // Выбор из ссылки выигрывает у черновика — человек только что нажал
+  // «Создать открытку» на конкретном шаблоне, это свежее намерение.
+  // Тексты, фотографии и сюрприз параметр не трогает: их не выбирали.
+  const search = useSyncExternalStore(subscribe, getSearch, getServerSearch);
+  const fromTemplate = useMemo(
+    () => templateBySlug(new URLSearchParams(search).get(TEMPLATE_PARAM) ?? ""),
+    [search],
+  );
+
+  const base = useMemo(
+    () =>
+      fromTemplate === undefined
+        ? stored
+        : { ...stored, occasion: fromTemplate.filter, game: fromTemplate.game },
+    [stored, fromTemplate],
+  );
+
   const [edits, setEdits] = useState<Draft | null>(null);
-  const draft = edits ?? stored;
+  const draft = edits ?? base;
 
   const update = (patch: Partial<Draft>) => setEdits({ ...draft, ...patch });
 
