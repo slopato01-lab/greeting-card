@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Icon } from "@/components/Icon";
+import { SOCIAL } from "@/components/site/social";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
@@ -21,17 +22,21 @@ import { type TextKey, t } from "@/lib/i18n";
  * поэтому у плашек нет подписей: назвать банк, которого может
  * не оказаться в списке, хуже, чем не назвать никого.
  */
-/** Соцсети внешние и остаются `<a>`, свои страницы идут через Link. */
+/**
+ * Соцсети внешние и остаются `<a>`, свои страницы идут через Link.
+ *
+ * «Данные и приватность» и «Контакты» стоят последними: в макете их
+ * нет, но подвал — единственное место, откуда до них можно дойти.
+ * Оферты и правил возврата здесь нет намеренно: страницы пустые,
+ * пока их не напишет юрист, и ссылка вела бы в никуда.
+ */
 const NAV = [
   { href: "/faq", key: "nav.faq" },
   { href: "/cards", key: "nav.cards" },
   { href: "/how", key: "nav.how" },
+  { href: "/privacy", key: "page.privacy.title" },
+  { href: "/contacts", key: "page.contacts.title" },
 ] as const satisfies ReadonlyArray<{ href: string; key: TextKey }>;
-
-const SOCIAL = [
-  { icon: "instagram", label: "footer.social.instagram", href: "https://instagram.com" },
-  { icon: "twitter", label: "footer.social.twitter", href: "https://twitter.com" },
-] as const;
 
 /** Ширина кропа и сдвиг внутри спрайта в долях ширины плашки. */
 const PAY = [
@@ -61,32 +66,33 @@ export function Footer() {
               role="list"
               className="mt-[40px] flex items-center gap-[21px] xl:mt-[45px] xl:gap-[25px]"
             >
-              {SOCIAL.map((item) => (
-                <li key={item.icon}>
-                  {/* Подпись висит на ссылке, а не на иконке внутри.
-                      Имя вложенного role="img" тоже поднялось бы наверх,
-                      но называть имеет смысл то, что нажимают. */}
-                  <a
-                    href={item.href}
-                    aria-label={t(item.label)}
-                    className="min-h-tap flex size-[37px] items-center justify-center rounded-full text-white transition-opacity hover:opacity-80 xl:size-[44px]"
-                  >
-                    <Icon name={item.icon} size={37} className="xl:size-[44px]" />
-                  </a>
-                </li>
-              ))}
+              {SOCIAL.map((item) => {
+                // Facebook в макете лежит в розовом круге и потому нарисован
+                // мельче остальных двух: те идут просто контуром. Так во
+                // фрейме, не унифицируем.
+                const inCircle = item.icon === "facebook";
 
-              {/* Facebook в макете лежит в розовом круге, остальные две —
-                  просто контуром. Так во фрейме, не унифицируем. */}
-              <li>
-                <a
-                  href="https://facebook.com"
-                  aria-label={t("footer.social.facebook")}
-                  className="bg-pink min-h-tap flex size-[37px] items-center justify-center rounded-full text-white transition-opacity hover:opacity-80 xl:size-[44px]"
-                >
-                  <Icon name="facebook" size={21} className="xl:size-[25px]" />
-                </a>
-              </li>
+                return (
+                  <li key={item.icon}>
+                    {/* Подпись висит на ссылке, а не на иконке внутри.
+                        Имя вложенного role="img" тоже поднялось бы наверх,
+                        но называть имеет смысл то, что нажимают. */}
+                    <a
+                      href={item.href}
+                      aria-label={t(item.label)}
+                      className={`min-h-tap flex size-[37px] items-center justify-center rounded-full text-white transition-opacity hover:opacity-80 xl:size-[44px] ${
+                        inCircle ? "bg-pink" : ""
+                      }`}
+                    >
+                      <Icon
+                        name={item.icon}
+                        size={inCircle ? 21 : 37}
+                        className={inCircle ? "xl:size-[25px]" : "xl:size-[44px]"}
+                      />
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
