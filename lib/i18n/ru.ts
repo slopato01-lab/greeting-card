@@ -800,4 +800,22 @@ export const ru = {
   "sticker.arrow-doodle": "Стрелка",
   "sticker.cake-mono": "Торт",
   "sticker.cake-photo": "Торт с макарунами",
+
+  // ── Ёлка из полароидов (08.10.2026) ──────────────────────
+  "tpl.polaroid.label": "Ёлка из фото",
+  "tpl.polaroid.word1": "Новый",
+  "tpl.polaroid.year": "2026",
+  "tpl.polaroid.word3": "Год",
+  "tpl.polaroid.wish": "Пусть сбудутся все мечты!",
+  "tpl.polaroid.handle": "/мойпрофиль",
+  "tpl.polaroid.tag": "#2026",
+  "anim.polaroid.name": "Ёлка из полароидов",
+  "anim.polaroid.lead":
+    "Шесть ваших фото складываются в ёлку, сверху загорается звезда, а год приземляется на бумагу. Нажмите на любое фото — и поставьте своё.",
+  "editor.anim.in.land": "Приземление",
+  "sticker.polaroid": "Полароид",
+  "sticker.star-gold": "Звезда",
+  "sticker.torn-paper": "Рваная бумага",
+  "sticker.snowflake-line": "Снежинка-контур",
+  "sticker.ny-photo": "Пример фото",
 } as const;

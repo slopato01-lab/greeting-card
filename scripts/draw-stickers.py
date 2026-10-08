@@ -253,4 +253,65 @@ svg(
     '<path d="M168 116 L190 140 L204 112"/></g>',
 )
 
+# ── Ёлка из полароидов (запись экрана от 08.10.2026) ─────────
+# Рамка полароида: белая карточка с тенью, окно под фото сверху,
+# широкое поле снизу. Окно 260 × 260, его центр на 25 выше центра рамки —
+# это знает шаблон (lib/editor/templates.ts, polaroid()).
+svg(
+    "polaroid",
+    320,
+    370,
+    '<rect x="10" y="8" width="300" height="350" rx="4" fill="#fdfdfb" filter="url(#shadow)"/>'
+    '<rect x="30" y="28" width="260" height="260" fill="#d9d9d9"/>',
+    '<filter id="shadow" x="-10%" y="-10%" width="120%" height="125%">'
+    '<feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".35"/></filter>',
+)
+
+# Золотая звезда на верхушку ёлки.
+star = []
+for k in range(10):
+    r = 96 if k % 2 == 0 else 42
+    a = math.pi / 2 + k * math.pi / 5
+    star.append(f"{100 + r * math.cos(a):.1f},{104 - r * math.sin(a):.1f}")
+svg(
+    "star-gold",
+    200,
+    200,
+    f'<polygon points="{" ".join(star)}" fill="url(#sg)" stroke="#b8862a" stroke-width="3" stroke-linejoin="round"/>',
+    '<linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset=".55" stop-color="#e8b84a"/><stop offset="1" stop-color="#c9922c"/></linearGradient>',
+)
+
+# Рваная бумага: белая полоса с неровными краями сверху и снизу.
+def torn(y0, amp, step, w):
+    pts = []
+    x = 0
+    while x <= w:
+        pts.append((x, y0 + rng.uniform(-amp, amp)))
+        x += step * rng.uniform(0.6, 1.4)
+    pts.append((w, y0))
+    return pts
+
+W = 640
+top = torn(30, 12, 10, W)
+bottom = torn(270, 9, 12, W)[::-1]
+path = "M" + " L".join(f"{x:.0f} {y:.0f}" for x, y in top + bottom) + " Z"
+svg(
+    "torn-paper",
+    W,
+    300,
+    f'<path d="{path}" fill="#fbfbf8" filter="url(#ts)"/>',
+    '<filter id="ts" x="-5%" y="-20%" width="110%" height="140%">'
+    '<feDropShadow dx="0" dy="-2" stdDeviation="3" flood-color="#000" flood-opacity=".25"/></filter>',
+)
+
+# Снежинка-контур для фона: белая, бледность задаёт прозрачность слоя.
+svg(
+    "snowflake-line",
+    240,
+    240,
+    '<g stroke="#ffffff" stroke-width="7" stroke-linecap="round" fill="none">'
+    + "".join(f'<g transform="rotate({a} 120 120)">{arm}</g>' for a in range(0, 360, 60))
+    + "</g>",
+)
+
 print("Готово:", len(list(OUT.glob("*.svg"))), "стикеров")

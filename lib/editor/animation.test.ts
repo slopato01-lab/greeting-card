@@ -156,3 +156,11 @@ test("огонёк и сердцебиение колеблются около �
     );
   }
 });
+
+test("приземление: крупно и прозрачно — и на месте", () => {
+  const layer = text({ in: "land", inDuration: 1 });
+  const start = frameAt(layer, 0, 6);
+  assert.ok(start.scale > 1.5 && start.opacity === 0);
+  const end = frameAt(layer, 1, 6);
+  assert.ok(near(end.scale, 1) && near(end.opacity, 1));
+});

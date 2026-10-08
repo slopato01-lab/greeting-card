@@ -86,6 +86,36 @@ export async function prepareImage(file: File): Promise<PrepareResult> {
   }
 }
 
+/**
+ * Обрезает уже подготовленное фото по центру до пропорции `aspect`
+ * (ширина / высота). Для окна полароида: снимок заполняет окно целиком.
+ * `null` — не вышло; тогда фото встаёт целиком, вписанным.
+ */
+export async function cropToAspect(blob: Blob, aspect: number): Promise<PreparedImage | null> {
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(blob);
+  } catch {
+    return null;
+  }
+  try {
+    const { width, height } = bitmap;
+    const w = Math.min(width, Math.round(height * aspect));
+    const h = Math.min(height, Math.round(width / aspect));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const context = canvas.getContext("2d");
+    if (context === null) return null;
+    context.drawImage(bitmap, (width - w) / 2, (height - h) / 2, w, h, 0, 0, w, h);
+    const type = blob.type === "image/png" ? "image/png" : "image/jpeg";
+    const out = await canvasToBlob(canvas, type);
+    return out === null ? null : { blob: out, width: w, height: h };
+  } finally {
+    bitmap.close();
+  }
+}
+
 // ── Перевод в data URL и обратно — для файла шаблона ────────
 
 export function blobToDataUrl(blob: Blob): Promise<string> {

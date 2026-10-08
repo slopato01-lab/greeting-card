@@ -251,6 +251,7 @@ export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
   animated("birthday", "catalog.filter.2", "anim.birthday.name", "anim.birthday.lead"),
   animated("party", "catalog.filter.2", "anim.party.name", "anim.party.lead"),
   animated("newyear", "catalog.filter.3", "anim.newyear.name", "anim.newyear.lead"),
+  animated("polaroid", "catalog.filter.3", "anim.polaroid.name", "anim.polaroid.lead"),
   animated("march8", "catalog.filter.5", "anim.march8.name", "anim.march8.lead"),
   animated("love", "catalog.filter.7", "anim.love.name", "anim.love.lead"),
 ];

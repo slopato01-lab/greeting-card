@@ -26,10 +26,17 @@ export type StickerInfo = {
   placeholder?: true;
   /** При замене фото автоматически убирается фон (lib/editor/cutout.ts). */
   cutout?: true;
+  /** Своё фото вместо примера — чёрно-белое по умолчанию (коллажи по видео). */
+  mono?: true;
+  /**
+   * Своё фото обрезается по центру под пропорцию примера и заполняет
+   * его целиком — окно полароида, а не фото с полями внутри окна.
+   */
+  fill?: true;
   /** Не показывать в каталоге стикеров — живёт только в шаблоне. */
   hidden?: true;
   /** Расширение файла, если не SVG. */
-  ext?: "png";
+  ext?: "png" | "jpg";
 };
 
 export const STICKERS: readonly StickerInfo[] = [
@@ -40,6 +47,7 @@ export const STICKERS: readonly StickerInfo[] = [
     width: 400,
     height: 500,
     placeholder: true,
+    mono: true,
   },
   // Пример фото в шаблоне «День рождения»: мальчик, уже вырезанный из
   // фона и чёрно-белый, как ребёнок в design/пример анимации и дизайна.MP4.
@@ -52,6 +60,7 @@ export const STICKERS: readonly StickerInfo[] = [
     height: 640,
     placeholder: true,
     cutout: true,
+    mono: true,
     hidden: true,
     ext: "png",
   },
@@ -65,6 +74,7 @@ export const STICKERS: readonly StickerInfo[] = [
     height: 760,
     placeholder: true,
     cutout: true,
+    mono: true,
     hidden: true,
     ext: "png",
   },
@@ -82,6 +92,31 @@ export const STICKERS: readonly StickerInfo[] = [
     height: 750,
     ext: "png",
   },
+  // Ёлка из полароидов (запись экрана 08.10.2026): рамка, звезда, рваная
+  // бумага, снежинка для фона и шесть примеров фото в окна рамок.
+  { id: "polaroid", theme: "newyear", label: "sticker.polaroid", width: 320, height: 370 },
+  { id: "star-gold", theme: "newyear", label: "sticker.star-gold", width: 200, height: 200 },
+  { id: "torn-paper", theme: "common", label: "sticker.torn-paper", width: 640, height: 300 },
+  {
+    id: "snowflake-line",
+    theme: "newyear",
+    label: "sticker.snowflake-line",
+    width: 240,
+    height: 240,
+  },
+  ...(
+    ["ny-photo-1", "ny-photo-2", "ny-photo-3", "ny-photo-4", "ny-photo-5", "ny-photo-6"] as const
+  ).map((id): StickerInfo => ({
+    id,
+    theme: "newyear",
+    label: "sticker.ny-photo",
+    width: 320,
+    height: 320,
+    placeholder: true,
+    fill: true,
+    hidden: true,
+    ext: "jpg",
+  })),
   { id: "party-hat", theme: "birthday", label: "sticker.party-hat", width: 400, height: 480 },
   { id: "candle", theme: "birthday", label: "sticker.candle", width: 120, height: 520 },
   { id: "flame", theme: "birthday", label: "sticker.flame", width: 120, height: 200 },

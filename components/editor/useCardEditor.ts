@@ -42,7 +42,13 @@ import {
 } from "@/lib/editor/fabric";
 import { loadFont } from "@/lib/editor/fonts";
 import { cutoutPerson } from "@/lib/editor/cutout";
-import { blobToDataUrl, dataUrlToBlob, newAssetId, prepareImage } from "@/lib/editor/image";
+import {
+  blobToDataUrl,
+  cropToAspect,
+  dataUrlToBlob,
+  newAssetId,
+  prepareImage,
+} from "@/lib/editor/image";
 import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
 import { stickerInfo } from "@/lib/editor/stickers";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
@@ -613,8 +619,9 @@ export function useCardEditor() {
   /**
    * Своё фото вместо выделенной заглушки или фото. Встаёт в ту же рамку
    * (вписывается по большей стороне), на тот же слой и с той же анимацией.
-   * Вместо заглушки фото по умолчанию чёрно-белое — как в шаблонах
-   * по образцу видео; выключается в свойствах.
+   * Чёрно-белое по умолчанию — если так помечен пример (коллажи
+   * по образцу видео); выключается в свойствах. Пример с `fill`
+   * (окно полароида) — своё фото обрезается по центру под его пропорцию.
    *
    * Заглушка с флагом `cutout` (пример фото в шаблоне «День рождения»)
    * сама убирает фон у нового фото: человек встаёт вместо примера.
@@ -626,7 +633,8 @@ export function useCardEditor() {
       if (current === null || old === undefined || playback.current !== null) return;
       const before = objectToLayer(current.fabric, old);
       if (before === null || (before.kind !== "image" && before.kind !== "sticker")) return;
-      const autoCutout = before.kind === "sticker" && stickerInfo(before.sticker).cutout === true;
+      const info = before.kind === "sticker" ? stickerInfo(before.sticker) : null;
+      const autoCutout = info?.cutout === true;
 
       setNotice(null);
       setBusyText("loading.upload");
@@ -638,6 +646,11 @@ export function useCardEditor() {
           return;
         }
         let { blob, width, height } = result.image;
+        // Окно полароида: обрезать по центру под пропорцию примера.
+        if (info?.fill === true) {
+          const cropped = await cropToAspect(blob, before.width / before.height);
+          if (cropped !== null) ({ blob, width, height } = cropped);
+        }
         if (autoCutout) {
           const cut = await tryCutout(blob);
           if (cut !== null) ({ blob, width, height } = cut);
@@ -658,7 +671,7 @@ export function useCardEditor() {
           scaleY: fit,
           opacity: before.opacity,
           anim: before.anim,
-          mono: before.kind === "image" ? before.mono : true,
+          mono: before.kind === "image" ? before.mono : info?.mono === true,
         };
         const object = await createObject(current.fabric, layer, current.theme, assetUrl);
         if (object === null || live.current !== current) {

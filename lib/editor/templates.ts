@@ -31,7 +31,7 @@ import { type TextKey, t } from "@/lib/i18n";
  * (docs/DESIGN.md, «Цвета и шрифты содержимого открытки»).
  */
 
-export const TEMPLATE_IDS = ["birthday", "party", "newyear", "march8", "love"] as const;
+export const TEMPLATE_IDS = ["birthday", "party", "newyear", "polaroid", "march8", "love"] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
 export type TemplateInfo = { id: TemplateId; label: TextKey; build: () => EditorDoc };
@@ -242,6 +242,128 @@ function party(): EditorDoc {
   };
 }
 
+/**
+ * Ёлка из полароидов — по записи экрана из design/ (08.10.2026):
+ * тёмно-зелёный фон с бледными снежинками, шесть фото в рамках
+ * пирамидой 1-2-3, золотая звезда, внизу рваная бумага и «Новый 2026 Год»
+ * засечным шрифтом, где год — красным курсивом. Образец квадратный,
+ * здесь 3:4: ёлке досталось больше места по высоте.
+ *
+ * «Новый 2026 Год» — три слова тремя слоями: у года свой цвет и курсив.
+ * Центры посчитаны по ширине слов в Playfair 64 (206 / 134 / 96, пробел 16):
+ * строка 468 точек ровно по центру. Сменят шрифт или кегль — пересчитать.
+ *
+ * Рамка и фото в ней — два слоя с одной анимацией: влетают вместе.
+ * Фото — заменяемые примеры с `fill`: своё обрежется под окно рамки.
+ */
+const POLAROID_SCALE = 0.46;
+/** Центр окна рамки выше центра стикера на 27 точек (scripts/draw-stickers.py). */
+const POLAROID_WINDOW_DY = -27;
+/** Окно 260 из 320 — во столько раз фото-пример меньше рамки. */
+const POLAROID_WINDOW = 260 / 320;
+
+function polaroid(): EditorDoc {
+  const green = "#0f4d3a";
+  const frame = (photo: StickerId, x: number, y: number, angle: number, delay: number): Layer[] => {
+    const motion = anim({ in: "toss-bottom", inDuration: 0.55, delay });
+    const rad = (angle * Math.PI) / 180;
+    const dy = POLAROID_WINDOW_DY * POLAROID_SCALE;
+    return [
+      sticker("polaroid", x, y, POLAROID_SCALE, angle, motion),
+      // Фото в окне: смещение окна поворачивается вместе с рамкой.
+      sticker(
+        photo,
+        x - dy * Math.sin(rad),
+        y + dy * Math.cos(rad),
+        POLAROID_SCALE * POLAROID_WINDOW,
+        angle,
+        motion,
+      ),
+    ];
+  };
+  const snow = (x: number, y: number, scale: number, i: number): StickerLayer => ({
+    ...sticker(
+      "snowflake-line",
+      x,
+      y,
+      scale,
+      i * 17,
+      anim({
+        in: "fade",
+        inDuration: 0.8,
+        delay: 2.3 + i * 0.08,
+        loop: "float",
+        loopPeriod: 3.4 + (i % 3) * 0.5,
+      }),
+    ),
+    opacity: 0.22,
+  });
+  const word = (
+    key: TextKey,
+    x: number,
+    fill: Color,
+    italic: boolean,
+    delay: number,
+  ): TextLayer => ({
+    ...text(key, 652, fill, "playfair", 64, { anim: anim({ in: "land", inDuration: 0.6, delay }) }),
+    x,
+    italic,
+  });
+  const corner = (key: TextKey, x: number, align: "left" | "right"): TextLayer => ({
+    ...text(key, 38, "#cfe3d9", "inter", 15, {
+      anim: anim({ in: "fade", inDuration: 0.6, delay: 2.4 }),
+    }),
+    x,
+    align,
+  });
+  return {
+    format: EDITOR_FORMAT,
+    version: EDITOR_VERSION,
+    background: green,
+    duration: 6,
+    layers: [
+      snow(64, 140, 0.2, 0),
+      snow(536, 110, 0.18, 1),
+      snow(84, 350, 0.16, 2),
+      snow(528, 330, 0.2, 3),
+      snow(44, 500, 0.14, 4),
+      snow(560, 490, 0.16, 5),
+      snow(190, 70, 0.12, 6),
+      snow(424, 200, 0.12, 7),
+      corner("tpl.polaroid.handle", 86, "left"),
+      corner("tpl.polaroid.tag", 528, "right"),
+      sticker(
+        "torn-paper",
+        300,
+        662,
+        1,
+        0,
+        anim({ in: "slide-bottom", inDuration: 0.6, delay: 0 }),
+      ),
+      ...frame("ny-photo-4", 162, 494, -7, 0.3),
+      ...frame("ny-photo-5", 300, 500, 3, 0.42),
+      ...frame("ny-photo-6", 438, 492, 8, 0.54),
+      ...frame("ny-photo-2", 232, 344, -6, 0.66),
+      ...frame("ny-photo-3", 370, 340, 5, 0.78),
+      ...frame("ny-photo-1", 300, 192, 0, 0.9),
+      sticker(
+        "star-gold",
+        300,
+        104,
+        0.4,
+        0,
+        anim({ in: "pop", inDuration: 0.5, delay: 1.1, loop: "flicker", loopPeriod: 1.4 }),
+      ),
+      word("tpl.polaroid.word1", 169, green, false, 1.3),
+      word("tpl.polaroid.year", 355, "#c62828", true, 1.5),
+      word("tpl.polaroid.word3", 486, green, false, 1.7),
+      text("tpl.polaroid.wish", 712, green, "inter", 18, {
+        anim: anim({ in: "tracking", inDuration: 0.8, delay: 2.0 }),
+      }),
+    ],
+  };
+}
+
 export const TEMPLATES: readonly TemplateInfo[] = [
   {
     id: "birthday",
@@ -373,6 +495,11 @@ export const TEMPLATES: readonly TemplateInfo[] = [
           ),
         ],
       }),
+  },
+  {
+    id: "polaroid",
+    label: "tpl.polaroid.label",
+    build: polaroid,
   },
   {
     id: "march8",

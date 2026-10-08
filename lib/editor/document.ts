@@ -95,6 +95,16 @@ export const STICKER_IDS = [
   "arrow-doodle",
   "cake-mono",
   "cake-photo",
+  "polaroid",
+  "star-gold",
+  "torn-paper",
+  "snowflake-line",
+  "ny-photo-1",
+  "ny-photo-2",
+  "ny-photo-3",
+  "ny-photo-4",
+  "ny-photo-5",
+  "ny-photo-6",
   "party-hat",
   "candle",
   "flame",
@@ -134,7 +144,9 @@ export type StickerId = (typeof STICKER_IDS)[number];
 /**
  * Появление. `typewriter`, `letters` и `tracking` — только для текста.
  * `letters` (по буквам), `tracking` (сборка из разрядки) и `toss-*`
- * (влёт с поворотом) — из design/пример анимации и дизайна.MP4.
+ * (влёт с поворотом) — из design/пример анимации и дизайна.MP4,
+ * `land` (приземление: крупно и прозрачно → на место) — из записи
+ * экрана с новогодней открыткой.
  */
 export const ANIM_IN = [
   "none",
@@ -148,6 +160,7 @@ export const ANIM_IN = [
   "toss-top",
   "toss-bottom",
   "zoom",
+  "land",
   "pop",
   "rotate",
   "typewriter",

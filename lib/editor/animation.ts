@@ -144,6 +144,9 @@ function enter(type: Layer["anim"]["in"] | Layer["anim"]["out"], p: number): Fra
     }
     case "zoom":
       return { ...IDENTITY, scale: 0.3 + 0.7 * e, opacity: e };
+    case "land":
+      // Обратное приближению: крупно и прозрачно — и садится на место.
+      return { ...IDENTITY, scale: 1.9 - 0.9 * e, opacity: e };
     case "pop":
       return { ...IDENTITY, scale: Math.max(0, easeOutBack(p)), opacity: clamp01(p * 3) };
     case "rotate":
