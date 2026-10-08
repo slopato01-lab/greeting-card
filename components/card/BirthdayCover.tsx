@@ -95,7 +95,7 @@ export function BirthdayCover({ photos, seed }: { photos: ReadonlyArray<string>;
       <img src={BACKGROUND} alt="" className="absolute inset-0 size-full object-cover" />
 
       <Layer index={0} style={{ left: "6%", top: "6%", width: "68%" }}>
-        <h2 className="bg-gold text-canvas rounded-inner font-display text-h3 xl:text-h2 -rotate-3 px-[0.6em] py-[0.35em] font-medium tracking-tight">
+        <h2 className="bg-gold text-ink rounded-inner font-display text-h3 xl:text-h2 -rotate-3 px-[0.6em] py-[0.35em] font-medium tracking-tight">
           {t("catalog.card.9")}
         </h2>
       </Layer>

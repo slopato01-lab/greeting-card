@@ -51,7 +51,7 @@ export function TemplatesPanel({
                 <span
                   className={[
                     "rounded-inner bg-photo block aspect-[3/4] w-full overflow-hidden border-2 transition-colors",
-                    active ? "border-gold" : "group-hover:border-muted border-transparent",
+                    active ? "border-gold-deep" : "group-hover:border-muted border-transparent",
                   ].join(" ")}
                 >
                   {preview === undefined ? null : (
@@ -60,7 +60,7 @@ export function TemplatesPanel({
                   )}
                 </span>
                 <span
-                  className={`font-ui text-note xl:text-note-d ${active ? "text-gold" : "text-ink"}`}
+                  className={`font-ui text-note xl:text-note-d ${active ? "text-gold-deep" : "text-ink"}`}
                 >
                   {t(template.label)}
                 </span>

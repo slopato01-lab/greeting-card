@@ -80,7 +80,7 @@ export function IconToggle({
       className={[
         "size-tap rounded-inner flex items-center justify-center border transition-colors",
         pressed
-          ? "bg-paper border-paper text-canvas"
+          ? "bg-ink border-ink text-canvas"
           : "border-line text-ink hover:bg-raised hover:border-muted active:bg-line",
       ].join(" ")}
     >
@@ -195,7 +195,7 @@ export function Slider({
           step={step}
           value={value}
           onChange={(event) => onChange(Number(event.target.value))}
-          className="min-h-tap accent-gold min-w-0 flex-1"
+          className="min-h-tap accent-gold-deep min-w-0 flex-1"
         />
         <output className="font-ui text-note xl:text-note-d text-ink w-[5ch] text-right tabular-nums">
           {display}

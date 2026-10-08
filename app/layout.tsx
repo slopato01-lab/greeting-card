@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter, Unbounded } from "next/font/google";
+import { Caveat, Inter, Unbounded } from "next/font/google";
 
 import "./globals.css";
 
@@ -23,6 +23,15 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+// Caveat — рукописные подписи со стрелками в герое (с 08.10.2026,
+// макет design/главный экран.jpg). OFL, с кириллицей.
+const caveat = Caveat({
+  subsets: ["cyrillic", "latin"],
+  weight: ["500"],
+  display: "swap",
+  variable: "--font-caveat",
+});
+
 // Название продукта зафиксировано в docs/PRODUCT.md.
 // Остальные метаданные появятся вместе с лендингом.
 export const metadata: Metadata = {
@@ -31,7 +40,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ru" className={`${unbounded.variable} ${inter.variable}`}>
+    <html lang="ru" className={`${unbounded.variable} ${inter.variable} ${caveat.variable}`}>
       <body>{children}</body>
     </html>
   );

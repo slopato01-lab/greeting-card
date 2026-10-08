@@ -78,7 +78,7 @@ function paintCoating(ctx: CanvasRenderingContext2D, seed: string, image: HTMLIm
   }
 
   const random = seededRandom(`${seed}:scratch`);
-  ctx.fillStyle = token(image === null ? "--color-canvas" : "--color-gold");
+  ctx.fillStyle = token(image === null ? "--color-ink" : "--color-gold");
   for (let index = 0; index < SPARKLES; index += 1) {
     sparkle(ctx, random() * WIDTH, random() * HEIGHT, 3 + random() * 7);
   }
@@ -245,7 +245,7 @@ export function ScratchCard({ seed, reward, cover, onDone }: GameProps) {
       {revealed ? null : (
         <Button
           labelKey="game.scratch.reveal"
-          tone="light"
+          tone="dark"
           onClick={finish}
           className="mt-[16px] xl:mt-[20px]"
         />

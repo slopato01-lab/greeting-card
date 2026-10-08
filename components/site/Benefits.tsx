@@ -73,7 +73,7 @@ export function Benefits() {
                 <ul role="list" className="mt-auto flex flex-col gap-[10px] pt-[24px]">
                   {CHECKS.map((key) => (
                     <li key={key} className="flex items-center gap-[12px]">
-                      <Icon name="tick" size={20} className="text-gold shrink-0" />
+                      <Icon name="tick" size={20} className="text-gold-deep shrink-0" />
                       <span className="font-ui text-note xl:text-note-d text-ink">{t(key)}</span>
                     </li>
                   ))}

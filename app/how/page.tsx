@@ -65,7 +65,7 @@ export default function HowPage() {
             >
               <span
                 aria-hidden="true"
-                className="bg-gold rounded-inner xl:rounded-inner-d font-display text-card xl:text-h3-d text-canvas flex size-[40px] shrink-0 items-center justify-center font-medium tracking-tight xl:size-[56px]"
+                className="bg-gold rounded-inner xl:rounded-inner-d font-display text-card xl:text-h3-d text-ink flex size-[40px] shrink-0 items-center justify-center font-medium tracking-tight xl:size-[56px]"
               >
                 {index + 1}
               </span>

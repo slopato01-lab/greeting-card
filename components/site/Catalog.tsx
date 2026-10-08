@@ -62,7 +62,7 @@ export function Catalog() {
           <p className="font-ui text-sub xl:text-sub-d text-body max-w-[520px] leading-[1.5]">
             {t("catalog.lead")}
           </p>
-          <Sun className="text-gold hidden h-[60px] w-[120px] shrink-0 xl:block" />
+          <Sun className="text-gold-deep hidden h-[60px] w-[120px] shrink-0 xl:block" />
         </div>
 
         <div className="xl:col-start-2 xl:row-start-1 xl:self-center xl:justify-self-end">

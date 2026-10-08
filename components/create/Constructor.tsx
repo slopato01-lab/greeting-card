@@ -480,7 +480,7 @@ export function Constructor() {
       </p>
       <div aria-hidden="true" className="bg-line mt-[10px] h-[6px] w-full rounded-full">
         <div
-          className="bg-gold h-full rounded-full transition-[width]"
+          className="bg-gold-deep h-full rounded-full transition-[width]"
           style={{ width: `${((step + 1) / STEP_TITLES.length) * 100}%` }}
         />
       </div>
@@ -552,7 +552,7 @@ export function Constructor() {
                   onClick={() => update({ game: key })}
                   className={
                     "rounded-card xl:rounded-card-d bg-surface flex w-full flex-col border-2 p-[8px] text-left transition-colors " +
-                    (draft.game === key ? "border-gold" : "hover:border-line border-transparent")
+                    (draft.game === key ? "border-gold-deep" : "hover:border-line border-transparent")
                   }
                 >
                   {/* Живого превью нет: игровых модулей ещё не существует. */}
@@ -593,7 +593,7 @@ export function Constructor() {
             </label>
 
             {photoError === null ? null : (
-              <p role="alert" className="font-ui text-card text-gold mt-[14px] leading-[1.4]">
+              <p role="alert" className="font-ui text-card text-gold-deep mt-[14px] leading-[1.4]">
                 {t(photoError)}
               </p>
             )}
@@ -670,7 +670,7 @@ export function Constructor() {
                   return (
                     <li
                       key={track.id}
-                      className={`rounded-inner xl:rounded-inner-d bg-surface flex items-center gap-[12px] border p-[8px] transition-colors ${chosen ? "border-gold" : "border-transparent"}`}
+                      className={`rounded-inner xl:rounded-inner-d bg-surface flex items-center gap-[12px] border p-[8px] transition-colors ${chosen ? "border-gold-deep" : "border-transparent"}`}
                     >
                       <button
                         type="button"

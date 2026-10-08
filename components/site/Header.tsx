@@ -123,7 +123,7 @@ export function Header() {
           href="/"
           className="font-display text-logo xl:text-logo-d min-h-tap inline-flex items-center gap-[10px] font-medium"
         >
-          <Icon name="planet" size={28} className="text-gold" />
+          <Icon name="planet" size={28} className="text-gold-deep" />
           {t("brand.name")}
         </Link>
 
@@ -149,7 +149,7 @@ export function Header() {
             в базовых классах уже есть inline-flex, и он перебивает
             hidden — порядок в строке классов на это не влияет. */}
         <div className="hidden xl:block">
-          <Button href="/create" variant="header" tone="light" labelKey="cta.create" />
+          <Button href="/create" variant="header" tone="dark" labelKey="cta.create" />
         </div>
 
         <button
@@ -159,7 +159,7 @@ export function Header() {
           aria-label={t("nav.menu")}
           aria-expanded={open}
           aria-controls={panelId}
-          className="size-tap text-ink hover:text-gold active:text-gold ms-auto flex items-center justify-center transition-colors xl:hidden"
+          className="size-tap text-ink hover:text-gold-deep active:text-gold-deep ms-auto flex items-center justify-center transition-colors xl:hidden"
         >
           <Icon name="burger" size={32} />
         </button>

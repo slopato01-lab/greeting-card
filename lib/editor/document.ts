@@ -23,7 +23,9 @@
  *   Новые поля необязательны — шаблоны 2 без них читаются как раньше.
  *
  * Цвета. Имя токена (`gold`) по-прежнему допустимо: шаблоны версии 1
- * ими написаны, и такие цвета перекрашиваются вместе с сайтом. Новые
+ * ими написаны. С 08.10.2026 значения таких цветов заморожены
+ * (TOKEN_COLORS): сайт стал светлым, и открытки пользователей не должны
+ * перекрашиваться вместе с ним — тёмный текст стал бы белым на белом. Новые
  * цвета — `#rrggbb` из палитры редактора: это данные пользователя,
  * а не оформление сайта, см. docs/DESIGN.md, «Цвета содержимого открытки».
  *
@@ -41,6 +43,20 @@ export const CARD_HEIGHT = 800;
 /** Токены `--color-*` из docs/DESIGN.md, которые понимает шаблон. */
 export const COLOR_TOKENS = ["paper", "body", "muted", "raised", "canvas", "gold"] as const;
 export type ColorToken = (typeof COLOR_TOKENS)[number];
+
+/**
+ * Значения токенов в открытке — палитра тёмной темы сайта, какой она
+ * была, когда этими именами писали шаблоны. От app/globals.css больше
+ * не зависят.
+ */
+export const TOKEN_COLORS: Readonly<Record<ColorToken, string>> = {
+  paper: "#ffffff",
+  body: "#c4c4c4",
+  muted: "#9a9a9a",
+  raised: "#2a2a2a",
+  canvas: "#141414",
+  gold: "#ecd18a",
+};
 export type HexColor = `#${string}`;
 export type Color = ColorToken | HexColor;
 

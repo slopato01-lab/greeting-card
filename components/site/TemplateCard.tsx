@@ -56,13 +56,13 @@ export function TemplateCard({
               className="absolute inset-0 size-full object-cover"
             />
           )}
-          <span className="border-ink text-ink group-hover:bg-paper group-hover:text-canvas absolute start-[12px] top-[12px] flex size-[40px] items-center justify-center rounded-full border transition-colors">
+          <span className="border-ink text-ink group-hover:bg-ink group-hover:text-canvas absolute start-[12px] top-[12px] flex size-[40px] items-center justify-center rounded-full border transition-colors">
             <Icon name="next" size={18} className="-rotate-45" />
           </span>
         </div>
 
         <div className="flex flex-1 flex-col px-[10px] pt-[16px] pb-[10px] xl:px-[12px]">
-          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-gold text-canvas self-start rounded-full px-[10px] py-[3px] font-medium">
+          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-gold text-ink self-start rounded-full px-[10px] py-[3px] font-medium">
             {t(template.filter)}
           </span>
           <span className="font-display text-tpl xl:text-tpl-d mt-[12px] font-medium tracking-tight">

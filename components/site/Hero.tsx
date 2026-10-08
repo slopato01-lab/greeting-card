@@ -1,120 +1,106 @@
-import Link from "next/link";
-
 import { Button } from "@/components/Button";
-import { Icon } from "@/components/Icon";
-import { TEMPLATES } from "@/lib/catalog/templates";
+import { HeroArc } from "@/components/site/HeroArc";
 import { t } from "@/lib/i18n";
 
 /**
- * Герой главной страницы.
+ * Первый экран главной — по design/главный экран.jpg (08.10.2026):
+ * всё по центру на белом — золотая плашка-бейдж, огромный H1, вводный
+ * абзац, под ним дуга анимированных открыток во всю ширину экрана
+ * и главная кнопка в пунктирном кольце. Рядом две подписи от руки
+ * со стрелками.
  *
- * Раскладка и стиль — первый блок макета design/главная greetinh-cards.jpg:
- * большая скруглённая карточка, внизу слева плашка-подпись в рамке,
- * крупный H1 и две кнопки — золотая и белая. Справа колонка из двух
- * мини-карточек: белая и золотая.
+ * Тексты наши, из словаря. Отличия от макета:
+ * - «Join over 100,000 happy creators» — у нас подзаголовок героя
+ *   `hero.badge`: цифр пользователей нет;
+ * - фото в карточках — наши анимированные шаблоны (HeroArc);
+ * - подпись «Выбери свою» видна только с 1280: на телефоне ей негде
+ *   встать рядом с заголовком, не налезая на текст.
  *
- * Белая мини-карточка — первый шаблон каталога (с 08.10.2026 это
- * «С днём рождения!» со своей обложкой), золотая — «Собрать свой». В макете там товары с ценами; цен и рейтингов у нас нет,
- * поэтому на карточках только то, что есть в каталоге.
- *
- * Фото из макета у нас нет — карточка залита --surface, на месте
- * превью шаблона плейсхолдер --photo. Вертикальный счётчик слайдов
- * из макета не перенесён: слайд у героя один.
- *
- * H1 разбит на строки блоками: три ключа словаря дают ровно то
- * разбиение, что задумано, перенос внутри ключа отдан браузеру.
+ * H1 из трёх ключей — три строки и на десктопе: в макете две, но наш
+ * текст длиннее, и «Маленький подарок по ссылке» не влезал в строку.
  */
-const FEATURED = TEMPLATES[0];
-
-/** Круг со стрелкой или плюсом в углу мини-карточки — как в макете. */
-const CORNER =
-  "size-[36px] shrink-0 items-center justify-center rounded-full border flex transition-colors";
-
 export function Hero() {
   return (
-    <section className="page-shell">
-      <div className="rounded-panel xl:rounded-panel-d bg-surface grid gap-[30px] p-[20px] xl:min-h-[640px] xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-[40px] xl:p-[48px]">
-        <div className="flex flex-col justify-end pt-[20px] xl:pt-0">
-          <p className="border-line rounded-inner flex max-w-[460px] items-center gap-[12px] self-start border px-[12px] py-[10px]">
-            <span
-              aria-hidden="true"
-              className="bg-paper text-canvas flex size-[28px] shrink-0 items-center justify-center rounded-full"
-            >
-              <Icon name="planet" size={18} />
-            </span>
-            <span className="font-ui caps text-badge xl:text-badge-d text-body leading-[1.35]">
-              {t("hero.badge")}
-            </span>
-          </p>
+    <section className="page-shell relative pt-[32px] text-center xl:pt-[56px]">
+      <p className="font-ui caps text-badge xl:text-badge-d bg-gold text-ink inline-block rounded-full px-[14px] py-[6px] font-medium">
+        {t("hero.badge")}
+      </p>
 
-          <h1 className="font-display text-h1 xl:text-h1-d mt-[20px] font-medium tracking-tight xl:mt-[28px]">
-            <span className="block">{t("hero.title.1")}</span>
-            <span className="block">{t("hero.title.2")}</span>
-            <span className="block">{t("hero.title.3")}</span>
-          </h1>
+      <div className="relative mx-auto max-w-[1100px]">
+        <h1 className="font-display text-h1 xl:text-h1-d mt-[20px] font-medium tracking-tight xl:mt-[28px]">
+          <span className="block">{t("hero.title.1")}</span>
+          <span className="block">{t("hero.title.2")}</span>
+          <span className="block">{t("hero.title.3")}</span>
+        </h1>
 
-          <p className="font-ui text-lead xl:text-lead-d text-body mt-[16px] max-w-[640px] leading-[1.5] xl:mt-[24px]">
-            {t("hero.lead")}
-          </p>
+        <p
+          aria-hidden="true"
+          className="font-hand text-hand-d text-ink absolute top-full right-0 hidden -translate-y-1/2 rotate-[14deg] xl:block"
+        >
+          {t("hero.note.pick")}
+          <ArrowDown className="ms-auto mt-[4px] h-[70px] w-[90px]" />
+        </p>
+      </div>
 
-          <div className="mt-[24px] flex flex-col gap-[10px] xl:mt-[36px] xl:flex-row xl:gap-[12px]">
-            <Button href="/create" labelKey="cta.create" />
-            <Button href="/cards" tone="light" labelKey="cta.templates" />
-          </div>
-        </div>
+      <p className="font-ui text-lead xl:text-lead-d text-body mx-auto mt-[16px] max-w-[560px] leading-[1.5] xl:mt-[24px]">
+        {t("hero.lead")}
+      </p>
 
-        {/* Мини-карточки: на мобильном рядом в две колонки, с 1280 —
-            колонкой справа, прижаты к верху, как в макете. */}
-        <ul role="list" className="grid grid-cols-2 gap-[10px] xl:grid-cols-1 xl:content-start">
-          <li>
-            <Link
-              href={`/cards/${FEATURED.slug}`}
-              className="group rounded-card bg-paper text-canvas on-light flex h-full flex-col p-[8px] transition-transform active:translate-y-px"
-            >
-              <span
-                aria-hidden="true"
-                className="bg-photo rounded-inner relative block h-[90px] overflow-hidden xl:h-[120px]"
-              >
-                {FEATURED.cover === null ? null : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={FEATURED.cover}
-                    alt=""
-                    className="absolute inset-0 size-full object-cover"
-                  />
-                )}
-              </span>
-              <span className="flex flex-1 flex-col justify-between gap-[10px] px-[6px] pt-[12px] pb-[4px] xl:flex-row xl:items-end">
-                <span className="font-display caps text-badge xl:text-badge-d leading-[1.25] font-medium">
-                  {t(FEATURED.nameKey)}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className={`${CORNER} border-canvas group-hover:bg-canvas group-hover:text-paper self-end`}
-                >
-                  <Icon name="next" size={16} className="-rotate-45" />
-                </span>
-              </span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/create"
-              className="group rounded-card bg-gold text-canvas on-light flex h-full flex-col justify-between gap-[16px] p-[14px] transition-transform active:translate-y-px xl:min-h-[150px]"
-            >
-              <span className="font-display caps text-badge xl:text-badge-d leading-[1.25] font-medium">
-                {t("catalog.filter.6")}
-              </span>
-              <span
-                aria-hidden="true"
-                className={`${CORNER} border-canvas group-hover:bg-canvas group-hover:text-gold self-end`}
-              >
-                <Icon name="next" size={16} className="-rotate-45" />
-              </span>
-            </Link>
-          </li>
-        </ul>
+      <div className="mt-[8px] xl:mt-[12px]">
+        <HeroArc />
+      </div>
+
+      <div className="relative mx-auto flex flex-col items-center xl:w-max">
+        <span className="border-ink w-full rounded-full border border-dashed p-[5px] xl:w-auto">
+          <Button href="/create" labelKey="cta.create" />
+        </span>
+
+        {/* На телефоне подпись под кнопкой, стрелка вверх. С 1280 —
+            слева от кнопки, стрелка вправо, как в макете. */}
+        <p
+          aria-hidden="true"
+          className="font-hand text-hand xl:text-hand-d text-ink mt-[8px] flex -rotate-[6deg] items-center gap-[6px] xl:absolute xl:top-1/2 xl:right-full xl:mt-0 xl:me-[20px] xl:-translate-y-1/4 xl:flex-row-reverse xl:rotate-[12deg] xl:whitespace-nowrap"
+        >
+          <ArrowSide className="h-[36px] w-[48px] -rotate-90 xl:rotate-0" />
+          {t("hero.note.free")}
+        </p>
       </div>
     </section>
+  );
+}
+
+/** Стрелка от руки, изгибом вниз — к ряду открыток. */
+function ArrowDown({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 90 70"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`block ${className ?? ""}`}
+    >
+      <path d="M8 6c30 2 62 10 70 30 4 10-2 20-10 26" />
+      <path d="M56 56l12 7 2-14" />
+    </svg>
+  );
+}
+
+/** Короткая стрелка от руки, остриём вправо — к кнопке. */
+function ArrowSide({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 48 36"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`block shrink-0 ${className ?? ""}`}
+    >
+      <path d="M4 28c10-14 22-18 38-14" />
+      <path d="M33 7l9 7-8 9" />
+    </svg>
   );
 }

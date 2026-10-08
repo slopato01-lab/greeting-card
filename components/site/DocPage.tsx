@@ -70,7 +70,7 @@ export function DocSections({ sections }: { sections: readonly DocSection[] }) {
                 className="font-ui text-card xl:text-card-d text-body flex gap-[10px] leading-[1.4]"
               >
                 {/* Маркер декоративный: роль списка уже несёт сам список. */}
-                <span aria-hidden="true" className="text-gold">
+                <span aria-hidden="true" className="text-gold-deep">
                   —
                 </span>
                 {t(item)}

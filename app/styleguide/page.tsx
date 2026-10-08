@@ -10,16 +10,17 @@ import { icons, type IconName } from "@/lib/icons/generated";
 const SAMPLE = "Съешь ещё этих мягких булок";
 
 const COLORS: ReadonlyArray<{ name: string; value: string; role: string }> = [
-  { name: "canvas", value: "#141414", role: "основа страницы" },
-  { name: "surface", value: "#1e1e1e", role: "карточки и панели" },
-  { name: "raised", value: "#2a2a2a", role: "ступень выше: наведение, вложенные плашки" },
-  { name: "line", value: "#3a3a3a", role: "тонкие обводки и линии, декор" },
-  { name: "photo", value: "#333333", role: "плейсхолдер изображения" },
-  { name: "ink", value: "#f5f5f5", role: "основной текст" },
-  { name: "body", value: "#c4c4c4", role: "текст абзацев" },
-  { name: "muted", value: "#9a9a9a", role: "второстепенный текст, обводки полей" },
-  { name: "gold", value: "#ecd18a", role: "акцент: главная кнопка, золотая карточка" },
-  { name: "paper", value: "#ffffff", role: "белые пилюли и плашки" },
+  { name: "canvas", value: "#ffffff", role: "основа страницы" },
+  { name: "surface", value: "#f5f5f5", role: "карточки и панели" },
+  { name: "raised", value: "#ebebeb", role: "ступень выше: наведение, вложенные плашки" },
+  { name: "line", value: "#dedede", role: "тонкие обводки и линии, декор" },
+  { name: "photo", value: "#e4e4e4", role: "плейсхолдер изображения" },
+  { name: "ink", value: "#141414", role: "основной текст, тёмные пилюли" },
+  { name: "body", value: "#3a3a3a", role: "текст абзацев" },
+  { name: "muted", value: "#666666", role: "второстепенный текст, обводки полей" },
+  { name: "gold", value: "#ecd18a", role: "акцент-заливка: главная кнопка, золотая карточка" },
+  { name: "gold-deep", value: "#7d6219", role: "золото текстом и значками на светлом" },
+  { name: "paper", value: "#ffffff", role: "белые плашки на сером" },
 ];
 
 const TYPE_SCALE: ReadonlyArray<{
@@ -200,7 +201,7 @@ function Pill({
   children: ReactNode;
 }) {
   const byState: Record<typeof state, string> = {
-    active: "bg-paper border-paper text-canvas",
+    active: "bg-ink border-ink text-canvas",
     normal: "border-line text-body",
     hover: "border-muted text-ink",
     pressed: "border-line bg-raised text-ink",
@@ -258,7 +259,7 @@ export default function StyleguidePage() {
         <Section
           id="color"
           title="Цвет"
-          note="Тёмная тема из design/главная greetinh-cards.jpg, золото #ecd18a — акцент. Контраст: --muted на --raised 5.1:1, --body на --surface больше 9:1, тёмный текст на золоте больше 11:1."
+          note="Светлая тема с 08.10.2026: цвета прежние, тёмная основа стала текстом. Золото #ecd18a — заливка, золото текстом — --gold-deep. Контраст: --muted на --raised 4.8:1, --body на --surface 10.4:1, тёмный текст на золоте 12.3:1."
         >
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {COLORS.map((c) => (
@@ -301,7 +302,7 @@ export default function StyleguidePage() {
         <Section
           id="shadow"
           title="Тени"
-          note="Теней нет: на тёмном их не видно. Наведение — сменой заливки и обводки."
+          note="Теней нет: ничего полупрозрачного. Наведение — сменой заливки и обводки, белое на белом отделяет обводка --line."
         >
           <span />
         </Section>
@@ -309,7 +310,7 @@ export default function StyleguidePage() {
         <Section
           id="button"
           title="Кнопка"
-          note="Золотая пилюля, подпись капсом, стрелка «↗». Наведение и нажатие — золото с основой 88% и 76%. Фокус — обводка 2px --ink со смещением 2px. Выключенная — заливка --raised, текст --muted. Второй тон — белая пилюля --paper с той же механикой."
+          note="Золотая пилюля, подпись капсом, стрелка «↗». Наведение и нажатие — золото с --ink 88% и 76%. Фокус — обводка 2px --ink со смещением 2px. Выключенная — заливка --raised, текст --muted. Второй тон — тёмная пилюля --ink с белым 88% и 76%."
         >
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
@@ -345,9 +346,9 @@ export default function StyleguidePage() {
           title="Пилюля фильтра"
           note="В макете высота 31px на мобильном и 47px на десктопе — по области нажатия это не проходит. Добавлена невидимая зона до 44px сверху и снизу. Включите переключатель, чтобы увидеть её границы."
         >
-          <div className="[&:has(:checked)_.tap-zone]:before:outline-gold [&:has(:checked)_.tap-zone]:before:outline [&:has(:checked)_.tap-zone]:before:outline-1 [&:has(:checked)_.tap-zone]:before:outline-dashed">
+          <div className="[&:has(:checked)_.tap-zone]:before:outline-gold-deep [&:has(:checked)_.tap-zone]:before:outline [&:has(:checked)_.tap-zone]:before:outline-1 [&:has(:checked)_.tap-zone]:before:outline-dashed">
             <label className="min-h-tap mb-6 inline-flex items-center gap-3">
-              <input type="checkbox" className="accent-gold size-5" />
+              <input type="checkbox" className="accent-gold-deep size-5" />
               <span className="font-ui text-[15px]">Показать зону нажатия</span>
             </label>
 
@@ -374,14 +375,14 @@ export default function StyleguidePage() {
         <Section
           id="icons"
           title="Иконки"
-          note="Одиннадцать иконок из docs/FIGMA.md, скачаны в public/assets/icons и вставляются прямо в разметку. Монохромные красятся токеном — показаны светлой и золотой. Цветные иллюстрации перекрасить нельзя. Бургер, декор FAQ и планета заменены на аналоги из Tabler: в макете стояли наборы под CC BY, а она требует указания авторства на видном месте."
+          note="Одиннадцать иконок из docs/FIGMA.md, скачаны в public/assets/icons и вставляются прямо в разметку. Монохромные красятся токеном — показаны тёмной и золотой. Цветные иллюстрации перекрасить нельзя. Бургер, декор FAQ и планета заменены на аналоги из Tabler: в макете стояли наборы под CC BY, а она требует указания авторства на видном месте."
         >
           <ul className="grid grid-cols-2 gap-6 sm:grid-cols-3 xl:grid-cols-4">
             {(Object.keys(icons) as IconName[]).map((name) => (
               <li key={name} className="flex flex-col gap-2">
                 <span className="flex items-center gap-3">
                   <Icon name={name} size={32} />
-                  {icons[name].mono ? <Icon name={name} size={32} className="text-gold" /> : null}
+                  {icons[name].mono ? <Icon name={name} size={32} className="text-gold-deep" /> : null}
                 </span>
                 <span className="font-ui text-[13px]">{name}</span>
                 <span className="font-ui text-muted text-[12px]">{icons[name].source}</span>

@@ -11,16 +11,16 @@ import { t, type TextKey } from "@/lib/i18n";
  *   Десктоп: 56px, ширина по содержимому.
  * - `header` — кнопка в шапке, только с 1280px: 44px.
  *
- * Тон `gold` — главное действие, `light` — белая пилюля, второе
- * по важности действие и кнопка в шапке. Обе на тёмном фоне,
- * текст на них тёмный.
+ * Тон `gold` — главное действие, текст на нём тёмный. `dark` — тёмная
+ * пилюля со светлым текстом, второе по важности действие и кнопка
+ * в шапке (до 08.10.2026 белая — на светлом сайте она пропала бы).
  *
  * Подпись приходит ключом словаря, а не строкой: придумывать текст
  * в коде нельзя.
  *
  * С `href` это ссылка, без него — кнопка, у которой есть выключенное
  * состояние и состояние загрузки. Наведение и нажатие подмешивают
- * к заливке тёмную основу на 12% и 24%. Фокус приходит из globals.css.
+ * к золоту тёмный --ink, к тёмной пилюле — белую основу, на 12% и 24%. Фокус приходит из globals.css.
  *
  * Внутренние адреса идут через `next/link`, внешние остаются `<a>`:
  * переход по своему сайту не должен перезагружать страницу и терять
@@ -29,7 +29,7 @@ import { t, type TextKey } from "@/lib/i18n";
 type ButtonCommon = {
   labelKey: TextKey;
   variant?: "primary" | "header";
-  tone?: "gold" | "light";
+  tone?: "gold" | "dark";
   className?: string;
 };
 
@@ -45,15 +45,15 @@ type ButtonProps =
 
 const BASE =
   "font-ui caps min-h-tap inline-flex items-center justify-center gap-2 rounded-full px-6 " +
-  "text-canvas font-medium whitespace-nowrap transition-colors select-none";
+  "font-medium whitespace-nowrap transition-colors select-none";
 
 const BY_TONE = {
   gold:
-    "bg-gold hover:bg-[color-mix(in_oklab,var(--color-gold)_88%,var(--color-canvas))] " +
-    "active:bg-[color-mix(in_oklab,var(--color-gold)_76%,var(--color-canvas))]",
-  light:
-    "bg-paper hover:bg-[color-mix(in_oklab,var(--color-paper)_88%,var(--color-canvas))] " +
-    "active:bg-[color-mix(in_oklab,var(--color-paper)_76%,var(--color-canvas))]",
+    "bg-gold text-ink hover:bg-[color-mix(in_oklab,var(--color-gold)_88%,var(--color-ink))] " +
+    "active:bg-[color-mix(in_oklab,var(--color-gold)_76%,var(--color-ink))]",
+  dark:
+    "bg-ink text-canvas hover:bg-[color-mix(in_oklab,var(--color-ink)_88%,var(--color-canvas))] " +
+    "active:bg-[color-mix(in_oklab,var(--color-ink)_76%,var(--color-canvas))]",
 } as const;
 
 const BY_VARIANT = {
@@ -82,7 +82,7 @@ function Arrow({ loading = false }: { loading?: boolean }) {
   return loading ? (
     <span
       aria-hidden="true"
-      className="border-canvas/30 border-t-canvas size-4 shrink-0 animate-spin rounded-full border-2"
+      className="border-current/30 border-t-current size-4 shrink-0 animate-spin rounded-full border-2"
     />
   ) : (
     <Icon name="next" size={18} className="shrink-0 -rotate-45" />

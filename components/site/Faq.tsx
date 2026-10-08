@@ -78,7 +78,7 @@ function AccentTitle({ text }: { text: string }) {
   return (
     <>
       {words.slice(0, ACCENT_WORD).join(" ")}{" "}
-      <span className="bg-gold text-canvas rounded-inner [box-decoration-break:clone] px-[0.2em]">
+      <span className="bg-gold text-ink rounded-inner [box-decoration-break:clone] px-[0.2em]">
         {accent}
       </span>
       <Dots className="ms-[0.15em] align-[-0.1em]" /> {words.slice(ACCENT_WORD + 1).join(" ")}
@@ -137,11 +137,11 @@ export function Faq() {
         {/* Карточка в рамке: номер и подводка выбранного повода. */}
         <div className="border-line rounded-panel xl:rounded-panel-d flex flex-col border p-[24px] xl:p-[40px]">
           <div className="flex items-start justify-between">
-            <Icon name="planet" className="text-gold size-[48px] xl:size-[72px]" />
+            <Icon name="planet" className="text-gold-deep size-[48px] xl:size-[72px]" />
             <Link
               href="/faq"
               aria-label={t("page.faq.title")}
-              className="size-tap bg-paper text-canvas hover:bg-gold flex items-center justify-center rounded-full transition-colors"
+              className="size-tap bg-ink text-canvas hover:bg-gold hover:text-ink flex items-center justify-center rounded-full transition-colors"
             >
               <Icon name="next" size={20} className="-rotate-45" />
             </Link>
@@ -155,7 +155,7 @@ export function Faq() {
           </p>
           <p
             aria-hidden="true"
-            className="font-ui caps text-badge xl:text-badge-d text-gold mt-[16px]"
+            className="font-ui caps text-badge xl:text-badge-d text-gold-deep mt-[16px]"
           >
             {t(current.pill)}
           </p>
@@ -221,7 +221,7 @@ export function Faq() {
                       {/* Точка списка — кружок фоном: своего рисунка у неё нет. */}
                       <span
                         aria-hidden="true"
-                        className="bg-gold mt-[8px] size-[6px] shrink-0 rounded-full"
+                        className="bg-gold-deep mt-[8px] size-[6px] shrink-0 rounded-full"
                       />
                       <span className="font-ui text-card xl:text-card-d text-body leading-[1.5]">
                         {t(key)}
@@ -253,7 +253,7 @@ export function Faq() {
                   <span className="font-display text-note-d text-ink rotate-180 font-medium whitespace-nowrap [writing-mode:vertical-rl]">
                     {t(occasion.pill)}
                   </span>
-                  <Icon name="planet" size={24} className="text-gold" />
+                  <Icon name="planet" size={24} className="text-gold-deep" />
                 </button>
               ),
             )}

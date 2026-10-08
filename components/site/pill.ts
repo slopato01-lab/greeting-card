@@ -21,7 +21,7 @@ const BASE =
   "rounded-full font-ui caps text-pill xl:text-pill-d flex h-[33px] items-center justify-center " +
   "px-[18px] font-medium whitespace-nowrap transition-colors select-none xl:h-[40px] xl:px-[22px]";
 
-const SELECTED = "bg-paper border-paper text-canvas border";
+const SELECTED = "bg-ink border-ink text-canvas border";
 
 // --body на основе даёт 10:1; наведение поднимает текст до --ink
 // и проявляет обводку до --muted.

@@ -211,7 +211,7 @@ export function Editor() {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-[12px]">
               <span
                 aria-hidden="true"
-                className="border-line border-t-gold size-[28px] animate-spin rounded-full border-2"
+                className="border-line border-t-gold-deep size-[28px] animate-spin rounded-full border-2"
               />
               <p className="font-ui text-note xl:text-note-d text-body">{t("loading.editor")}</p>
             </div>
@@ -223,7 +223,7 @@ export function Editor() {
               className="absolute inset-0 flex flex-col items-center justify-center gap-[16px] p-[20px] text-center"
             >
               <p className="font-ui text-sub xl:text-sub-d text-ink">{t("error.editorFailed")}</p>
-              <Button labelKey="cta.retry" tone="light" onClick={actions.retry} />
+              <Button labelKey="cta.retry" tone="dark" onClick={actions.retry} />
             </div>
           ) : null}
         </div>
@@ -255,7 +255,7 @@ export function Editor() {
             className="shrink-0"
           />
           <div aria-hidden="true" className="bg-line h-[6px] min-w-0 flex-1 rounded-full">
-            <div ref={progressRef} className="bg-gold h-full w-0 rounded-full" />
+            <div ref={progressRef} className="bg-gold-deep h-full w-0 rounded-full" />
           </div>
         </div>
 
@@ -270,7 +270,7 @@ export function Editor() {
             step={1}
             value={duration}
             onChange={(event) => actions.setDuration(Number(event.target.value))}
-            className="min-h-tap accent-gold w-full min-w-0 xl:w-[140px]"
+            className="min-h-tap accent-gold-deep w-full min-w-0 xl:w-[140px]"
           />
           <output className="font-ui text-note text-ink w-[4ch] shrink-0 tabular-nums">
             {duration} {t("editor.unit.seconds")}

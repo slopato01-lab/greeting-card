@@ -5,46 +5,22 @@ import { SocialLinks } from "@/components/site/SocialLinks";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
- * Подвал. Наполнение своё — название, описание, навигация, способы
- * оплаты, соцсети. Подвала в макете design/главная greetinh-cards.jpg
- * нет — вид собран из его шапки: знак и название, навигация капсом,
- * круглые кнопки с тонкой обводкой. Платёжные плашки белые: логотипы
- * в спрайте нарисованы под светлый фон.
+ * Подвал — структура из design/футер.jpg (08.10.2026), оформление
+ * и наполнение наши. Макет тёмный; у нас светлый сайт, поэтому
+ * подвал — панель --surface со скруглением панели.
  *
- * Сверху: название с описанием слева, навигация строкой справа.
- * Под линией: способы оплаты слева, соцсети справа. На мобильном
- * всё колонкой.
+ * Сверху: колонки ссылок с заголовками и последней колонкой —
+ * способы оплаты; справа карточка проекта (в макете там карточка
+ * поста из соцсети): знак, название, описание. Под линией: знак
+ * с названием и годом слева, соцсети справа. На мобильном колонки
+ * идут по две, карточка и низ — колонкой.
  *
- * Платёжные логотипы в макете — кропы одного растрового спрайта.
- * Спрайт скачан в public/assets/pay-logos.png: ссылка на хранилище
- * Figma умирает через неделю, тащить её в прод нельзя (docs/FIGMA.md).
- * Геометрия кропа задана инлайном, потому что это координаты внутри
- * картинки, а не значения дизайн-системы: множитель ширины и сдвиг
- * взяты из макета как есть.
- *
- * Состав способов оплаты в макете не финальный (см. docs/FIGMA.md),
- * поэтому у плашек нет подписей: назвать банк, которого может
- * не оказаться в списке, хуже, чем не назвать никого.
+ * Платёжные логотипы — кропы одного растрового спрайта
+ * public/assets/pay-logos.png: ссылка на хранилище Figma умирает
+ * через неделю (docs/FIGMA.md). Геометрия кропа инлайном — это
+ * координаты внутри картинки, а не значения дизайн-системы. Состав
+ * способов не финальный, поэтому у плашек нет подписей.
  */
-/**
- * Соцсети внешние и остаются `<a>`, свои страницы идут через Link.
- *
- * «Цены», «Данные и приватность» и «Контакты» стоят последними:
- * в макете их нет, но подвал — единственное место, откуда до них
- * можно дойти. В шапке четыре пункта из макета, и пятым «Цены»
- * туда не дописываются: это уже другая раскладка.
- * Оферты и правил возврата здесь нет намеренно: страницы пустые,
- * пока их не напишет юрист, и ссылка вела бы в никуда.
- */
-const NAV = [
-  { href: "/faq", key: "nav.faq" },
-  { href: "/cards", key: "nav.cards" },
-  { href: "/how", key: "nav.how" },
-  { href: "/prices", key: "page.prices.title" },
-  { href: "/privacy", key: "page.privacy.title" },
-  { href: "/contacts", key: "page.contacts.title" },
-] as const satisfies ReadonlyArray<{ href: string; key: TextKey }>;
-
 /**
  * Ширина кропа и сдвиг внутри спрайта в долях ширины плашки.
  * Сами плашки мельче, чем в старом макете: в светлой строке подвала
@@ -59,77 +35,120 @@ const PAY = [
   { scale: 11.92, offset: 8.99, w: 55, wd: 66 },
 ] as const;
 
+/**
+ * Колонки ссылок. Оферты и правил возврата здесь нет намеренно:
+ * страницы пустые, пока их не напишет юрист.
+ */
+const COLUMNS = [
+  {
+    title: "nav.cards",
+    links: [
+      { href: "/cards", key: "cta.templates" },
+      { href: "/games", key: "nav.games" },
+      { href: "/create", key: "cta.create" },
+    ],
+  },
+  {
+    title: "footer.col.help",
+    links: [
+      { href: "/how", key: "nav.how" },
+      { href: "/faq", key: "nav.faq" },
+      { href: "/prices", key: "page.prices.title" },
+    ],
+  },
+  {
+    title: "footer.col.service",
+    links: [
+      { href: "/contacts", key: "page.contacts.title" },
+      { href: "/privacy", key: "page.privacy.title" },
+    ],
+  },
+] as const satisfies ReadonlyArray<{
+  title: TextKey;
+  links: ReadonlyArray<{ href: string; key: TextKey }>;
+}>;
+
+const HEADING = "font-display text-feat xl:text-feat-d font-medium tracking-tight";
+
 export function Footer() {
   return (
-    <footer className="pt-[30px] pb-[30px] xl:pt-[50px] xl:pb-[40px]">
-      <div className="page-shell">
-        <div className="flex flex-col gap-[30px] xl:flex-row xl:items-start xl:justify-between xl:gap-10">
-          {/* О проекте */}
-          <div className="xl:max-w-[520px]">
-            <p className="font-display text-logo xl:text-logo-d flex items-center gap-[10px] font-medium">
-              <Icon name="planet" size={28} className="text-gold" />
-              {t("brand.name")}
-            </p>
-            <p className="font-ui text-note xl:text-card-d text-body mt-[10px] leading-[1.4] xl:mt-[14px]">
-              {t("footer.about")}
-            </p>
-          </div>
-
-          {/* Навигация. Заголовок «Навигация» в макете не виден,
-              скринридеру он нужен — скрыт визуально, а не выброшен. */}
-          <nav aria-labelledby="footer-nav-title">
+    <footer className="page-shell pt-[30px] pb-[20px] xl:pt-[50px] xl:pb-[30px]">
+      <div className="rounded-panel xl:rounded-panel-d bg-surface px-[20px] pt-[28px] pb-[20px] xl:px-[48px] xl:pt-[48px] xl:pb-[28px]">
+        <div className="flex flex-col gap-[32px] xl:flex-row xl:items-start xl:justify-between xl:gap-[40px]">
+          <nav aria-labelledby="footer-nav-title" className="min-w-0">
             <p id="footer-nav-title" className="sr-only">
               {t("footer.nav.title")}
             </p>
-            <ul
-              role="list"
-              className="flex flex-col gap-x-[30px] xl:max-w-[760px] xl:flex-row xl:flex-wrap xl:justify-end"
-            >
-              {NAV.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="font-ui caps text-nav-d min-h-tap min-w-tap text-body hover:text-ink active:text-ink inline-flex items-center transition-colors"
-                  >
-                    {t(item.key)}
-                  </Link>
-                </li>
+            <div className="grid grid-cols-2 gap-x-[20px] gap-y-[28px] xl:flex xl:gap-[56px]">
+              {COLUMNS.map((column) => (
+                <div key={column.title}>
+                  <p className={HEADING}>{t(column.title)}</p>
+                  <ul role="list" className="mt-[8px] xl:mt-[12px]">
+                    {column.links.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="font-ui text-note xl:text-note-d min-h-tap text-body hover:text-ink active:text-ink inline-flex items-center transition-colors xl:whitespace-nowrap"
+                        >
+                          {t(link.key)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+
+              {/* Способы оплаты — четвёртая колонка, как «Legal» в макете. */}
+              <div className="col-span-2 xl:col-span-1">
+                <p className={HEADING}>{t("footer.pay.title")}</p>
+                <ul
+                  role="list"
+                  className="mt-[16px] flex max-w-[260px] flex-wrap gap-[8px] xl:mt-[20px]"
+                >
+                  {PAY.map((crop, index) => (
+                    <li
+                      key={index}
+                      aria-hidden="true"
+                      className="pay-plate rounded-inner bg-paper flex h-[40px] items-center justify-center"
+                      style={
+                        {
+                          "--pay-w": `${crop.w}px`,
+                          "--pay-w-d": `${crop.wd}px`,
+                          "--pay-scale": crop.scale,
+                          "--pay-offset": crop.offset,
+                        } as React.CSSProperties
+                      }
+                    >
+                      <span className="block h-[26px] w-full" />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </nav>
+
+          {/* Карточка проекта — на месте карточки поста из макета. */}
+          <div className="rounded-card bg-canvas border-line border p-[16px] xl:w-[300px] xl:shrink-0 xl:p-[20px]">
+            <p className="flex items-center gap-[12px]">
+              <span
+                aria-hidden="true"
+                className="bg-gold text-ink flex size-[40px] shrink-0 items-center justify-center rounded-full"
+              >
+                <Icon name="planet" size={22} />
+              </span>
+              <span className="font-display text-card font-medium">{t("brand.name")}</span>
+            </p>
+            <p className="font-ui text-note text-body mt-[12px] leading-[1.45]">
+              {t("footer.about")}
+            </p>
+          </div>
         </div>
 
-        <div className="border-line mt-[30px] flex flex-col gap-[25px] border-t pt-[25px] xl:mt-[40px] xl:flex-row xl:items-end xl:justify-between xl:pt-[30px]">
-          {/* Способы оплаты */}
-          <div>
-            <p className="font-ui caps text-badge xl:text-badge-d text-muted">
-              {t("footer.pay.title")}
-            </p>
-
-            <ul
-              role="list"
-              className="mt-[12px] flex flex-wrap gap-x-[10px] gap-y-[10px] xl:mt-[14px] xl:gap-x-[12px]"
-            >
-              {PAY.map((crop, index) => (
-                <li
-                  key={index}
-                  aria-hidden="true"
-                  className="pay-plate rounded-inner xl:rounded-inner-d bg-paper flex h-[44px] items-center justify-center xl:h-[52px]"
-                  style={
-                    {
-                      "--pay-w": `${crop.w}px`,
-                      "--pay-w-d": `${crop.wd}px`,
-                      "--pay-scale": crop.scale,
-                      "--pay-offset": crop.offset,
-                    } as React.CSSProperties
-                  }
-                >
-                  <span className="block h-[29px] w-full xl:h-[34px]" />
-                </li>
-              ))}
-            </ul>
-          </div>
-
+        <div className="border-line mt-[32px] flex flex-col gap-[16px] border-t pt-[20px] xl:mt-[48px] xl:flex-row xl:items-center xl:justify-between xl:pt-[24px]">
+          <p className="font-display text-note xl:text-note-d flex items-center gap-[10px] font-medium">
+            <Icon name="planet" size={24} className="text-gold-deep" />
+            {t("footer.copyright")}
+          </p>
           <SocialLinks />
         </div>
       </div>

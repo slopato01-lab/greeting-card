@@ -84,7 +84,7 @@ function FontList({ value, onChange }: { value: FontId; onChange: (font: FontId)
                 style={{ fontFamily: previewFamily(font) }}
                 className={[
                   "rounded-inner min-h-tap text-sub px-[12px] text-left transition-colors",
-                  active ? "bg-paper text-canvas" : "text-ink hover:bg-raised active:bg-line",
+                  active ? "bg-ink text-canvas" : "text-ink hover:bg-raised active:bg-line",
                 ].join(" ")}
               >
                 {t(font.label)}

@@ -28,7 +28,7 @@ const STEPS = [
 
 export function Steps() {
   return (
-    <section className="on-light rounded-panel xl:rounded-panel-d bg-gold text-canvas p-[24px] xl:p-[40px]">
+    <section className="rounded-panel xl:rounded-panel-d bg-gold text-ink p-[24px] xl:p-[40px]">
       {/* role="list" не лишний: preflight Tailwind снимает маркеры через
           list-style: none, а Safari вместе с маркерами теряет и семантику
           списка. Здесь она несёт смысл — цифры скрыты от скринридера,
@@ -38,7 +38,7 @@ export function Steps() {
           <li key={step.title} className="flex items-start gap-[16px] xl:gap-[20px]">
             <span
               aria-hidden="true"
-              className="bg-canvas text-gold font-display text-note xl:text-note-d size-tap flex shrink-0 items-center justify-center rounded-full font-medium"
+              className="bg-ink text-gold font-display text-note xl:text-note-d size-tap flex shrink-0 items-center justify-center rounded-full font-medium"
             >
               {counterNumber(index)}
             </span>
@@ -46,7 +46,7 @@ export function Steps() {
               <h2 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
                 {t(step.title)}
               </h2>
-              {/* text-card — размер, text-canvas — цвет: тёмный текст на золоте */}
+              {/* text-card — размер, text-ink — цвет: тёмный текст на золоте */}
               <p className="font-ui text-card xl:text-card-d mt-[8px] leading-[1.5]">
                 {t(step.body)}
               </p>

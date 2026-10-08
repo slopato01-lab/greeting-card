@@ -113,7 +113,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
                 >
                   {/* Маркер декоративный: списку он смысла не добавляет,
                       его роль уже несёт сам список. */}
-                  <span aria-hidden="true" className="text-gold">
+                  <span aria-hidden="true" className="text-gold-deep">
                     —
                   </span>
                   {t(item)}

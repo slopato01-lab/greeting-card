@@ -61,7 +61,7 @@ export default function FaqPage() {
 
                   <span
                     aria-hidden="true"
-                    className="font-display text-h3 text-gold shrink-0 leading-none transition-transform group-open:rotate-45"
+                    className="font-display text-h3 text-gold-deep shrink-0 leading-none transition-transform group-open:rotate-45"
                   >
                     +
                   </span>

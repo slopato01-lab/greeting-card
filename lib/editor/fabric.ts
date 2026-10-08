@@ -7,6 +7,7 @@ import {
   type Color,
   type ColorToken,
   COLOR_TOKENS,
+  TOKEN_COLORS,
   type EditorDoc,
   EDITOR_FORMAT,
   EDITOR_VERSION,
@@ -39,16 +40,12 @@ export type Theme = {
 };
 
 /**
- * Читает токены с корня документа. Значения задаёт app/globals.css,
- * источник — docs/DESIGN.md.
+ * Цвета токенов — замороженные значения из lib/editor/document.ts
+ * (TOKEN_COLORS), а не текущие из CSS: тема сайта меняется, открытки
+ * пользователей — нет. Шрифты читаются с корня документа.
  */
 export function readTheme(): Theme {
-  const style = getComputedStyle(document.documentElement);
-  const colors = {} as Record<ColorToken, string>;
-  for (const token of COLOR_TOKENS) {
-    colors[token] = style.getPropertyValue(`--color-${token}`).trim();
-  }
-  return { colors, fonts: readFontFamilies() };
+  return { colors: { ...TOKEN_COLORS }, fonts: readFontFamilies() };
 }
 
 /** Цвет шаблона в цвет для холста: токен — из CSS, hex — как есть. */

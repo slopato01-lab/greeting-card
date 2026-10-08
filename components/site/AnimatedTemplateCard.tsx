@@ -49,10 +49,10 @@ export function AnimatedTemplateCard({
             и короткий заголовок. Тёмный текст на светлом фоне шаблона,
             открытку под собой не закрывает. */}
         <span className="flex flex-col items-start gap-[6px] px-[12px] pt-[12px] pb-[4px] xl:gap-[8px] xl:px-[16px] xl:pt-[16px]">
-          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-canvas text-gold rounded-full px-[10px] py-[3px] font-medium">
+          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-ink text-gold rounded-full px-[10px] py-[3px] font-medium">
             {t(template.filter)}
           </span>
-          <span className="font-display text-note xl:text-tpl text-canvas max-w-full truncate font-medium tracking-tight">
+          <span className="font-display text-note xl:text-tpl text-ink max-w-full truncate font-medium tracking-tight">
             {t(template.nameKey)}
           </span>
         </span>
@@ -63,7 +63,7 @@ export function AnimatedTemplateCard({
             poster={template.poster}
             className="absolute inset-0 size-full object-cover"
           />
-          <span className="font-ui caps text-tpl-action xl:text-btn bg-canvas text-ink border-canvas group-hover:bg-gold group-hover:text-canvas group-focus-visible:bg-gold group-focus-visible:text-canvas absolute start-[10px] bottom-[10px] inline-flex min-h-[36px] items-center gap-[8px] rounded-full border px-[14px] font-medium transition-colors xl:start-[14px] xl:bottom-[14px] xl:min-h-[44px] xl:px-[20px]">
+          <span className="font-ui caps text-tpl-action xl:text-btn bg-ink text-canvas border-ink group-hover:bg-gold group-hover:border-gold group-hover:text-ink group-focus-visible:bg-gold group-focus-visible:border-gold group-focus-visible:text-ink absolute start-[10px] bottom-[10px] inline-flex min-h-[36px] items-center gap-[8px] rounded-full border px-[14px] font-medium transition-colors xl:start-[14px] xl:bottom-[14px] xl:min-h-[44px] xl:px-[20px]">
             {t("catalog.edit")}
             <Icon name="next" size={16} className="-rotate-45" />
           </span>

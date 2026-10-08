@@ -185,7 +185,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
   /** Сюрприз под покрытием скретч-карты. */
   const reward =
     code !== null ? (
-      <p className="font-display text-h2 xl:text-h2-d text-gold font-medium tracking-tight break-all">
+      <p className="font-display text-h2 xl:text-h2-d text-gold-deep font-medium tracking-tight break-all">
         {code}
       </p>
     ) : surprise !== "" && link === null ? (
@@ -206,7 +206,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
             onClick={toggleMusic}
             aria-label={t(musicOn ? "card.music.off" : "card.music.on")}
             aria-pressed={musicOn}
-            className={`size-tap flex shrink-0 items-center justify-center rounded-full border transition-colors ${musicOn ? "bg-gold border-gold text-canvas" : "border-line text-ink hover:bg-raised"}`}
+            className={`size-tap flex shrink-0 items-center justify-center rounded-full border transition-colors ${musicOn ? "bg-gold border-gold text-ink" : "border-line text-ink hover:bg-raised"}`}
           >
             <span aria-hidden="true" className="font-ui text-card">
               ♪
@@ -350,15 +350,15 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
               >
                 {code !== null ? (
                   <div>
-                    <p className="font-display text-h2 xl:text-h2-d text-gold font-medium tracking-tight break-all">
+                    <p className="font-display text-h2 xl:text-h2-d text-gold-deep font-medium tracking-tight break-all">
                       {code}
                     </p>
                     <div className="mt-[20px] flex flex-col gap-[10px] xl:flex-row xl:items-center xl:gap-[20px]">
-                      <Button labelKey="cta.copyCode" tone="light" onClick={copyCode} />
+                      <Button labelKey="cta.copyCode" tone="dark" onClick={copyCode} />
                       <p aria-live="polite" className="font-ui text-note text-muted">
                         {copied ? (
                           <>
-                            <Icon name="tick" size={16} className="text-gold me-[6px] inline" />
+                            <Icon name="tick" size={16} className="text-gold-deep me-[6px] inline" />
                             {t("card.copied")}
                           </>
                         ) : null}
@@ -372,7 +372,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                     href={link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-ui text-card xl:text-card-d min-h-tap text-gold inline-flex items-center break-all underline"
+                    className="font-ui text-card xl:text-card-d min-h-tap text-gold-deep inline-flex items-center break-all underline"
                   >
                     {link}
                   </a>
