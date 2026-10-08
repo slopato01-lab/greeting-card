@@ -21,8 +21,11 @@ export const metadata: Metadata = {
  * есть: подставить чужой рабочий адрес было бы хуже, чем показать,
  * что его ещё нет.
  */
-const DETAILS = ["legal.entity", "legal.tax", "legal.address"] as const satisfies
-  ReadonlyArray<TextKey>;
+const DETAILS = [
+  "legal.entity",
+  "legal.tax",
+  "legal.address",
+] as const satisfies ReadonlyArray<TextKey>;
 
 function Block({ title, children }: { title: TextKey; children: React.ReactNode }) {
   return (

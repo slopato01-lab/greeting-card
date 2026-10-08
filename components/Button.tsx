@@ -45,7 +45,8 @@ const BASE =
   "active:bg-[color-mix(in_oklab,var(--color-pink)_80%,var(--color-ink))]";
 
 const BY_VARIANT = {
-  primary: "rounded-btn xl:rounded-btn-d text-btn xl:text-btn-d border-ink h-[45px] w-full border xl:h-[75px]",
+  primary:
+    "rounded-btn xl:rounded-btn-d text-btn xl:text-btn-d border-ink h-[45px] w-full border xl:h-[75px]",
   header: "rounded-btn-header-d text-btn-header-d h-[62px] w-[318px]",
 } as const;
 

@@ -69,8 +69,7 @@ function safeUrl(value: string): string | null {
   }
 }
 
-const CARD =
-  "border-ink rounded-card xl:rounded-card-d overflow-hidden border-2 bg-white";
+const CARD = "border-ink rounded-card xl:rounded-card-d overflow-hidden border-2 bg-white";
 
 /** Текст автора: переносы строк он ставил руками, и они значимые. */
 const AUTHOR_TEXT =
@@ -117,7 +116,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                 придумывать за автора нечего. */}
             <div className="px-[24px] py-[28px] xl:px-[54px] xl:py-[40px]">
               {greeting === "" ? null : (
-                <h2 className="font-display text-h3 xl:text-h3-d font-medium whitespace-pre-line break-words">
+                <h2 className="font-display text-h3 xl:text-h3-d font-medium break-words whitespace-pre-line">
                   {greeting}
                 </h2>
               )}
