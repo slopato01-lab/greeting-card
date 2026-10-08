@@ -32,7 +32,7 @@ function splitLast(text: string): readonly [string, string] {
   return at === -1 ? [text, ""] : [text.slice(0, at), text.slice(at + 1)];
 }
 
-const DISPLAY = "font-display text-display xl:text-display-d font-medium tracking-tight";
+const DISPLAY = "font-display text-h1 xl:text-h1-d font-medium tracking-tight";
 
 export function Catalog() {
   const title = t("catalog.title");

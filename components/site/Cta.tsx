@@ -18,7 +18,7 @@ export function Cta() {
       <div className="rounded-panel xl:rounded-panel-d bg-surface border-line flex min-h-[320px] flex-col items-center justify-center border px-[20px] py-[50px] text-center xl:min-h-[440px] xl:px-[100px] xl:py-[70px]">
         <Sun className="text-gold-deep h-[40px] w-[80px] xl:h-[60px] xl:w-[120px]" />
 
-        <h2 className="font-display text-h2 xl:text-h2-d mt-[24px] max-w-[1100px] font-medium tracking-tight">
+        <h2 className="font-display text-h1 xl:text-h1-d mt-[24px] max-w-[1100px] font-medium tracking-tight">
           {t("cta.title")}
         </h2>
 

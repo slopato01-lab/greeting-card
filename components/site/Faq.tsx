@@ -19,13 +19,13 @@ import { type TextKey, t } from "@/lib/i18n";
  * design/главная greetinh-cards.jpg: широкий заголовок с одним словом
  * на золотой плашке и кружками за ним. Ниже слева карточка в тонкой
  * рамке — крупный номер повода, его название и подводка; справа ряд
- * пилюль-поводов, раскрытая карточка ответа и свёрнутые в узкие
- * вертикальные карточки остальные поводы (с 1280px).
+ * пилюль-поводов и горизонтальный аккордеон: раскрытая карточка ответа
+ * и свёрнутые в узкие вертикальные полоски остальные поводы (с 1280px).
  *
  * Пилюли переключают карточку — это вкладки, поэтому role="tablist"
- * и блуждающий tabindex: выбран всегда ровно один повод. Свёрнутые
- * карточки — тот же выбор мышью, дополнительные кнопки к той же
- * панели; с клавиатуры хватает вкладок.
+ * и блуждающий tabindex: выбран всегда ровно один повод. У каждого
+ * повода своя панель; закрытые — inert, скринридер и Tab их не видят.
+ * Полоски — тот же выбор мышью; с клавиатуры хватает вкладок.
  *
  * Выделенное слово заголовка берётся из ключа словаря по номеру
  * слова — текст не меняется. Если слова с таким номером нет,
@@ -92,7 +92,7 @@ export function Faq() {
   const tabs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const tabId = (index: number) => `${baseId}-tab-${index}`;
-  const panelId = `${baseId}-panel`;
+  const panelId = (index: number) => `${baseId}-panel-${index}`;
   const current = OCCASIONS[active] ?? OCCASIONS[0];
 
   // Выбор с клавиатуры сразу уводит фокус на новую вкладку.
@@ -128,7 +128,7 @@ export function Faq() {
     <section className="page-shell pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
       <h2
         id="faq-title"
-        className="font-display text-h2 xl:text-h2-d max-w-[1300px] font-medium tracking-tight"
+        className="font-display text-h1 xl:text-h1-d max-w-[1300px] font-medium tracking-tight"
       >
         <AccentTitle text={t("faq.title")} />
       </h2>
@@ -184,7 +184,7 @@ export function Faq() {
                 role="tab"
                 id={tabId(index)}
                 aria-selected={index === active}
-                aria-controls={panelId}
+                aria-controls={panelId(index)}
                 // Блуждающий tabindex: ряд вкладок — один таб-стоп,
                 // внутри ходят стрелками.
                 tabIndex={index === active ? 0 : -1}
@@ -196,67 +196,98 @@ export function Faq() {
             ))}
           </div>
 
+          {/* Горизонтальный аккордеон (с 1280px, просьба пользователя
+              08.10.2026): поводы стоят в постоянном порядке, открытый —
+              широкий, остальные — узкие полоски. Нажали на полоску — она
+              выплывает вширь, открытый одновременно сжимается.
+              Анимируются flex-grow и flex-basis; содержимое не
+              переверстывается на ходу: у него минимальная ширина, лишнее
+              срезает overflow, а проявляется оно, когда карточка почти
+              раскрылась. Высота ряда — по самой длинной карточке: панели
+              закрытых поводов стоят в потоке невидимыми, ряд не прыгает.
+              На телефоне полоскам нет места — видна только открытая. */}
           <div className="mt-[16px] flex flex-1 gap-[12px]">
-            {/* Карточка ответа: высота подстраивается под текст —
-                у четырёх поводов пункты разной длины. */}
-            <div
-              role="tabpanel"
-              id={panelId}
-              aria-labelledby={tabId(active)}
-              className="rounded-card xl:rounded-card-d bg-surface flex min-w-0 flex-1 flex-col p-[8px] xl:p-[10px]"
-            >
-              <div
-                aria-hidden="true"
-                className="bg-photo rounded-inner xl:rounded-inner-d h-[140px] xl:h-[180px]"
-              />
-
-              <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[14px] xl:px-[20px] xl:pt-[28px] xl:pb-[20px]">
-                <h3 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
-                  {t(current.title)}
-                </h3>
-
-                <ul role="list" className="mt-[20px] flex flex-col gap-[14px] xl:gap-[16px]">
-                  {current.items.map((key) => (
-                    <li key={key} className="flex items-start gap-[14px]">
-                      {/* Точка списка — кружок фоном: своего рисунка у неё нет. */}
-                      <span
-                        aria-hidden="true"
-                        className="bg-gold-deep mt-[8px] size-[6px] shrink-0 rounded-full"
-                      />
-                      <span className="font-ui text-card xl:text-card-d text-body leading-[1.5]">
-                        {t(key)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:pt-[28px] 2xl:flex-row">
-                  <Button href="/create" labelKey="cta.create" className="xl:w-full 2xl:w-auto" />
-                  {/* Каталог живёт на /cards. */}
-                  <GhostButton href="/cards" labelKey="cta.templates" className="2xl:w-auto" />
-                </div>
-              </div>
-            </div>
-
-            {/* Свёрнутые поводы — узкие карточки с подписью снизу вверх. */}
-            {OCCASIONS.map((occasion, index) =>
-              index === active ? null : (
-                <button
+            {OCCASIONS.map((occasion, index) => {
+              const open = index === active;
+              return (
+                <div
                   key={occasion.pill}
-                  type="button"
-                  tabIndex={-1}
-                  aria-controls={panelId}
-                  onClick={() => setActive(index)}
-                  className="rounded-card xl:rounded-card-d bg-surface hover:bg-raised active:bg-line hidden w-[72px] shrink-0 flex-col items-center justify-between py-[20px] transition-colors xl:flex"
+                  className={`rounded-card xl:rounded-card-d bg-surface relative min-w-0 overflow-hidden transition-[flex-grow,flex-basis,background-color] duration-500 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
+                    open
+                      ? "flex shrink grow basis-0"
+                      : "hover:bg-raised hidden shrink-0 grow-0 basis-[72px] xl:flex"
+                  }`}
                 >
-                  <Icon name="next" size={18} className="text-ink -rotate-90" />
-                  <span className="font-display text-note-d text-ink rotate-180 font-medium whitespace-nowrap [writing-mode:vertical-rl]">
-                    {t(occasion.pill)}
-                  </span>
-                  <Icon name="planet" size={24} className="text-gold-deep" />
-                </button>
-              ),
-            )}
+                  <div
+                    role="tabpanel"
+                    id={panelId(index)}
+                    aria-labelledby={tabId(index)}
+                    inert={!open || undefined}
+                    className={`flex w-full min-w-0 flex-col p-[8px] transition-opacity duration-300 motion-reduce:transition-none xl:min-w-[420px] xl:p-[10px] ${
+                      open ? "opacity-100 delay-200" : "opacity-0"
+                    }`}
+                  >
+                    <div
+                      aria-hidden="true"
+                      className="bg-photo rounded-inner xl:rounded-inner-d h-[140px] xl:h-[180px]"
+                    />
+
+                    <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[14px] xl:px-[20px] xl:pt-[28px] xl:pb-[20px]">
+                      <h3 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
+                        {t(occasion.title)}
+                      </h3>
+
+                      <ul role="list" className="mt-[20px] flex flex-col gap-[14px] xl:gap-[16px]">
+                        {occasion.items.map((key) => (
+                          <li key={key} className="flex items-start gap-[14px]">
+                            {/* Точка списка — кружок фоном: своего рисунка у неё нет. */}
+                            <span
+                              aria-hidden="true"
+                              className="bg-gold-deep mt-[8px] size-[6px] shrink-0 rounded-full"
+                            />
+                            <span className="font-ui text-card xl:text-card-d text-body leading-[1.5]">
+                              {t(key)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:pt-[28px] 2xl:flex-row">
+                        <Button
+                          href="/create"
+                          labelKey="cta.create"
+                          className="xl:w-full 2xl:w-auto"
+                        />
+                        {/* Каталог живёт на /cards. */}
+                        <GhostButton
+                          href="/cards"
+                          labelKey="cta.templates"
+                          className="2xl:w-auto"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Полоска закрытого повода: подпись снизу вверх. Тот же
+                      выбор мышью, что и вкладка; с клавиатуры хватает вкладок. */}
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    aria-controls={panelId(index)}
+                    onClick={() => setActive(index)}
+                    className={`absolute inset-y-0 start-0 hidden w-[72px] flex-col items-center justify-between py-[20px] transition-opacity duration-300 motion-reduce:transition-none xl:flex ${
+                      open ? "pointer-events-none opacity-0" : "opacity-100 delay-200"
+                    }`}
+                  >
+                    <Icon name="next" size={18} className="text-ink -rotate-90" />
+                    <span className="font-display text-note-d text-ink rotate-180 font-medium whitespace-nowrap [writing-mode:vertical-rl]">
+                      {t(occasion.pill)}
+                    </span>
+                    <Icon name="planet" size={24} className="text-gold-deep" />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

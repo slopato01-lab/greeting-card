@@ -233,7 +233,24 @@ export type AnimatedTemplate = {
   poster: string;
   /** Цвет фона шаблона — содержимое открытки, а не оформление сайта. */
   background: string;
+  /**
+   * Фон тёмный: название карточки, лежащее на нём, пишется светлым.
+   * Тёмный текст на бордо и тёмно-зелёном не читался (08.10.2026).
+   */
+  dark: boolean;
 };
+
+/**
+ * Тёмный ли цвет `#rrggbb`: относительная яркость по WCAG ниже 0,18.
+ * На таком фоне белый текст контрастнее тёмного (#141414).
+ */
+function isDark(hex: string): boolean {
+  const channel = (at: number) => {
+    const value = Number.parseInt(hex.slice(at, at + 2), 16) / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5) < 0.18;
+}
 
 function animated(
   id: TemplateId,
@@ -251,6 +268,7 @@ function animated(
     video: `/assets/templates/editor/${id}.mp4`,
     poster: `/assets/templates/editor/${id}.webp`,
     background: background.startsWith("#") ? background : "#ffffff",
+    dark: background.startsWith("#") && isDark(background),
   };
 }
 

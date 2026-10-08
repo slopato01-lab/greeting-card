@@ -45,7 +45,7 @@ export default function HowPage() {
       <section className="page-shell pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
         <h2
           id="how-steps-title"
-          className="font-display text-h2 xl:text-h2-d font-semibold tracking-tight"
+          className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
         >
           {t("how.steps.title")}
         </h2>
@@ -87,7 +87,7 @@ export default function HowPage() {
 
       <section className="page-shell pt-[60px] pb-[20px] xl:pt-[100px] xl:pb-[40px]">
         <div className="bg-surface border-line rounded-card xl:rounded-panel-d border px-[24px] py-[34px] xl:px-[100px] xl:py-[60px]">
-          <h2 className="font-display text-h2 xl:text-h2-d text-ink font-semibold tracking-tight">
+          <h2 className="font-display text-h1 xl:text-h1-d text-ink font-medium tracking-tight">
             {t("how.player.title")}
           </h2>
           <p className="font-ui text-card xl:text-card-d text-ink mt-[16px] leading-[1.4] xl:mt-[25px] xl:max-w-[1000px]">

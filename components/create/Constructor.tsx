@@ -488,7 +488,7 @@ export function Constructor() {
       <h2
         ref={headingRef}
         tabIndex={-1}
-        className="font-display text-h2 xl:text-h2-d mt-[24px] font-semibold tracking-tight xl:mt-[40px]"
+        className="font-display text-h1 xl:text-h1-d mt-[24px] font-medium tracking-tight xl:mt-[40px]"
       >
         {t(STEP_TITLES[step] ?? "step.1.title")}
       </h2>

@@ -20,7 +20,7 @@ export function PageHead({ title, lead }: { title: TextKey; lead?: TextKey }) {
     <div className="page-shell pt-[40px] pb-[10px] xl:pt-[80px] xl:pb-[20px]">
       <h1
         id={PAGE_TITLE_ID}
-        className="font-display text-h2 xl:text-h2-d font-semibold tracking-tight"
+        className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
       >
         {t(title)}
       </h1>

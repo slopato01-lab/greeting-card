@@ -149,7 +149,7 @@ export function TemplateGrid({
       ) : (
         <ul
           role="list"
-          className={`grid gap-[20px] xl:grid-cols-4 xl:gap-x-5 xl:gap-y-[30px] ${gridClassName}`}
+          className={`grid grid-cols-2 gap-x-[12px] gap-y-[16px] md:grid-cols-3 md:gap-x-[16px] md:gap-y-[20px] xl:grid-cols-5 xl:gap-x-5 xl:gap-y-[30px] ${gridClassName}`}
         >
           {shown.map((entry) => (
             <Card key={entry.key} entry={entry} />

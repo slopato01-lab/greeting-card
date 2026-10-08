@@ -36,7 +36,7 @@ export function Benefits() {
       <div className="flex flex-col gap-[16px] xl:flex-row xl:items-end xl:justify-between xl:gap-[60px]">
         <h2
           id="benefits-title"
-          className="font-display text-h2 xl:text-h2-d max-w-[900px] font-medium tracking-tight"
+          className="font-display text-h1 xl:text-h1-d max-w-[900px] font-medium tracking-tight"
         >
           {t("benefits.title")}
         </h2>

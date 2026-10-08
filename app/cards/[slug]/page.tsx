@@ -135,7 +135,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
       <section className="page-shell pb-[70px] xl:pb-[120px]">
         <h2
           id="more-templates"
-          className="font-display text-h3 xl:text-h2-d font-semibold tracking-tight"
+          className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
         >
           {t("tpl.more")}
         </h2>

@@ -49,11 +49,15 @@ export function AnimatedTemplateCard({
         {/* Шапка карточки — на однотонном фоне открытки: метка повода
             и короткий заголовок. Тёмный текст на светлом фоне шаблона,
             открытку под собой не закрывает. */}
-        <span className="flex flex-col items-start gap-[6px] px-[12px] pt-[12px] pb-[4px] xl:gap-[8px] xl:px-[16px] xl:pt-[16px]">
-          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-ink text-gold rounded-full px-[10px] py-[3px] font-medium">
+        <span className="flex flex-col items-start gap-[6px] px-[8px] pt-[8px] pb-[4px] md:px-[12px] md:pt-[12px] xl:gap-[8px] xl:px-[16px] xl:pt-[16px]">
+          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-ink text-gold max-w-full truncate rounded-full px-[8px] py-[3px] font-medium whitespace-nowrap md:px-[10px]">
             {t(template.filter)}
           </span>
-          <span className="font-display text-note xl:text-tpl text-ink max-w-full truncate font-medium tracking-tight">
+          <span
+            className={`font-display text-note xl:text-tpl max-w-full truncate font-medium tracking-tight ${
+              template.dark ? "text-canvas" : "text-ink"
+            }`}
+          >
             {t(template.nameKey)}
           </span>
         </span>

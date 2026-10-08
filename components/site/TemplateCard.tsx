@@ -62,7 +62,7 @@ export function TemplateCard({
         </div>
 
         <div className="flex flex-1 flex-col px-[10px] pt-[16px] pb-[10px] xl:px-[12px]">
-          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-gold text-ink self-start rounded-full px-[10px] py-[3px] font-medium">
+          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-gold text-ink max-w-full self-start truncate rounded-full px-[10px] py-[3px] font-medium whitespace-nowrap">
             {t(template.filter)}
           </span>
           <span className="font-display text-tpl xl:text-tpl-d mt-[12px] font-medium tracking-tight">

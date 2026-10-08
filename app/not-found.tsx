@@ -30,7 +30,7 @@ export default function NotFound() {
           404
         </p>
 
-        <h1 className="font-display text-h2 xl:text-h2-d mt-[10px] font-semibold tracking-tight">
+        <h1 className="font-display text-h1 xl:text-h1-d mt-[10px] font-medium tracking-tight">
           {t("error.pageNotFound")}
         </h1>
 
