@@ -20,7 +20,11 @@ export const metadata: Metadata = {
 export default function EditorPage() {
   return (
     <SitePage withFooter={false}>
-      <PageHead title="editor.title" />
+      {/* Заголовок — для скринридера и вкладки браузера. На десктопе
+          видимым он съел бы высоту: редактор занимает ровно окно. */}
+      <div className="xl:sr-only">
+        <PageHead title="editor.title" />
+      </div>
       <Editor />
     </SitePage>
   );

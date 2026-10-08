@@ -43,6 +43,7 @@ import {
 import { loadFont } from "@/lib/editor/fonts";
 import { cutoutPerson } from "@/lib/editor/cutout";
 import { blobToDataUrl, dataUrlToBlob, newAssetId, prepareImage } from "@/lib/editor/image";
+import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
 import { stickerInfo } from "@/lib/editor/stickers";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { type TextKey, t } from "@/lib/i18n";
@@ -503,6 +504,27 @@ export function useCardEditor() {
       const current = live.current;
       if (current === null || playback.current !== null) return;
       const layer = defaultLayer(kind, t("editor.text.default"));
+      const object = await createObject(current.fabric, layer, current.theme, assetUrl);
+      if (object !== null && live.current === current) placeNew(current, object);
+    },
+    [assetUrl, placeNew],
+  );
+
+  /** Текст по заготовке из вкладки «Текст». */
+  const addText = useCallback(
+    async (preset: TextPreset) => {
+      const current = live.current;
+      if (current === null || playback.current !== null) return;
+      const info = TEXT_PRESET_INFO[preset];
+      const base = defaultLayer("text", t(info.text));
+      if (base.kind !== "text") return;
+      const layer: Layer = {
+        ...base,
+        font: info.font,
+        fontSize: info.fontSize,
+        bold: info.bold,
+        spacing: info.spacing,
+      };
       const object = await createObject(current.fabric, layer, current.theme, assetUrl);
       if (object !== null && live.current === current) placeNew(current, object);
     },
@@ -987,6 +1009,7 @@ export function useCardEditor() {
     hasContent: () => (live.current?.canvas.getObjects().length ?? 0) > 0,
     actions: {
       add,
+      addText,
       addImage,
       addSticker,
       replaceImage,

@@ -90,7 +90,8 @@ try {
   // Узкие ширины — через эмуляцию: окно headless не уже 500px.
   await send("Emulation.setDeviceMetricsOverride", {
     width: Number(width),
-    height: 1400,
+    // PROBE_HEIGHT — высота окна, когда важна раскладка «на один экран».
+    height: Number(process.env.PROBE_HEIGHT ?? 1400),
     deviceScaleFactor: 1,
     mobile: Number(width) < 768,
   });
@@ -101,7 +102,7 @@ try {
     await sleep(Math.max(0, at * 1000 - (Date.now() - started)));
     const shot = await send("Page.captureScreenshot", {
       format: "png",
-      captureBeyondViewport: true,
+      captureBeyondViewport: process.env.PROBE_HEIGHT === undefined,
     });
     const file = join(process.env.SHOT_DIR ?? ".", `shot-${width}-${at}.png`);
     writeFileSync(file, Buffer.from(shot.result.data, "base64"));

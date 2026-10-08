@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import {
   ColorPicker,
   FileButton,
@@ -10,13 +8,14 @@ import {
   ToolButton,
 } from "@/components/editor/controls";
 import type { Color, StickerId } from "@/lib/editor/document";
+import type { TextPreset } from "@/lib/editor/presets";
 import { STICKER_THEMES, STICKERS, stickerUrl, type StickerTheme } from "@/lib/editor/stickers";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
- * Панели инструментов. Две отдельные, а не одна: на мобильном «Файл»
- * уезжает под свойства, иначе холст оказывается на втором экране.
- * На десктопе обе стоят в левой колонке, раскладку задаёт Editor.tsx.
+ * Панели вкладок редактора: «Элементы», «Текст», «Фото», «Фон», «Файл».
+ * Какая видна — решает рейка вкладок в Editor.tsx, как боковая
+ * панель в Canva.
  */
 
 const THEME_NAME: Record<StickerTheme, TextKey> = {
@@ -74,36 +73,22 @@ function StickerCatalog({
   );
 }
 
-/** Добавить слой и выбрать фон. Кнопки переносятся по ширине, а не режут подписи. */
-export function AddPanel({
+/** Вкладка «Элементы»: фигуры и каталог стикеров по темам. */
+export function ElementsPanel({
   disabled,
-  background,
   onAdd,
-  onAddImage,
   onAddSticker,
-  onBackground,
   className,
 }: {
   disabled: boolean;
-  background: Color;
-  onAdd: (kind: "text" | "rect" | "circle") => void;
-  onAddImage: (file: File) => void;
+  onAdd: (kind: "rect" | "circle") => void;
   onAddSticker: (id: StickerId) => void;
-  onBackground: (color: Color) => void;
   className?: string;
 }) {
-  const [stickers, setStickers] = useState(false);
-
   return (
-    <Panel labelledBy="editor-tools" {...(className === undefined ? {} : { className })}>
-      <GroupLabel id="editor-tools" labelKey="editor.tools" />
-      <div className="flex flex-wrap gap-[8px] xl:flex-col">
-        <ToolButton
-          icon="text"
-          labelKey="editor.add.text"
-          disabled={disabled}
-          onClick={() => onAdd("text")}
-        />
+    <Panel labelledBy="editor-elements" {...(className === undefined ? {} : { className })}>
+      <GroupLabel id="editor-elements" labelKey="editor.tab.elements" />
+      <div className="flex flex-wrap gap-[8px]">
         <ToolButton
           icon="rect"
           labelKey="editor.add.rect"
@@ -116,27 +101,106 @@ export function AddPanel({
           disabled={disabled}
           onClick={() => onAdd("circle")}
         />
-        {/* HEIC принимаем: Safari его откроет. Остальные браузеры
-            честно скажут, что не смогли, — см. lib/editor/image.ts. */}
-        <FileButton
-          icon="photo"
-          labelKey="editor.add.photo"
-          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
-          disabled={disabled}
-          onFile={onAddImage}
-        />
-        <ToolButton
-          icon="sticker"
-          labelKey="editor.add.sticker"
-          disabled={disabled}
-          aria-expanded={stickers}
-          aria-controls="editor-stickers"
-          onClick={() => setStickers((open) => !open)}
-        />
       </div>
+      <StickerCatalog disabled={disabled} onPick={onAddSticker} />
+    </Panel>
+  );
+}
 
-      {stickers ? <StickerCatalog disabled={disabled} onPick={onAddSticker} /> : null}
+/**
+ * Вкладка «Текст»: три заготовки, как «Добавить заголовок» в Canva.
+ * Каждая кнопка написана тем начертанием, которое добавит: заголовок —
+ * маркерным, основной текст — моноширинным, как в шаблонах.
+ */
+const PRESETS: { preset: TextPreset; label: TextKey; className: string }[] = [
+  {
+    preset: "title",
+    label: "editor.text.preset.title",
+    className: "text-h3 xl:text-h3-d font-bold",
+  },
+  {
+    preset: "subtitle",
+    label: "editor.text.preset.subtitle",
+    className: "text-sub xl:text-sub-d font-medium",
+  },
+  { preset: "body", label: "editor.text.preset.body", className: "text-note xl:text-note-d" },
+];
 
+export function TextPanel({
+  disabled,
+  presetFamilies,
+  onAddText,
+  className,
+}: {
+  disabled: boolean;
+  /** Семейства шрифтов заготовок — для образца прямо на кнопке. */
+  presetFamilies: Record<TextPreset, string>;
+  onAddText: (preset: TextPreset) => void;
+  className?: string;
+}) {
+  return (
+    <Panel labelledBy="editor-text" {...(className === undefined ? {} : { className })}>
+      <GroupLabel id="editor-text" labelKey="editor.tab.text" />
+      <div className="flex flex-col gap-[8px]">
+        {PRESETS.map(({ preset, label, className: size }) => (
+          <button
+            key={preset}
+            type="button"
+            disabled={disabled}
+            onClick={() => onAddText(preset)}
+            // Шрифт — образец того, что ляжет на открытку, а не оформление сайта.
+            style={{ fontFamily: presetFamilies[preset] }}
+            className={`${size} text-ink border-line rounded-inner bg-raised hover:border-muted active:bg-line min-h-tap border px-[14px] py-[10px] text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50`}
+          >
+            {t(label)}
+          </button>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+/** Вкладка «Фото»: загрузка и что с ним можно сделать дальше. */
+export function PhotoPanel({
+  disabled,
+  onAddImage,
+  className,
+}: {
+  disabled: boolean;
+  onAddImage: (file: File) => void;
+  className?: string;
+}) {
+  return (
+    <Panel labelledBy="editor-photo" {...(className === undefined ? {} : { className })}>
+      <GroupLabel id="editor-photo" labelKey="editor.tab.photo" />
+      {/* HEIC принимаем: Safari его откроет. Остальные браузеры
+          честно скажут, что не смогли, — см. lib/editor/image.ts. */}
+      <FileButton
+        icon="photo"
+        labelKey="editor.add.photo"
+        accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+        disabled={disabled}
+        onFile={onAddImage}
+      />
+      <p className="font-ui text-note xl:text-note-d text-body leading-[1.4]">
+        {t("editor.photo.hint")}
+      </p>
+    </Panel>
+  );
+}
+
+/** Вкладка «Фон»: цвет открытки. */
+export function BackgroundPanel({
+  background,
+  onBackground,
+  className,
+}: {
+  background: Color;
+  onBackground: (color: Color) => void;
+  className?: string;
+}) {
+  return (
+    <Panel labelledBy="editor-background" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-background" labelKey="editor.background" />
       <ColorPicker labelledBy="editor-background" value={background} onChange={onBackground} />
     </Panel>

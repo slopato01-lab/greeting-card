@@ -985,7 +985,7 @@
 | `editor.anim.out.slide-bottom` | Уезд вниз |
 | `editor.anim.out.zoom` | Отдаление |
 | `editor.anim.out.rotate` | Вращение |
-| `editor.duration` | Длительность открытки |
+| `editor.duration` | Длительность (с 08.10.2026, было «Длительность открытки» — не помещалось в полосу) |
 | `editor.play` | Просмотр |
 | `editor.stop` | Стоп |
 | `editor.playing` | Идёт просмотр — правки на паузе |
@@ -1112,3 +1112,28 @@
 | `loading.cutout` | Убираем фон. В первый раз это займёт несколько секунд |
 | `editor.error.cutoutFailed` | Не получилось убрать фон в этом браузере — фото осталось целиком |
 | `editor.error.cutoutNoPerson` | Не нашли на фото человека — оставили его целиком |
+
+## Редактор: раскладка как в Canva (08.10.2026)
+
+Слева рейка вкладок, рядом панель вкладки, в центре открытка, снизу
+полоса просмотра. Всё на один экран десктопа. Тексты написаны при сборке.
+
+| Ключ | Текст |
+|---|---|
+| `editor.tabs` | Инструменты редактора |
+| `editor.tab.templates` | Шаблоны |
+| `editor.tab.elements` | Элементы |
+| `editor.tab.text` | Текст |
+| `editor.tab.photo` | Фото |
+| `editor.tab.background` | Фон |
+| `editor.tab.edit` | Изменить |
+| `editor.tab.animation` | Анимация |
+| `editor.tab.file` | Файл |
+| `editor.text.preset.title` | Добавить заголовок |
+| `editor.text.preset.subtitle` | Добавить подзаголовок |
+| `editor.text.preset.body` | Добавить основной текст |
+| `editor.text.title` | Заголовок |
+| `editor.text.subtitle` | Подзаголовок |
+| `editor.text.body` | Основной текст |
+| `editor.photo.hint` | JPG, PNG или HEIC до 10 МБ, до 10 фото в открытке. Фон у фото можно убрать во вкладке «Изменить». |
+| `editor.anim.empty` | Выберите элемент на открытке — и задайте, как он появится, двигается и уходит. |

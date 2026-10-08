@@ -54,6 +54,12 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `picker.svg` | `tabler:color-picker` | редактор: свой цвет |
 | `sticker.svg` | `tabler:sticker` | редактор: стикеры |
 | `cutout.svg` | `tabler:background` | редактор: убрать фон |
+| `tabTemplates.svg` | `tabler:layout-grid` | редактор: вкладка «Шаблоны» |
+| `tabElements.svg` | `tabler:triangle-square-circle` | редактор: вкладка «Элементы» |
+| `tabBackground.svg` | `tabler:palette` | редактор: вкладка «Фон» |
+| `tabEdit.svg` | `tabler:adjustments-horizontal` | редактор: вкладка «Изменить» |
+| `tabAnimation.svg` | `tabler:sparkles` | редактор: вкладка «Анимация» |
+| `tabFile.svg` | `tabler:file` | редактор: вкладка «Файл» |
 | `balloon.svg` | `noto:balloon` | наклейка в открытке «С днём рождения!» |
 | `cake.svg` | `noto:birthday-cake` | наклейка в открытке «С днём рождения!» |
 | `popper.svg` | `noto:party-popper` | наклейка в открытке «С днём рождения!» |

@@ -77,6 +77,32 @@ const ICONS = [
   { name: "picker", source: "tabler:color-picker", mono: true, where: "редактор: свой цвет" },
   { name: "sticker", source: "tabler:sticker", mono: true, where: "редактор: стикеры" },
   { name: "cutout", source: "tabler:background", mono: true, where: "редактор: убрать фон" },
+  {
+    name: "tabTemplates",
+    source: "tabler:layout-grid",
+    mono: true,
+    where: "редактор: вкладка «Шаблоны»",
+  },
+  {
+    name: "tabElements",
+    source: "tabler:triangle-square-circle",
+    mono: true,
+    where: "редактор: вкладка «Элементы»",
+  },
+  { name: "tabBackground", source: "tabler:palette", mono: true, where: "редактор: вкладка «Фон»" },
+  {
+    name: "tabEdit",
+    source: "tabler:adjustments-horizontal",
+    mono: true,
+    where: "редактор: вкладка «Изменить»",
+  },
+  {
+    name: "tabAnimation",
+    source: "tabler:sparkles",
+    mono: true,
+    where: "редактор: вкладка «Анимация»",
+  },
+  { name: "tabFile", source: "tabler:file", mono: true, where: "редактор: вкладка «Файл»" },
   // Наклейки открытки «С днём рождения!» — Noto, Apache 2.0.
   { name: "balloon", source: "noto:balloon", where: "наклейка в открытке «С днём рождения!»" },
   { name: "cake", source: "noto:birthday-cake", where: "наклейка в открытке «С днём рождения!»" },

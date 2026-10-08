@@ -64,7 +64,7 @@ function FontList({ value, onChange }: { value: FontId; onChange: (font: FontId)
     <div
       role="group"
       aria-labelledby="editor-font"
-      className="border-line rounded-inner max-h-[280px] overflow-y-auto border p-[4px]"
+      className="border-line rounded-inner max-h-[220px] overflow-y-auto border p-[4px]"
     >
       {FONT_GROUPS.map((group) => (
         <div key={group} className="flex flex-col">
@@ -182,9 +182,48 @@ function AnimationFields({
 }
 
 /**
- * Панель свойств выделенного слоя. Пока ничего не выделено — пустое
- * состояние с подсказкой; во время просмотра — сообщение, что правки
- * на паузе.
+ * Вкладка «Анимация»: появление, показ, исчезание выделенного слоя.
+ * Отдельно от свойств, как кнопка «Анимировать» в Canva: свойства
+ * текста и так занимают панель целиком.
+ */
+export function AnimationPanel({
+  selected,
+  playing,
+  onAnimation,
+  className,
+}: {
+  selected: Layer | null;
+  playing: boolean;
+  onAnimation: (change: Partial<Animation>) => void;
+  className?: string;
+}) {
+  return (
+    <Panel labelledBy="editor-anim" {...(className === undefined ? {} : { className })}>
+      {playing ? (
+        <>
+          <GroupLabel id="editor-anim" labelKey="editor.anim" />
+          <p className="font-ui text-note xl:text-note-d text-body leading-[1.4]">
+            {t("editor.playing")}
+          </p>
+        </>
+      ) : selected === null ? (
+        <>
+          <GroupLabel id="editor-anim" labelKey="editor.anim" />
+          <p className="font-ui text-note xl:text-note-d text-body leading-[1.4]">
+            {t("editor.anim.empty")}
+          </p>
+        </>
+      ) : (
+        <AnimationFields layer={selected} onChange={onAnimation} />
+      )}
+    </Panel>
+  );
+}
+
+/**
+ * Панель свойств выделенного слоя («Изменить»). Пока ничего не выделено —
+ * пустое состояние с подсказкой; во время просмотра — сообщение, что
+ * правки на паузе.
  */
 export function Inspector({
   selected,
@@ -193,7 +232,6 @@ export function Inspector({
   onOpacity,
   onFontSize,
   onTextStyle,
-  onAnimation,
   onRemove,
   onReplaceImage,
   onRemoveBackground,
@@ -207,7 +245,6 @@ export function Inspector({
   onOpacity: (value: number) => void;
   onFontSize: (size: number) => void;
   onTextStyle: (style: TextStyle) => void;
-  onAnimation: (change: Partial<Animation>) => void;
   onRemove: () => void;
   onReplaceImage: (file: File) => void;
   onRemoveBackground: () => void;
@@ -347,8 +384,6 @@ export function Inspector({
             display={`${Math.round((1 - selected.opacity) * 100)}%`}
             onChange={(value) => onOpacity(1 - value / 100)}
           />
-
-          <AnimationFields layer={selected} onChange={onAnimation} />
 
           <ToolButton icon="trash" labelKey="editor.props.delete" onClick={onRemove} />
         </>
