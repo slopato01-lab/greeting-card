@@ -18,6 +18,9 @@
  * - **2** (08.10.2026) — свой цвет `#rrggbb`, двадцать шрифтов,
  *   начертание и выравнивание, прозрачность, фото, анимация, длительность.
  *   Версия 1 читается и переводится во вторую.
+ *   Дополнена тем же днём, без смены номера: стикеры, чёрно-белое фото,
+ *   межбуквенный интервал, анимации из design/пример анимации и дизайна.MP4.
+ *   Новые поля необязательны — шаблоны 2 без них читаются как раньше.
  *
  * Цвета. Имя токена (`gold`) по-прежнему допустимо: шаблоны версии 1
  * ими написаны, и такие цвета перекрашиваются вместе с сайтом. Новые
@@ -66,18 +69,66 @@ export const FONT_IDS = [
   "marck",
   "badscript",
   "amatic",
+  "shantell",
+  "ptmono",
 ] as const;
 export type FontId = (typeof FONT_IDS)[number];
 
 export const TEXT_ALIGNS = ["left", "center", "right"] as const;
 export type TextAlign = (typeof TEXT_ALIGNS)[number];
 
-export const LAYER_KINDS = ["text", "rect", "circle", "image"] as const;
+export const LAYER_KINDS = ["text", "rect", "circle", "image", "sticker"] as const;
 export type LayerKind = (typeof LAYER_KINDS)[number];
+
+/**
+ * Встроенные стикеры: SVG в public/assets/stickers. Имена, темы и
+ * размеры — в lib/editor/stickers.ts, здесь только допустимые id:
+ * по ним шаблон из файла не сможет сослаться ни на что, кроме своих
+ * картинок.
+ */
+export const STICKER_IDS = [
+  "photo-placeholder",
+  "party-hat",
+  "candle",
+  "flame",
+  "match",
+  "tape-pink",
+  "tape-mint",
+  "tape-gold",
+  "tape-red",
+  "heart-doodle-pink",
+  "heart-doodle-red",
+  "heart-red",
+  "sparkle-gold",
+  "sparkle-pink",
+  "confetti",
+  "ornament-red",
+  "ornament-gold",
+  "snowflake",
+  "gift",
+  "balloon",
+  "party-popper",
+  "christmas-tree",
+  "snowman",
+  "glowing-star",
+  "tulip",
+  "bouquet",
+  "blossom",
+  "rose",
+  "love-letter",
+  "kiss-mark",
+  "ribbon",
+  "clinking-glasses",
+] as const;
+export type StickerId = (typeof STICKER_IDS)[number];
 
 // ── Анимация ────────────────────────────────────────────────
 
-/** Появление. `typewriter` — только для текста. */
+/**
+ * Появление. `typewriter`, `letters` и `tracking` — только для текста.
+ * `letters` (по буквам), `tracking` (сборка из разрядки) и `toss-*`
+ * (влёт с поворотом) — из design/пример анимации и дизайна.MP4.
+ */
 export const ANIM_IN = [
   "none",
   "fade",
@@ -85,21 +136,32 @@ export const ANIM_IN = [
   "slide-right",
   "slide-top",
   "slide-bottom",
+  "toss-left",
+  "toss-right",
+  "toss-top",
+  "toss-bottom",
   "zoom",
   "pop",
   "rotate",
   "typewriter",
+  "letters",
+  "tracking",
 ] as const;
 export type AnimIn = (typeof ANIM_IN)[number];
 
-/** Во время показа. `marquee` — только текст, `kenburns` — только фото. */
+/**
+ * Во время показа. `marquee` — только текст, `kenburns` — только фото.
+ * `flicker` — огонёк свечи, `heartbeat` — двойной удар сердца.
+ */
 export const ANIM_LOOP = [
   "none",
   "pulse",
+  "heartbeat",
   "float",
   "swing",
   "shake",
   "blink",
+  "flicker",
   "marquee",
   "kenburns",
 ] as const;
@@ -118,9 +180,15 @@ export const ANIM_OUT = [
 ] as const;
 export type AnimOut = (typeof ANIM_OUT)[number];
 
+const TEXT_ONLY_IN: readonly AnimIn[] = ["typewriter", "letters", "tracking"];
+
 /** Какие варианты имеют смысл для какого слоя. */
 export function animInFor(kind: LayerKind): readonly AnimIn[] {
-  return kind === "text" ? ANIM_IN : ANIM_IN.filter((a) => a !== "typewriter");
+  return kind === "text" ? ANIM_IN : ANIM_IN.filter((a) => !TEXT_ONLY_IN.includes(a));
+}
+
+export function isTextOnlyIn(anim: AnimIn): boolean {
+  return TEXT_ONLY_IN.includes(anim);
 }
 
 export function animLoopFor(kind: LayerKind): readonly AnimLoop[] {
@@ -163,6 +231,8 @@ export const LIMITS = {
   scale: { min: 0.02, max: 20 },
   size: { min: 1, max: CARD_HEIGHT * 4 },
   opacity: { min: 0, max: 1 },
+  /** Межбуквенный интервал, тысячные доли кегля — как charSpacing в Fabric. */
+  spacing: { min: -100, max: 800 },
   /** Длительность открытки целиком, секунды. */
   duration: { min: 2, max: 60 },
   delay: { min: 0, max: 60 },
@@ -197,6 +267,8 @@ export type TextLayer = LayerBase & {
   bold: boolean;
   italic: boolean;
   align: TextAlign;
+  /** Межбуквенный интервал, тысячные кегля. 0 — как задумано шрифтом. */
+  spacing: number;
 };
 
 export type RectLayer = LayerBase & { kind: "rect"; fill: Color; width: number; height: number };
@@ -213,9 +285,22 @@ export type ImageLayer = LayerBase & {
   asset: string;
   width: number;
   height: number;
+  /** Чёрно-белое — как фото в design/пример анимации и дизайна.MP4. */
+  mono: boolean;
 };
 
-export type Layer = TextLayer | RectLayer | CircleLayer | ImageLayer;
+/**
+ * Встроенная картинка из public/assets/stickers. Ширина и высота —
+ * собственный размер SVG, масштаб — в scaleX/scaleY.
+ */
+export type StickerLayer = LayerBase & {
+  kind: "sticker";
+  sticker: StickerId;
+  width: number;
+  height: number;
+};
+
+export type Layer = TextLayer | RectLayer | CircleLayer | ImageLayer | StickerLayer;
 
 export type EditorDoc = {
   format: typeof EDITOR_FORMAT;
@@ -249,7 +334,7 @@ export function emptyDoc(): EditorDoc {
  * словаря, а этот файл про словарь не знает. Фото добавляется
  * отдельно — ему нужен размер картинки, см. imageLayer.
  */
-export function defaultLayer(kind: Exclude<LayerKind, "image">, text: string): Layer {
+export function defaultLayer(kind: "text" | "rect" | "circle", text: string): Layer {
   const base = {
     x: CARD_WIDTH / 2,
     y: CARD_HEIGHT / 2,
@@ -272,6 +357,7 @@ export function defaultLayer(kind: Exclude<LayerKind, "image">, text: string): L
         bold: false,
         italic: false,
         align: "center",
+        spacing: 0,
       };
     case "rect":
       return { ...base, kind, fill: "gold", width: 240, height: 160 };
@@ -286,6 +372,25 @@ export function imageLayer(asset: string, width: number, height: number): ImageL
   return {
     kind: "image",
     asset,
+    width,
+    height,
+    x: CARD_WIDTH / 2,
+    y: CARD_HEIGHT / 2,
+    angle: 0,
+    scaleX: fit,
+    scaleY: fit,
+    opacity: 1,
+    anim: { ...NO_ANIMATION },
+    mono: false,
+  };
+}
+
+/** Стикер вписывается в 200 × 200 по центру открытки. */
+export function stickerLayer(sticker: StickerId, width: number, height: number): StickerLayer {
+  const fit = Math.min(1, 200 / width, 200 / height);
+  return {
+    kind: "sticker",
+    sticker,
     width,
     height,
     x: CARD_WIDTH / 2,
@@ -381,8 +486,18 @@ function parseLayer(raw: unknown, version: 1 | 2): Layer | null {
     if (version === 1 || !isAssetId(raw.asset)) return null;
     const width = num(raw.width, LIMITS.size);
     const height = num(raw.height, LIMITS.size);
-    if (width === null || height === null) return null;
-    return { ...base, kind, asset: raw.asset, width, height };
+    // Необязательное: шаблоны версии 2 до стикеров его не знали.
+    const mono = raw.mono === undefined ? false : bool(raw.mono);
+    if (width === null || height === null || mono === null) return null;
+    return { ...base, kind, asset: raw.asset, width, height, mono };
+  }
+
+  if (kind === "sticker") {
+    const sticker = version === 1 ? null : oneOf(raw.sticker, STICKER_IDS);
+    const width = num(raw.width, LIMITS.size);
+    const height = num(raw.height, LIMITS.size);
+    if (sticker === null || width === null || height === null) return null;
+    return { ...base, kind, sticker, width, height };
   }
 
   const fill = version === 1 ? oneOf(raw.fill, COLOR_TOKENS) : parseColor(raw.fill);
@@ -408,14 +523,18 @@ function parseLayer(raw: unknown, version: 1 | 2): Layer | null {
           bold: false,
           italic: false,
           align: "center",
+          spacing: 0,
         };
       }
       const font = oneOf(raw.font, FONT_IDS);
       const bold = bool(raw.bold);
       const italic = bool(raw.italic);
       const align = oneOf(raw.align, TEXT_ALIGNS);
+      // Необязательное: шаблоны версии 2 до стикеров его не знали.
+      const spacing = raw.spacing === undefined ? 0 : num(raw.spacing, LIMITS.spacing);
       if (font === null || bold === null || italic === null || align === null) return null;
-      return { ...base, kind, fill, text, fontSize, font, bold, italic, align };
+      if (spacing === null) return null;
+      return { ...base, kind, fill, text, fontSize, font, bold, italic, align, spacing };
     }
     case "rect": {
       const width = num(raw.width, LIMITS.size);
@@ -546,6 +665,7 @@ export function clampLayer(layer: Layer): Layer {
         bold: layer.bold,
         italic: layer.italic,
         align: layer.align,
+        spacing: clamp(layer.spacing, LIMITS.spacing),
       };
     case "rect":
       return {
@@ -567,6 +687,15 @@ export function clampLayer(layer: Layer): Layer {
         ...base,
         kind: "image",
         asset: layer.asset,
+        width: clamp(layer.width, LIMITS.size),
+        height: clamp(layer.height, LIMITS.size),
+        mono: layer.mono,
+      };
+    case "sticker":
+      return {
+        ...base,
+        kind: "sticker",
+        sticker: layer.sticker,
         width: clamp(layer.width, LIMITS.size),
         height: clamp(layer.height, LIMITS.size),
       };

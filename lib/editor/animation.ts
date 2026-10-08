@@ -1,4 +1,4 @@
-import { CARD_HEIGHT, CARD_WIDTH, type Layer } from "./document.ts";
+import { CARD_HEIGHT, CARD_WIDTH, isTextOnlyIn, type Layer } from "./document.ts";
 
 /**
  * Движок анимации редактора. Чистые функции: время → поправки к слою.
@@ -33,9 +33,25 @@ export type Frame = {
   opacity: number;
   /** Доля видимого текста, 0…1. Только для «печатной машинки». */
   reveal: number;
+  /**
+   * Прогресс появления по буквам, 0…1; 1 — все буквы на месте.
+   * Состояние каждой буквы считает letterState.
+   */
+  letters: number;
+  /** Добавка к межбуквенному интервалу, тысячные кегля. «Сборка из разрядки». */
+  spacing: number;
 };
 
-export const IDENTITY: Frame = { dx: 0, dy: 0, scale: 1, angle: 0, opacity: 1, reveal: 1 };
+export const IDENTITY: Frame = {
+  dx: 0,
+  dy: 0,
+  scale: 1,
+  angle: 0,
+  opacity: 1,
+  reveal: 1,
+  letters: 1,
+  spacing: 0,
+};
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const easeOutCubic = (p: number) => 1 - (1 - p) ** 3;
@@ -57,8 +73,41 @@ function combine(a: Frame, b: Frame): Frame {
     angle: a.angle + b.angle,
     opacity: a.opacity * b.opacity,
     reveal: Math.min(a.reveal, b.reveal),
+    letters: Math.min(a.letters, b.letters),
+    spacing: a.spacing + b.spacing,
   };
 }
+
+/** Откуда влетает стикер: недалеко за краем места и с поворотом. */
+const TOSS = {
+  left: { dx: -170, dy: -60, angle: -40 },
+  right: { dx: 170, dy: -40, angle: 40 },
+  top: { dx: -40, dy: -200, angle: -30 },
+  bottom: { dx: 30, dy: 220, angle: 25 },
+} as const;
+
+/**
+ * Буква `index` из `count` при общем прогрессе `p`. Буквы стартуют
+ * по очереди и каждая занимает 30% времени — так за любую длину
+ * текста появление укладывается в заданную длительность.
+ * `alpha` — непрозрачность буквы, `dy` — насколько она ещё над местом.
+ */
+export function letterState(index: number, count: number, p: number) {
+  if (p >= 1) return { alpha: 1, dy: 0 };
+  const window = 0.3;
+  const start = count <= 1 ? 0 : (index / (count - 1)) * (1 - window);
+  const local = clamp01((p - start) / window);
+  return { alpha: easeOutCubic(local), dy: -22 * (1 - easeOutBack(local)) };
+}
+
+/**
+ * Детерминированная «дрожь» для огонька: сумма двух несоразмерных
+ * синусов. В нуле — ноль, чтобы показ начинался без скачка.
+ */
+const jitter = (phase: number) => 0.6 * wave(phase * 3.1) + 0.4 * wave(phase * 7.3);
+
+/** Узкий горб в нуле — один удар сердца. */
+const beat = (x: number) => Math.exp(-((x / 0.07) ** 2));
 
 /** Сдвиг «за край открытки» в нужную сторону. */
 function offscreen(direction: "left" | "right" | "top" | "bottom"): { dx: number; dy: number } {
@@ -99,8 +148,29 @@ function enter(type: Layer["anim"]["in"] | Layer["anim"]["out"], p: number): Fra
       return { ...IDENTITY, scale: Math.max(0, easeOutBack(p)), opacity: clamp01(p * 3) };
     case "rotate":
       return { ...IDENTITY, angle: -180 * (1 - e), scale: 0.2 + 0.8 * e, opacity: e };
+    case "toss-left":
+    case "toss-right":
+    case "toss-top":
+    case "toss-bottom": {
+      // Влёт с перелётом: easeOutBack проскакивает место и возвращается.
+      const from = TOSS[type.slice("toss-".length) as keyof typeof TOSS];
+      const b = easeOutBack(p);
+      return {
+        ...IDENTITY,
+        dx: from.dx * (1 - b),
+        dy: from.dy * (1 - b),
+        angle: from.angle * (1 - b),
+        scale: 0.6 + 0.4 * b,
+        opacity: clamp01(p * 2.5),
+      };
+    }
     case "typewriter":
       return { ...IDENTITY, reveal: p };
+    case "letters":
+      return { ...IDENTITY, letters: p };
+    case "tracking":
+      // Буквы разъехались на 0.9 кегля и съезжаются, проявляясь.
+      return { ...IDENTITY, spacing: 900 * (1 - e), opacity: clamp01(p * 1.6) };
   }
 }
 
@@ -111,6 +181,18 @@ function loop(layer: Layer, phase: number, span: number): Frame {
       return IDENTITY;
     case "pulse":
       return { ...IDENTITY, scale: 1 + 0.06 * wave(phase) };
+    case "heartbeat": {
+      const f = frac(phase);
+      // Два удара — «тук-тук» — и пауза. В начале периода покой.
+      return { ...IDENTITY, scale: 1 + 0.14 * beat(f - 0.2) + 0.09 * beat(f - 0.42) };
+    }
+    case "flicker":
+      return {
+        ...IDENTITY,
+        opacity: 1 - 0.18 * Math.abs(jitter(phase)),
+        scale: 1 + 0.05 * jitter(phase * 1.3),
+        angle: 3 * jitter(phase * 0.7),
+      };
     case "float":
       return { ...IDENTITY, dy: -10 * wave(phase) };
     case "swing":
@@ -154,8 +236,8 @@ export function frameAt(source: Layer, t: number, duration: number, reduced = fa
   const layer = reduced ? calm(source) : source;
   const { anim } = layer;
 
-  const typewriterOk = anim.in !== "typewriter" || layer.kind === "text";
-  const inType = typewriterOk ? anim.in : "none";
+  const textOk = !isTextOnlyIn(anim.in) || layer.kind === "text";
+  const inType = textOk ? anim.in : "none";
 
   const inStart = anim.delay;
   const inEnd = inType === "none" ? inStart : inStart + anim.inDuration;

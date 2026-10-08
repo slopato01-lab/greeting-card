@@ -52,6 +52,7 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `alignCenter.svg` | `tabler:align-center` | редактор: по центру |
 | `alignRight.svg` | `tabler:align-right` | редактор: по правому краю |
 | `picker.svg` | `tabler:color-picker` | редактор: свой цвет |
+| `sticker.svg` | `tabler:sticker` | редактор: стикеры |
 | `balloon.svg` | `noto:balloon` | наклейка в открытке «С днём рождения!» |
 | `cake.svg` | `noto:birthday-cake` | наклейка в открытке «С днём рождения!» |
 | `popper.svg` | `noto:party-popper` | наклейка в открытке «С днём рождения!» |

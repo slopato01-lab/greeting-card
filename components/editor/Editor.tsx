@@ -3,6 +3,7 @@
 import { Button } from "@/components/Button";
 import { Slider, ToolButton } from "@/components/editor/controls";
 import { Inspector } from "@/components/editor/Inspector";
+import { TemplatesPanel } from "@/components/editor/Templates";
 import { AddPanel, FilePanel } from "@/components/editor/Toolbar";
 import { useCardEditor } from "@/components/editor/useCardEditor";
 import { LIMITS } from "@/lib/editor/document";
@@ -23,10 +24,10 @@ import { t } from "@/lib/i18n";
  * - этот файл, Toolbar, Inspector и controls — только разметка.
  *
  * Раскладка (утверждена 08.10.2026). Мобильный — потоком, в порядке
- * работы: добавить, холст с просмотром, свойства, файл. С 1280px — три
- * колонки: слева «добавить» и «файл» друг под другом, в центре холст,
- * справа свойства. Боковые колонки по 304px: ровно шесть кружков цвета
- * по 44px в строку плюс поля панели.
+ * работы: шаблоны, добавить, холст с просмотром, свойства, файл.
+ * С 1280px — три колонки: слева шаблоны, «добавить» и «файл» друг под
+ * другом, в центре холст, справа свойства. Боковые колонки по 304px:
+ * ровно шесть кружков цвета по 44px в строку плюс поля панели.
  */
 export function Editor() {
   const {
@@ -41,6 +42,8 @@ export function Editor() {
     busy,
     saved,
     notice,
+    previews,
+    hasContent,
     actions,
   } = useCardEditor();
   const ready = status === "ready";
@@ -48,17 +51,26 @@ export function Editor() {
 
   return (
     <div className="page-shell pt-[16px] pb-[60px] xl:pt-[24px] xl:pb-[100px]">
-      <div className="flex flex-col gap-[16px] xl:grid xl:grid-cols-[304px_minmax(0,600px)_304px] xl:grid-rows-[auto_1fr] xl:items-start xl:justify-center xl:gap-[24px]">
+      <div className="flex flex-col gap-[16px] xl:grid xl:grid-cols-[304px_minmax(0,600px)_304px] xl:grid-rows-[auto_auto_1fr] xl:items-start xl:justify-center xl:gap-[24px]">
+        <TemplatesPanel
+          disabled={!editable}
+          previews={previews}
+          hasContent={hasContent}
+          onApply={(id) => void actions.applyTemplate(id)}
+          className="xl:col-start-1 xl:row-start-1"
+        />
+
         <AddPanel
           disabled={!editable}
           background={background}
           onAdd={(kind) => void actions.add(kind)}
           onAddImage={(file) => void actions.addImage(file)}
+          onAddSticker={(id) => void actions.addSticker(id)}
           onBackground={actions.setBackground}
-          className="xl:col-start-1 xl:row-start-1"
+          className="xl:col-start-1 xl:row-start-2"
         />
 
-        <div className="flex min-w-0 flex-col gap-[12px] xl:col-start-2 xl:row-span-2 xl:row-start-1">
+        <div className="flex min-w-0 flex-col gap-[12px] xl:col-start-2 xl:row-span-3 xl:row-start-1">
           <div
             ref={frameRef}
             tabIndex={0}
@@ -142,7 +154,10 @@ export function Editor() {
           onTextStyle={(style) => void actions.setTextStyle(style)}
           onAnimation={actions.setAnimation}
           onRemove={actions.remove}
-          className="xl:col-start-3 xl:row-span-2 xl:row-start-1"
+          onReplaceImage={(file) => void actions.replaceImage(file)}
+          onMono={actions.setMono}
+          onSpacing={actions.setSpacing}
+          className="xl:col-start-3 xl:row-span-3 xl:row-start-1"
         />
 
         <FilePanel
@@ -150,7 +165,7 @@ export function Editor() {
           onExportPng={actions.exportPng}
           onExportJson={() => void actions.exportJson()}
           onImport={(file) => void actions.importFile(file)}
-          className="xl:col-start-1 xl:row-start-2"
+          className="xl:col-start-1 xl:row-start-3"
         />
       </div>
     </div>

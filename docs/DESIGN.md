@@ -456,4 +456,9 @@ FAQ и подписи CTA. Проверять такое нужно в собр�
 - Шрифты — `lib/editor/fonts.ts`: двадцать Google Fonts под OFL,
   все с кириллицей. Раздаются со своего домена, грузятся только
   на `/editor` и только когда их выбрали (`preload: false`).
+- Стикеры (`public/assets/stickers`, 08.10.2026) — тоже содержимое
+  открытки: рисованные по мотивам `design/пример анимации и дизайна.MP4`
+  (`scripts/draw-stickers.py`) и Noto Emoji (`pnpm stickers:fetch`).
+  Шаблоны редактора (`lib/editor/templates.ts`) собраны из них же,
+  цвета шаблонов — hex, как у пользователя.
 

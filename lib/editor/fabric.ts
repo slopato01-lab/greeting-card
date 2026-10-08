@@ -1,6 +1,6 @@
-import type { Canvas, FabricObject } from "fabric";
+import type { Canvas, FabricObject, IText, StaticCanvas } from "fabric";
 
-import { applyFrame, type Frame, revealText } from "@/lib/editor/animation";
+import { applyFrame, type Frame, letterState, revealText } from "@/lib/editor/animation";
 import {
   type Animation,
   clampLayer,
@@ -12,9 +12,11 @@ import {
   EDITOR_VERSION,
   type FontId,
   type Layer,
+  type StickerId,
   type TextAlign,
 } from "@/lib/editor/document";
 import { loadFont, readFontFamilies } from "@/lib/editor/fonts";
+import { stickerUrl } from "@/lib/editor/stickers";
 
 /**
  * Мост между форматом шаблона (lib/editor/document.ts) и Fabric.
@@ -60,6 +62,8 @@ type Meta = {
   fill: Color | null;
   font: FontId | null;
   asset: string | null;
+  sticker: StickerId | null;
+  mono: boolean;
   anim: Animation;
 };
 
@@ -120,6 +124,7 @@ export async function createObject(
         fontWeight: layer.bold ? 700 : 400,
         fontStyle: layer.italic ? "italic" : "normal",
         textAlign: layer.align,
+        charSpacing: layer.spacing,
         cursorColor: theme.colors.canvas,
         editingBorderColor: theme.colors.gold,
       });
@@ -148,17 +153,48 @@ export async function createObject(
       } catch {
         return null;
       }
+      if (layer.mono) setMono(fabric, object, true);
+      break;
+    }
+    case "sticker": {
+      try {
+        object = await fabric.FabricImage.fromURL(stickerUrl(layer.sticker), {}, common);
+      } catch {
+        return null;
+      }
       break;
     }
   }
 
+  const hasFill = layer.kind !== "image" && layer.kind !== "sticker";
   meta.set(object, {
-    fill: layer.kind === "image" ? null : layer.fill,
+    fill: hasFill ? layer.fill : null,
     font: layer.kind === "text" ? layer.font : null,
     asset: layer.kind === "image" ? layer.asset : null,
+    sticker: layer.kind === "sticker" ? layer.sticker : null,
+    mono: layer.kind === "image" ? layer.mono : false,
     anim: layer.anim,
   });
   return object;
+}
+
+/** Чёрно-белый фильтр фото. Фильтр пересчитывает картинку один раз. */
+function setMono(fabric: FabricModule, object: FabricObject, mono: boolean) {
+  if (!(object instanceof fabric.FabricImage)) return;
+  object.filters = mono ? [new fabric.filters.Grayscale()] : [];
+  object.applyFilters();
+}
+
+export function applyMono(fabric: FabricModule, object: FabricObject, mono: boolean) {
+  const info = meta.get(object);
+  if (info === undefined || info.asset === null) return;
+  setMono(fabric, object, mono);
+  meta.set(object, { ...info, mono });
+}
+
+/** Это заглушка на месте фото? */
+export function stickerOf(object: FabricObject): StickerId | null {
+  return meta.get(object)?.sticker ?? null;
 }
 
 /**
@@ -189,6 +225,15 @@ function rawLayer(fabric: FabricModule, object: FabricObject): Layer | null {
   };
 
   if (object instanceof fabric.FabricImage) {
+    if (info.sticker !== null) {
+      return {
+        ...base,
+        kind: "sticker",
+        sticker: info.sticker,
+        width: object.width,
+        height: object.height,
+      };
+    }
     if (info.asset === null) return null;
     return {
       ...base,
@@ -196,6 +241,7 @@ function rawLayer(fabric: FabricModule, object: FabricObject): Layer | null {
       asset: info.asset,
       width: object.width,
       height: object.height,
+      mono: info.mono,
     };
   }
 
@@ -212,6 +258,7 @@ function rawLayer(fabric: FabricModule, object: FabricObject): Layer | null {
       bold: isBold(object.fontWeight),
       italic: object.fontStyle === "italic",
       align: align === "left" || align === "right" ? align : "center",
+      spacing: object.charSpacing,
     };
   }
   if (object instanceof fabric.Rect) {
@@ -225,7 +272,7 @@ function rawLayer(fabric: FabricModule, object: FabricObject): Layer | null {
 
 export function canvasToDoc(
   fabric: FabricModule,
-  canvas: Canvas,
+  canvas: StaticCanvas,
   background: Color,
   duration: number,
 ): EditorDoc {
@@ -244,7 +291,7 @@ export function canvasToDoc(
  */
 export async function loadDocIntoCanvas(
   fabric: FabricModule,
-  canvas: Canvas,
+  canvas: StaticCanvas,
   doc: EditorDoc,
   theme: Theme,
   assetUrl: AssetResolver,
@@ -254,7 +301,8 @@ export async function loadDocIntoCanvas(
   const objects = await Promise.all(
     doc.layers.map((layer) => createObject(fabric, layer, theme, assetUrl)),
   );
-  canvas.discardActiveObject();
+  // Превью шаблонов рисуются на StaticCanvas — у него выделения нет.
+  if (canvas instanceof fabric.Canvas) canvas.discardActiveObject();
   canvas.remove(...canvas.getObjects());
   canvas.backgroundColor = resolveColor(doc.background, theme);
   let missing = 0;
@@ -267,7 +315,7 @@ export async function loadDocIntoCanvas(
 }
 
 /** Ids фото, на которые ссылается холст. */
-export function usedAssets(canvas: Canvas): Set<string> {
+export function usedAssets(canvas: StaticCanvas): Set<string> {
   const ids = new Set<string>();
   for (const object of canvas.getObjects()) {
     const asset = meta.get(object)?.asset;
@@ -324,6 +372,37 @@ export async function applyTextStyle(
 
 // ── Проигрывание ────────────────────────────────────────────
 
+/** Цвет с прозрачностью для отдельной буквы. Понимает только #rrggbb. */
+function withAlpha(color: string, alpha: number): string {
+  const match = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(color);
+  if (match === null) return color;
+  const [r, g, b] = match.slice(1).map((hex) => parseInt(hex, 16));
+  return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`;
+}
+
+/**
+ * «По буквам»: каждой букве свой цвет с прозрачностью и сдвиг вверх.
+ * Через стили символов Fabric — они не меняют раскладку строки,
+ * поэтому буквы не толкают друг друга, пока появляются.
+ */
+function showLetters(text: IText, progress: number) {
+  const base = typeof text.fill === "string" ? text.fill : "#000000";
+  const lines = text._textLines;
+  const count = lines.reduce((sum, line) => sum + line.length, 0);
+  const styles: Record<number, Record<number, { fill: string; deltaY: number }>> = {};
+  let index = 0;
+  lines.forEach((line, row) => {
+    const rowStyles: Record<number, { fill: string; deltaY: number }> = {};
+    line.forEach((_, col) => {
+      const { alpha, dy } = letterState(index, count, progress);
+      rowStyles[col] = { fill: withAlpha(base, alpha), deltaY: dy };
+      index += 1;
+    });
+    styles[row] = rowStyles;
+  });
+  text.set("styles", styles);
+}
+
 /**
  * Ставит объект в положение кадра анимации. Исходный слой не меняется:
  * после просмотра объект возвращают в него через restoreObject.
@@ -338,10 +417,23 @@ export function showFrame(fabric: FabricModule, object: FabricObject, layer: Lay
     angle: moved.angle,
     opacity: Math.min(1, Math.max(0, moved.opacity)),
   });
-  if (layer.kind === "text" && object instanceof fabric.IText) {
-    const visible = revealText(layer.text, frame.reveal);
-    if (object.text !== visible) object.set("text", visible);
+  if (layer.kind !== "text" || !(object instanceof fabric.IText)) return;
+
+  const visible = revealText(layer.text, frame.reveal);
+  const spacing = layer.spacing + frame.spacing;
+  let remeasure = false;
+  if (object.text !== visible) {
+    object.set("text", visible);
+    remeasure = true;
   }
+  if (object.charSpacing !== spacing) {
+    object.set("charSpacing", spacing);
+    remeasure = true;
+  }
+  if (remeasure) object.initDimensions();
+
+  if (frame.letters < 1) showLetters(object, frame.letters);
+  else if (Object.keys(object.styles).length > 0) object.set("styles", {});
 }
 
 export function restoreObject(fabric: FabricModule, object: FabricObject, layer: Layer) {
@@ -353,6 +445,9 @@ export function restoreObject(fabric: FabricModule, object: FabricObject, layer:
     angle: layer.angle,
     opacity: layer.opacity,
   });
-  if (layer.kind === "text" && object instanceof fabric.IText) object.set("text", layer.text);
+  if (layer.kind === "text" && object instanceof fabric.IText) {
+    object.set({ text: layer.text, charSpacing: layer.spacing, styles: {} });
+    object.initDimensions();
+  }
   object.setCoords();
 }

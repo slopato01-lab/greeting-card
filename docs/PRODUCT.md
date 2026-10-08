@@ -988,3 +988,88 @@
 | `editor.error.photoLimit` | В открытке уже 10 фото — это максимум |
 | `editor.error.photoMissing` | Часть фото не нашлась в этом браузере — их слои убраны |
 | `editor.error.photoStorage` | Фото добавлено, но браузер не дал его сохранить. После перезагрузки оно пропадёт |
+
+## Редактор: стикеры и шаблоны (08.10.2026)
+
+По образцу `design/пример анимации и дизайна.MP4`: коллаж, рукописный
+заголовок с прыгающим регистром, моноширинное пожелание, анимация
+по очереди. Четыре шаблона — день рождения, Новый год, 8 Марта,
+любовь (выбор пользователя). Тексты написаны при сборке, тексты
+шаблонов — заготовки, которые правят прямо на холсте. ⏎ — перенос строки.
+
+| Ключ | Текст |
+|---|---|
+| `sticker.photo-placeholder` | Место для фото |
+| `sticker.party-hat` | Колпак |
+| `sticker.candle` | Свеча |
+| `sticker.flame` | Огонёк |
+| `sticker.match` | Спичка |
+| `sticker.tape-pink` | Розовая лента |
+| `sticker.tape-mint` | Мятная лента |
+| `sticker.tape-gold` | Золотая лента |
+| `sticker.tape-red` | Красная лента |
+| `sticker.heart-doodle-pink` | Розовое сердечко |
+| `sticker.heart-doodle-red` | Красное сердечко |
+| `sticker.heart-red` | Сердце |
+| `sticker.sparkle-gold` | Золотая искра |
+| `sticker.sparkle-pink` | Розовая искра |
+| `sticker.confetti` | Конфетти |
+| `sticker.ornament-red` | Красный шар |
+| `sticker.ornament-gold` | Золотой шар |
+| `sticker.snowflake` | Снежинка |
+| `sticker.gift` | Подарок |
+| `sticker.balloon` | Воздушный шар |
+| `sticker.party-popper` | Хлопушка |
+| `sticker.christmas-tree` | Ёлка |
+| `sticker.snowman` | Снеговик |
+| `sticker.glowing-star` | Звезда |
+| `sticker.tulip` | Тюльпан |
+| `sticker.bouquet` | Букет |
+| `sticker.blossom` | Цветок |
+| `sticker.rose` | Роза |
+| `sticker.love-letter` | Письмо |
+| `sticker.kiss-mark` | Поцелуй |
+| `sticker.ribbon` | Бант |
+| `sticker.clinking-glasses` | Бокалы |
+| `editor.add.sticker` | Стикер |
+| `editor.stickers` | Стикеры |
+| `editor.stickerTheme.common` | Для всего |
+| `editor.stickerTheme.birthday` | День рождения |
+| `editor.stickerTheme.newyear` | Новый год |
+| `editor.stickerTheme.march8` | 8 Марта |
+| `editor.stickerTheme.love` | Любовь |
+| `editor.photo.replace` | Заменить на своё фото |
+| `editor.photo.replaceHint` | Это место для фото. Выберите снимок — он встанет сюда с той же анимацией |
+| `editor.photo.mono` | Чёрно-белое |
+| `editor.props.spacing` | Межбуквенный интервал |
+| `editor.anim.in.toss-left` | Влёт слева с поворотом |
+| `editor.anim.in.toss-right` | Влёт справа с поворотом |
+| `editor.anim.in.toss-top` | Влёт сверху с поворотом |
+| `editor.anim.in.toss-bottom` | Влёт снизу с поворотом |
+| `editor.anim.in.letters` | По буквам |
+| `editor.anim.in.tracking` | Сборка из разрядки |
+| `editor.anim.loop.heartbeat` | Сердцебиение |
+| `editor.anim.loop.flicker` | Огонёк |
+| `font.shantell` | Shantell Sans |
+| `font.ptmono` | PT Mono |
+| `editor.fontGroup.mono` | Моноширинные |
+| `editor.templates` | Шаблоны |
+| `editor.templates.replace` | Заменить текущую открытку шаблоном? Всё, что на холсте сейчас, пропадёт |
+| `editor.templates.confirm` | Заменить |
+| `editor.templates.cancel` | Отмена |
+| `tpl.birthday.label` | День рождения |
+| `tpl.birthday.title` | с ДнЁм ⏎ РоЖдЕнИя, |
+| `tpl.birthday.who` | СоЛнЫшКо! |
+| `tpl.birthday.wish` | загадывай желание — ⏎ пусть сбудется ⏎ самое смелое! |
+| `tpl.newyear.label` | Новый год |
+| `tpl.newyear.title` | с НоВыМ ⏎ ГоДоМ, |
+| `tpl.newyear.who` | ДоРоГиЕ! |
+| `tpl.newyear.wish` | пусть всё, что загадано ⏎ под бой курантов, ⏎ сбудется! |
+| `tpl.march8.label` | 8 Марта |
+| `tpl.march8.title` | с 8 МаРтА, |
+| `tpl.march8.who` | ЛюБиМаЯ! |
+| `tpl.march8.wish` | весны в душе, ⏎ цветов без повода ⏎ и улыбок каждый день |
+| `tpl.love.label` | Любовь |
+| `tpl.love.title` | Я ТеБя ⏎ ЛюБлЮ, |
+| `tpl.love.who` | СоЛнЦе! |
+| `tpl.love.wish` | ты — моё самое лучшее ⏎ «доброе утро» ⏎ и самое тёплое ⏎ «спокойной ночи» |

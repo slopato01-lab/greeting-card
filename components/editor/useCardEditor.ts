@@ -17,13 +17,15 @@ import {
   emptyDoc,
   imageLayer,
   type Layer,
-  type LayerKind,
   LIMITS,
   parseEditorJson,
+  type StickerId,
+  stickerLayer,
 } from "@/lib/editor/document";
 import {
   applyAnimation,
   applyFill,
+  applyMono,
   applyTextStyle,
   canvasToDoc,
   createObject,
@@ -34,11 +36,15 @@ import {
   resolveColor,
   restoreObject,
   showFrame,
+  stickerOf,
   type TextStyle,
   type Theme,
   usedAssets,
 } from "@/lib/editor/fabric";
+import { loadFont } from "@/lib/editor/fonts";
 import { blobToDataUrl, dataUrlToBlob, newAssetId, prepareImage } from "@/lib/editor/image";
+import { stickerInfo } from "@/lib/editor/stickers";
+import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
@@ -70,6 +76,8 @@ const NUDGE_STEP_BIG = 10;
 const CASCADE_OFFSET = 24;
 const CASCADE_STEPS = 6;
 const BLOB_TTL_MS = 10_000;
+/** Превью шаблона: 180 × 240, вчетверо меньше PNG-экспорта. */
+const PREVIEW_MULTIPLIER = 0.3;
 
 export type EditorStatus = "loading" | "ready" | "error";
 
@@ -124,6 +132,7 @@ export function useCardEditor() {
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState<TextKey | null>(null);
+  const [previews, setPreviews] = useState<Partial<Record<TemplateId, string>>>({});
 
   // ── Общие помощники ───────────────────────────────────────
 
@@ -360,6 +369,42 @@ export function useCardEditor() {
       );
 
       setStatus("ready");
+
+      // ── Превью шаблонов ───────────────────────────────────
+      // Рисуются тем же кодом, что и холст, на невидимом StaticCanvas:
+      // так превью всегда совпадает с тем, что ляжет на холст.
+      // Сначала все шрифты шаблонов разом, потом сброс кэша ширин:
+      // иначе первое превью меряет буквы запасным шрифтом, пока
+      // настоящий ещё не готов для холста, — поймано в браузере.
+      const docs = TEMPLATES.map((template) => ({ template, doc: template.build() }));
+      await Promise.all(
+        docs.flatMap(({ doc }) =>
+          doc.layers.flatMap((layer) =>
+            layer.kind === "text"
+              ? [loadFont(theme.fonts[layer.font], layer.bold, layer.italic)]
+              : [],
+          ),
+        ),
+      );
+      if ("fonts" in document) await document.fonts.ready;
+      fabric.cache.clearFontCache();
+      if (signal.aborted) return;
+
+      const shots: Partial<Record<TemplateId, string>> = {};
+      for (const { template, doc } of docs) {
+        const element = document.createElement("canvas");
+        const preview = new fabric.StaticCanvas(element, {
+          width: CARD_WIDTH,
+          height: CARD_HEIGHT,
+          renderOnAddRemove: false,
+        });
+        await loadDocIntoCanvas(fabric, preview, doc, theme, assetUrl);
+        preview.renderAll();
+        shots[template.id] = preview.toDataURL({ format: "png", multiplier: PREVIEW_MULTIPLIER });
+        await preview.dispose();
+        if (signal.aborted) return;
+      }
+      setPreviews(shots);
     };
 
     start().catch(() => {
@@ -428,7 +473,7 @@ export function useCardEditor() {
   );
 
   const add = useCallback(
-    async (kind: Exclude<LayerKind, "image">) => {
+    async (kind: "text" | "rect" | "circle") => {
       const current = live.current;
       if (current === null || playback.current !== null) return;
       const layer = defaultLayer(kind, t("editor.text.default"));
@@ -475,6 +520,100 @@ export function useCardEditor() {
       }
     },
     [assetUrl, placeNew, registerAsset],
+  );
+
+  const addSticker = useCallback(
+    async (id: StickerId) => {
+      const current = live.current;
+      if (current === null || playback.current !== null) return;
+      const { width, height } = stickerInfo(id);
+      const object = await createObject(
+        current.fabric,
+        stickerLayer(id, width, height),
+        current.theme,
+        assetUrl,
+      );
+      if (object !== null && live.current === current) placeNew(current, object);
+    },
+    [assetUrl, placeNew],
+  );
+
+  /**
+   * Своё фото вместо выделенной заглушки или фото. Встаёт в ту же рамку
+   * (вписывается по большей стороне), на тот же слой и с той же анимацией.
+   * Вместо заглушки фото по умолчанию чёрно-белое — как в шаблонах
+   * по образцу видео; выключается в свойствах.
+   */
+  const replaceImage = useCallback(
+    async (file: File) => {
+      const current = live.current;
+      const old = current?.canvas.getActiveObject();
+      if (current === null || old === undefined || playback.current !== null) return;
+      const before = objectToLayer(current.fabric, old);
+      if (before === null || (before.kind !== "image" && before.kind !== "sticker")) return;
+
+      setNotice(null);
+      setBusy(true);
+      try {
+        const result = await prepareImage(file);
+        if (!result.ok) {
+          setNotice(result.error);
+          return;
+        }
+        const { blob, width, height } = result.image;
+        const id = newAssetId();
+        registerAsset(id, blob);
+        if (!(await putAsset(id, blob))) setNotice("editor.error.photoStorage");
+
+        const boxW = before.width * before.scaleX;
+        const boxH = before.height * before.scaleY;
+        const fit = Math.min(boxW / width, boxH / height);
+        const layer: Layer = {
+          ...imageLayer(id, width, height),
+          x: before.x,
+          y: before.y,
+          angle: before.angle,
+          scaleX: fit,
+          scaleY: fit,
+          opacity: before.opacity,
+          anim: before.anim,
+          mono: before.kind === "image" ? before.mono : stickerOf(old) === "photo-placeholder",
+        };
+        const object = await createObject(current.fabric, layer, current.theme, assetUrl);
+        if (object === null || live.current !== current) {
+          setNotice("editor.error.photoDecode");
+          return;
+        }
+        const index = current.canvas.getObjects().indexOf(old);
+        current.canvas.remove(old);
+        current.canvas.insertAt(Math.max(0, index), object);
+        current.canvas.setActiveObject(object);
+        current.canvas.requestRenderAll();
+        markDirty();
+        syncSelection();
+      } finally {
+        setBusy(false);
+      }
+    },
+    [assetUrl, markDirty, registerAsset, syncSelection],
+  );
+
+  const setMono = useCallback(
+    (mono: boolean) => editActive((object, { fabric }) => applyMono(fabric, object, mono)),
+    [editActive],
+  );
+
+  const setSpacing = useCallback(
+    (spacing: number) =>
+      editActive((object, { fabric }) => {
+        if (!(object instanceof fabric.IText)) return;
+        object.set(
+          "charSpacing",
+          Math.min(LIMITS.spacing.max, Math.max(LIMITS.spacing.min, spacing)),
+        );
+        object.initDimensions();
+      }),
+    [editActive],
   );
 
   const setFill = useCallback(
@@ -608,6 +747,28 @@ export function useCardEditor() {
     setSelected(null);
   }, [saveDraft, stopPlayback]);
 
+  /** Шаблон на холст — и сразу просмотр: шаблон без движения не понять. */
+  const applyTemplate = useCallback(
+    async (id: TemplateId) => {
+      const current = live.current;
+      const template = TEMPLATES.find((item) => item.id === id);
+      if (current === null || template === undefined || playback.current !== null) return;
+      setNotice(null);
+      setBusy(true);
+      try {
+        const doc = template.build();
+        await loadDocIntoCanvas(current.fabric, current.canvas, doc, current.theme, assetUrl);
+        applyDocMeta(doc);
+        markDirty();
+        syncSelection();
+      } finally {
+        setBusy(false);
+      }
+      if (live.current === current) play();
+    },
+    [applyDocMeta, assetUrl, markDirty, play, syncSelection],
+  );
+
   // ── Файлы ─────────────────────────────────────────────────
 
   const exportPng = useCallback(() => {
@@ -711,9 +872,16 @@ export function useCardEditor() {
     busy,
     saved,
     notice,
+    previews,
+    hasContent: () => (live.current?.canvas.getObjects().length ?? 0) > 0,
     actions: {
       add,
       addImage,
+      addSticker,
+      replaceImage,
+      setMono,
+      setSpacing,
+      applyTemplate,
       setFill,
       setOpacity,
       setFontSize,

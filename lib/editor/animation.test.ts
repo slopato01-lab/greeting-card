@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { applyFrame, frameAt, IDENTITY, revealText } from "./animation.ts";
+import { applyFrame, frameAt, IDENTITY, letterState, revealText } from "./animation.ts";
 import { ANIM_IN, ANIM_LOOP, ANIM_OUT, defaultLayer, imageLayer, type Layer } from "./document.ts";
 
 const text = (anim: Partial<Layer["anim"]>): Layer => {
@@ -50,9 +50,11 @@ test("каждое исчезание начинается с места сло�
 
 test("показ начинается без скачка", () => {
   for (const type of ANIM_LOOP) {
+    // Допуск 0.001: у сердцебиения хвост удара в нуле — 0.00003.
+    const close = (a: number, b: number) => Math.abs(a - b) < 1e-3;
     const frame = frameAt(text({ loop: type, in: "fade", inDuration: 1 }), 1, 6);
-    assert.ok(near(frame.dx, 0) && near(frame.dy, 0) && near(frame.angle, 0), type);
-    assert.ok(near(frame.scale, 1) && near(frame.opacity, 1), type);
+    assert.ok(close(frame.dx, 0) && close(frame.dy, 0) && close(frame.angle, 0), type);
+    assert.ok(close(frame.scale, 1) && close(frame.opacity, 1), type);
   }
 });
 
@@ -89,7 +91,14 @@ test("одинаковое время — одинаковый кадр", () => 
 
 test("applyFrame складывает сдвиг и умножает масштаб и прозрачность", () => {
   const layer = { ...defaultLayer("rect", ""), opacity: 0.5, scaleX: 2 };
-  const out = applyFrame(layer, { dx: 10, dy: -5, scale: 0.5, angle: 30, opacity: 0.5, reveal: 1 });
+  const out = applyFrame(layer, {
+    ...IDENTITY,
+    dx: 10,
+    dy: -5,
+    scale: 0.5,
+    angle: 30,
+    opacity: 0.5,
+  });
   assert.equal(out.x, layer.x + 10);
   assert.equal(out.scaleX, 1);
   assert.equal(out.angle, 30);
@@ -101,4 +110,49 @@ test("revealText режет по символам, а не по половинк
   assert.equal(revealText("🎉🎂", 0.5), "🎉");
   assert.equal(revealText("abc", 0), "");
   assert.equal(revealText("abc", 1), "abc");
+});
+
+test("по буквам: буквы встают по очереди и все на месте к концу", () => {
+  const first = letterState(0, 10, 0.2);
+  const last = letterState(9, 10, 0.2);
+  assert.ok(first.alpha > 0 && last.alpha === 0, "первая раньше последней");
+  for (let i = 0; i < 10; i += 1) assert.deepEqual(letterState(i, 10, 1), { alpha: 1, dy: 0 });
+  assert.deepEqual(letterState(0, 1, 1), { alpha: 1, dy: 0 });
+  const mid = frameAt(text({ in: "letters", inDuration: 1 }), 0.5, 6);
+  assert.equal(mid.letters, 0.5);
+});
+
+test("сборка из разрядки: буквы съезжаются к нулю", () => {
+  const layer = text({ in: "tracking", inDuration: 1 });
+  assert.ok(frameAt(layer, 0.1, 6).spacing > 500);
+  assert.ok(near(frameAt(layer, 1, 6).spacing, 0));
+});
+
+test("влёт с поворотом приходит с поворотом и встаёт на место", () => {
+  const rect = defaultLayer("rect", "");
+  const layer = { ...rect, anim: { ...rect.anim, in: "toss-left" as const, inDuration: 1 } };
+  const start = frameAt(layer, 0, 6);
+  assert.ok(start.dx < 0 && start.angle < 0 && start.opacity === 0);
+  const end = frameAt(layer, 1, 6);
+  assert.ok(near(end.dx, 0) && near(end.angle, 0) && near(end.scale, 1));
+});
+
+test("по буквам и разрядка у фигур не работают", () => {
+  const rect = defaultLayer("rect", "");
+  for (const type of ["letters", "tracking"] as const) {
+    const layer = { ...rect, anim: { ...rect.anim, in: type } };
+    assert.deepEqual(frameAt(layer, 0.3, 6), IDENTITY, type);
+  }
+});
+
+test("огонёк и сердцебиение колеблются около исходного", () => {
+  for (const loop of ["flicker", "heartbeat"] as const) {
+    const layer = text({ loop, loopPeriod: 1 });
+    const scales = [0.05, 0.1, 0.3, 0.5, 0.8].map((t) => frameAt(layer, t, 6).scale);
+    assert.ok(Math.max(...scales) > 1.01, `${loop} шевелится`);
+    assert.ok(
+      scales.every((v) => v > 0.9 && v < 1.2),
+      `${loop} без скачков`,
+    );
+  }
 });

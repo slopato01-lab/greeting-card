@@ -48,7 +48,9 @@ const chrome = spawn(
     `--user-data-dir=${profile}`,
     "about:blank",
   ],
-  { stdio: "ignore" },
+  // Своя группа процессов: у Chrome есть дочерние (рендерер, GPU),
+  // и они дописывают профиль после выхода главного.
+  { stdio: "ignore", detached: true },
 );
 
 try {
@@ -108,6 +110,20 @@ try {
   console.log(result.result?.result?.value);
   ws.close();
 } finally {
-  chrome.kill();
-  rmSync(profile, { recursive: true, force: true });
+  const exited = new Promise((resolve) => chrome.once("exit", resolve));
+  try {
+    process.kill(-chrome.pid, "SIGTERM");
+  } catch {
+    chrome.kill();
+  }
+  await exited;
+  // Подчищаем профиль; не вышло за секунду — не повод ронять проверку.
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    try {
+      rmSync(profile, { recursive: true, force: true });
+      break;
+    } catch {
+      await sleep(100);
+    }
+  }
 }

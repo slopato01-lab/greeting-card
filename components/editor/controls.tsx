@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { type ChangeEvent, type ReactNode, useRef, useState, useSyncExternalStore } from "react";
 
 import { Icon } from "@/components/Icon";
 import { type Color, parseColor, type HexColor } from "@/lib/editor/document";
@@ -27,18 +27,25 @@ export function ToolButton({
   onClick,
   disabled = false,
   className,
+  "aria-expanded": expanded,
+  "aria-controls": controls,
 }: {
   icon: IconName;
   labelKey: TextKey;
   onClick: () => void;
   disabled?: boolean;
   className?: string;
+  /** Для кнопок, которые раскрывают панель, — каталог стикеров. */
+  "aria-expanded"?: boolean;
+  "aria-controls"?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-expanded={expanded}
+      aria-controls={controls}
       className={[TOOL_BASE, className].filter(Boolean).join(" ")}
     >
       <Icon name={icon} size={20} className="shrink-0" />
@@ -79,6 +86,48 @@ export function IconToggle({
     >
       <Icon name={icon} size={20} />
     </button>
+  );
+}
+
+/** Кнопка, которая открывает скрытое поле выбора файла. */
+export function FileButton({
+  icon,
+  labelKey,
+  accept,
+  disabled,
+  onFile,
+}: {
+  icon: IconName;
+  labelKey: TextKey;
+  accept: string;
+  disabled: boolean;
+  onFile: (file: File) => void;
+}) {
+  const input = useRef<HTMLInputElement>(null);
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    // Сбрасываем, чтобы повторный выбор того же файла снова сработал.
+    event.target.value = "";
+    if (file !== undefined) onFile(file);
+  };
+  return (
+    <>
+      <ToolButton
+        icon={icon}
+        labelKey={labelKey}
+        disabled={disabled}
+        onClick={() => input.current?.click()}
+      />
+      <input
+        ref={input}
+        type="file"
+        accept={accept}
+        className="hidden"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={onChange}
+      />
+    </>
   );
 }
 

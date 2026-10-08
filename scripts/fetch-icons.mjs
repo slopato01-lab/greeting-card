@@ -75,6 +75,7 @@ const ICONS = [
     where: "редактор: по правому краю",
   },
   { name: "picker", source: "tabler:color-picker", mono: true, where: "редактор: свой цвет" },
+  { name: "sticker", source: "tabler:sticker", mono: true, where: "редактор: стикеры" },
   // Наклейки открытки «С днём рождения!» — Noto, Apache 2.0.
   { name: "balloon", source: "noto:balloon", where: "наклейка в открытке «С днём рождения!»" },
   { name: "cake", source: "noto:birthday-cake", where: "наклейка в открытке «С днём рождения!»" },

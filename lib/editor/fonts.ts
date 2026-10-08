@@ -13,10 +13,12 @@ import {
   Oswald,
   Pacifico,
   Playfair_Display,
+  PT_Mono,
   PT_Serif,
   Roboto_Slab,
   Rubik,
   Russo_One,
+  Shantell_Sans,
 } from "next/font/google";
 
 import type { FontId } from "@/lib/editor/document";
@@ -127,8 +129,22 @@ const amatic = Amatic_SC({
   preload: false,
   weight: ["400", "700"],
 });
+// Shantell Sans — маркерный рукописный, ближе всего к заголовку из
+// design/пример анимации и дизайна.MP4. PT Mono — пожелание из того же видео.
+const shantell = Shantell_Sans({
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  preload: false,
+  style: ["normal", "italic"],
+});
+const ptMono = PT_Mono({
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  preload: false,
+  weight: "400",
+});
 
-export const FONT_GROUPS = ["sans", "serif", "accent", "hand"] as const;
+export const FONT_GROUPS = ["sans", "serif", "accent", "hand", "mono"] as const;
 export type FontGroup = (typeof FONT_GROUPS)[number];
 
 export type FontInfo = {
@@ -173,6 +189,8 @@ export const FONTS: readonly FontInfo[] = [
   { id: "marck", group: "hand", label: "font.marck", family: marck.style.fontFamily },
   { id: "badscript", group: "hand", label: "font.badscript", family: badScript.style.fontFamily },
   { id: "amatic", group: "hand", label: "font.amatic", family: amatic.style.fontFamily },
+  { id: "shantell", group: "hand", label: "font.shantell", family: shantell.style.fontFamily },
+  { id: "ptmono", group: "mono", label: "font.ptmono", family: ptMono.style.fontFamily },
 ];
 
 /** Семейства всех шрифтов. Шрифты сайта — из его CSS-переменных. */

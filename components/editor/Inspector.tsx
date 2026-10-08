@@ -2,6 +2,7 @@
 
 import {
   ColorPicker,
+  FileButton,
   GroupLabel,
   IconToggle,
   Panel,
@@ -25,6 +26,8 @@ import {
 } from "@/lib/editor/document";
 import { FONT_GROUPS, FONTS, type FontGroup, type FontInfo } from "@/lib/editor/fonts";
 import type { TextStyle } from "@/lib/editor/fabric";
+import { stickerInfo } from "@/lib/editor/stickers";
+import { pillVisual } from "@/components/site/pill";
 import { type TextKey, t } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons/generated";
 
@@ -33,6 +36,7 @@ const GROUP_NAME: Record<FontGroup, TextKey> = {
   serif: "editor.fontGroup.serif",
   accent: "editor.fontGroup.accent",
   hand: "editor.fontGroup.hand",
+  mono: "editor.fontGroup.mono",
 };
 
 const ALIGNS: { value: TextAlign; icon: IconName; label: TextKey }[] = [
@@ -191,6 +195,9 @@ export function Inspector({
   onTextStyle,
   onAnimation,
   onRemove,
+  onReplaceImage,
+  onMono,
+  onSpacing,
   className,
 }: {
   selected: Layer | null;
@@ -201,8 +208,13 @@ export function Inspector({
   onTextStyle: (style: TextStyle) => void;
   onAnimation: (change: Partial<Animation>) => void;
   onRemove: () => void;
+  onReplaceImage: (file: File) => void;
+  onMono: (mono: boolean) => void;
+  onSpacing: (spacing: number) => void;
   className?: string;
 }) {
+  const placeholder =
+    selected?.kind === "sticker" && stickerInfo(selected.sticker).placeholder === true;
   return (
     <Panel labelledBy="editor-props" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-props" labelKey="editor.props" />
@@ -217,7 +229,36 @@ export function Inspector({
         </p>
       ) : (
         <>
-          {selected.kind === "image" ? null : (
+          {/* Заглушка в шаблоне и своё фото: заменить на снимок. */}
+          {placeholder || selected.kind === "image" ? (
+            <div className="flex flex-col gap-[8px]">
+              {placeholder ? (
+                <p className="font-ui text-note xl:text-note-d text-body leading-[1.4]">
+                  {t("editor.photo.replaceHint")}
+                </p>
+              ) : null}
+              <FileButton
+                icon="photo"
+                labelKey="editor.photo.replace"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+                disabled={false}
+                onFile={onReplaceImage}
+              />
+            </div>
+          ) : null}
+
+          {selected.kind === "image" ? (
+            <button
+              type="button"
+              aria-pressed={selected.mono}
+              onClick={() => onMono(!selected.mono)}
+              className="pill-tap self-start"
+            >
+              <span className={pillVisual(selected.mono)}>{t("editor.photo.mono")}</span>
+            </button>
+          ) : null}
+
+          {selected.kind === "image" || selected.kind === "sticker" ? null : (
             <>
               <GroupLabel id="editor-color" labelKey="editor.props.color" />
               <ColorPicker labelledBy="editor-color" value={selected.fill} onChange={onFill} />
@@ -237,6 +278,16 @@ export function Inspector({
                 step={1}
                 display={String(Math.round(selected.fontSize))}
                 onChange={onFontSize}
+              />
+
+              <Slider
+                labelKey="editor.props.spacing"
+                value={selected.spacing}
+                min={LIMITS.spacing.min}
+                max={400}
+                step={10}
+                display={String(Math.round(selected.spacing))}
+                onChange={onSpacing}
               />
 
               <div className="flex flex-wrap gap-x-[24px] gap-y-[12px]">
