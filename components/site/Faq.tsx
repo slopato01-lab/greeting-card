@@ -14,7 +14,7 @@ import { type TextKey, t } from "@/lib/i18n";
  * Раскладка — блок «панель со счётчиком + большая картинка» из макета
  * главной (design/главная.jpg). Слева белая панель: счётчик поводов
  * 01–04, название выбранного повода, заголовок секции и стрелки.
- * Справа на месте картинки — розовая панель с карточкой ответа.
+ * Справа на месте картинки — тёмная панель с белой карточкой ответа.
  *
  * Номер в счётчике переключает карточку — это вкладки, поэтому
  * role="tablist" и блуждающий tabindex, а не набор переключателей:
@@ -106,7 +106,7 @@ export function Faq() {
   return (
     <section className="pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
       <div className="page-shell grid gap-[15px] xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-5">
-        <div className="rounded-card xl:rounded-card-d border-ink flex flex-col border bg-white px-[20px] pt-[20px] pb-[25px] xl:px-[50px] xl:pt-[45px] xl:pb-[50px]">
+        <div className="rounded-panel xl:rounded-panel-d flex flex-col bg-white px-[20px] pt-[20px] pb-[25px] xl:px-[50px] xl:pt-[45px] xl:pb-[50px]">
           <div
             role="tablist"
             aria-labelledby="faq-title"
@@ -143,13 +143,13 @@ export function Faq() {
 
           <p
             aria-hidden="true"
-            className="font-ui text-note xl:text-note-d text-body mt-[40px] xl:mt-auto xl:pt-[80px]"
+            className="font-ui text-note xl:text-note-d text-muted mt-[40px] xl:mt-auto xl:pt-[80px]"
           >
             {t(current.pill)}
           </p>
           <h2
             id="faq-title"
-            className="font-display text-h2 xl:text-h2-d mt-[8px] font-medium xl:mt-[12px]"
+            className="font-display text-h2 xl:text-h2-d mt-[8px] font-semibold tracking-tight xl:mt-[12px]"
           >
             {t("faq.title")}
           </h2>
@@ -166,16 +166,18 @@ export function Faq() {
         {/* Карточка ответа: высота из старого макета (510 / 580) стала
             минимальной — список пунктов на русском переносится, и у
             четырёх поводов пункты разной длины. */}
-        <div className="bg-pink-tint/10 rounded-card xl:rounded-card-d flex p-[10px] xl:p-[40px]">
+        <div className="bg-dark rounded-panel xl:rounded-panel-d flex p-[10px] xl:p-[40px]">
           <div
             role="tabpanel"
             id={panelId}
             aria-labelledby={tabId(active)}
-            className="rounded-faq border-ink shadow-faq flex-1 border bg-white px-[15px] pt-[30px] pb-[30px] xl:min-h-[580px] xl:px-[50px] xl:pt-[50px] xl:pb-[50px]"
+            className="rounded-card xl:rounded-card-d flex-1 bg-white px-[15px] pt-[30px] pb-[30px] xl:min-h-[580px] xl:px-[50px] xl:pt-[50px] xl:pb-[50px]"
           >
-            <h3 className="font-display text-h3 xl:text-h3-d font-medium">{t(current.title)}</h3>
+            <h3 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+              {t(current.title)}
+            </h3>
 
-            <p className="font-display text-card xl:text-card-d mt-[30px] font-medium xl:mt-[40px]">
+            <p className="font-ui text-card xl:text-card-d text-body mt-[30px] leading-[1.4] xl:mt-[40px]">
               {t(current.lead)}
             </p>
 
@@ -185,11 +187,9 @@ export function Faq() {
                   {/* Точка списка — кружок фоном: своего рисунка у неё нет. */}
                   <span
                     aria-hidden="true"
-                    className="bg-ink mt-[6px] size-[6px] shrink-0 rounded-full xl:mt-0 xl:size-[10px]"
+                    className="bg-pink mt-[7px] size-[6px] shrink-0 rounded-full xl:mt-0 xl:size-[8px]"
                   />
-                  <span className="font-display text-note xl:text-card-d leading-[1.15]">
-                    {t(key)}
-                  </span>
+                  <span className="font-ui text-note xl:text-card-d leading-[1.4]">{t(key)}</span>
                 </li>
               ))}
             </ul>

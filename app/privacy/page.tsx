@@ -60,9 +60,11 @@ export default function PrivacyPage() {
 
         {/* Чего на сайте ещё нет. Список честнее молчания: эти четыре
             документа обязаны появиться до первой продажи. */}
-        <div className="border-ink rounded-card xl:rounded-card-d mt-[40px] border-2 px-[24px] py-[28px] xl:mt-[60px] xl:max-w-[900px] xl:px-[40px] xl:py-[34px]">
-          <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t("legal.todo.title")}</h2>
-          <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15]">
+        <div className="rounded-card xl:rounded-card-d mt-[40px] bg-white px-[24px] py-[28px] xl:mt-[60px] xl:max-w-[900px] xl:px-[40px] xl:py-[34px]">
+          <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+            {t("legal.todo.title")}
+          </h2>
+          <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4]">
             {t("legal.todo.body")}
           </p>
 

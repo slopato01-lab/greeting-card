@@ -18,12 +18,15 @@ export const PAGE_TITLE_ID = "page-title";
 export function PageHead({ title, lead }: { title: TextKey; lead?: TextKey }) {
   return (
     <div className="page-shell pt-[40px] pb-[10px] xl:pt-[80px] xl:pb-[20px]">
-      <h1 id={PAGE_TITLE_ID} className="font-display text-h2 xl:text-h2-d font-medium">
+      <h1
+        id={PAGE_TITLE_ID}
+        className="font-display text-h2 xl:text-h2-d font-semibold tracking-tight"
+      >
         {t(title)}
       </h1>
 
       {lead === undefined ? null : (
-        <p className="font-display text-sub xl:text-sub-d text-body mt-[14px] leading-[1.15] xl:mt-[25px] xl:max-w-[900px]">
+        <p className="font-ui text-sub xl:text-sub-d text-body mt-[14px] leading-[1.4] xl:mt-[25px] xl:max-w-[900px]">
           {t(lead)}
         </p>
       )}

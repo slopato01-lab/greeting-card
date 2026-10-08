@@ -10,20 +10,20 @@ import { icons, type IconName } from "@/lib/icons/generated";
 const SAMPLE = "Съешь ещё этих мягких булок";
 
 const COLORS: ReadonlyArray<{ name: string; value: string; role: string }> = [
-  { name: "pink", value: "#c9356f", role: "акцент: кнопки, активные фильтры, подложка H1" },
-  { name: "pink-tint", value: "#ff3d89", role: "только с opacity 0.1 — заливка секций" },
-  { name: "pink-card", value: "#ffecf3", role: "фон карточек внутри розовых секций" },
-  { name: "dark", value: "#2d2b32", role: "тёмные блоки: CTA и подвал" },
-  { name: "dark-badge", value: "#23202b", role: "номерные квадраты этапов" },
-  { name: "ink", value: "#000000", role: "текст и все обводки" },
-  { name: "nav", value: "#3a3a3a", role: "навигация в шапке (десктоп)" },
-  { name: "btn-ghost", value: "#363636", role: "текст вторичной кнопки (мобильный)" },
-  { name: "muted", value: "#7a7a7a", role: "второстепенный текст, обводки неактивных пилюль" },
-  { name: "muted-2", value: "#6c6c6c", role: "неактивные пилюли фильтров (десктоп)" },
-  { name: "body", value: "#5c5c5c", role: "тело текста в карточках" },
-  { name: "caption", value: "#5a5a5a", role: "подписи, чек-строки" },
-  { name: "photo", value: "#909090", role: "плейсхолдер изображения" },
-  { name: "white", value: "#ffffff", role: "фон" },
+  {
+    name: "pink",
+    value: "#c9356f",
+    role: "точечный акцент: кружок кнопки, выбранная пилюля, галочки",
+  },
+  { name: "canvas", value: "#f2f2f2", role: "основа страницы" },
+  { name: "white", value: "#ffffff", role: "панели и карточки" },
+  { name: "line", value: "#e2e2e2", role: "тонкие линии, наведение на светлом" },
+  { name: "dark", value: "#161616", role: "тёмные блоки: герой, CTA, главная кнопка" },
+  { name: "dark-2", value: "#262626", role: "поверхность на тёмном, наведение тёмной кнопки" },
+  { name: "ink", value: "#111111", role: "основной текст" },
+  { name: "body", value: "#4a4a4a", role: "текст абзацев и карточек" },
+  { name: "muted", value: "#6a6a6a", role: "второстепенный текст, обводки полей" },
+  { name: "photo", value: "#c8c8c8", role: "плейсхолдер изображения" },
 ];
 
 const TYPE_SCALE: ReadonlyArray<{
@@ -106,23 +106,12 @@ const TYPE_SCALE: ReadonlyArray<{
 ];
 
 const RADII: ReadonlyArray<{ token: string; px: string; role: string }> = [
-  { token: "radius-h1", px: "5", role: "подложка H1, мобильный" },
-  { token: "radius-h1-d", px: "9", role: "подложка H1, десктоп" },
-  { token: "radius-btn", px: "10", role: "кнопка, мобильный" },
-  { token: "radius-btn-header-d", px: "12", role: "кнопка шапки, десктоп" },
-  { token: "radius-faq", px: "12", role: "белая карточка FAQ" },
-  { token: "radius-faq-btn-d", px: "14", role: "кнопки в карточке FAQ" },
-  { token: "radius-badge", px: "16", role: "наклонная плашка, мобильный" },
-  { token: "radius-btn-d", px: "18", role: "главная кнопка, десктоп" },
-  { token: "radius-card", px: "20", role: "карточка шаблона, мобильный" },
-  { token: "radius-benefit-d", px: "20", role: "карточка преимущества, десктоп" },
-  { token: "radius-cta-d", px: "22", role: "тёмный блок CTA, десктоп" },
-  { token: "radius-step", px: "25", role: "карточка этапа, мобильный" },
-  { token: "radius-strip-d", px: "28", role: "плашка карточки шаблона" },
-  { token: "radius-card-d", px: "30", role: "карточки, десктоп" },
-  { token: "radius-badge-d", px: "36", role: "наклонная плашка, десктоп" },
-  { token: "radius-pill", px: "31", role: "пилюля фильтра, мобильный" },
-  { token: "radius-pill-d", px: "47", role: "пилюля фильтра, десктоп" },
+  { token: "radius-inner", px: "12", role: "поле ввода, плашка, мини-превью" },
+  { token: "radius-inner-d", px: "16", role: "то же, десктоп" },
+  { token: "radius-card", px: "20", role: "карточка" },
+  { token: "radius-card-d", px: "24", role: "карточка, десктоп" },
+  { token: "radius-panel", px: "24", role: "панель секции, герой, CTA" },
+  { token: "radius-panel-d", px: "32", role: "то же, десктоп" },
 ];
 
 function Section({
@@ -137,8 +126,8 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="border-ink/10 scroll-mt-6 border-t pt-8">
-      <h2 className="font-display text-h3 xl:text-h3-d font-medium">{title}</h2>
+    <section id={id} className="border-line scroll-mt-6 border-t pt-8">
+      <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">{title}</h2>
       {note ? <p className="font-ui text-body mt-2 max-w-[70ch] text-[15px]">{note}</p> : null}
       <div className="mt-6">{children}</div>
     </section>
@@ -149,8 +138,8 @@ function Label({ children }: { children: ReactNode }) {
   return <span className="font-ui text-muted text-[13px]">{children}</span>;
 }
 
-/** Кнопка в конкретном состоянии. Состояний в макете нет —
- *  все, кроме обычного, спроектированы от токенов и требуют утверждения. */
+/** Кнопка в конкретном состоянии: тёмная пилюля с розовым кружком.
+ *  Состояния спроектированы от токенов и требуют утверждения. */
 function Button({
   state,
   live = false,
@@ -159,19 +148,19 @@ function Button({
   live?: boolean;
 }) {
   const base =
-    "inline-flex min-h-tap items-center justify-center gap-2 rounded-btn px-6 font-ui text-btn font-medium text-white xl:rounded-btn-d xl:px-8 xl:text-btn-d";
+    "inline-flex min-h-tap h-[52px] items-center justify-between gap-4 rounded-full ps-6 pe-[6px] font-ui text-btn font-medium";
 
   const byState: Record<typeof state, string> = {
-    normal: "bg-pink",
-    hover: "bg-[color-mix(in_oklab,var(--color-pink)_90%,var(--color-ink))]",
-    active: "bg-[color-mix(in_oklab,var(--color-pink)_80%,var(--color-ink))]",
-    focus: "bg-pink outline-2 outline-offset-2 outline-ink",
-    disabled: "bg-muted",
-    loading: "bg-pink",
+    normal: "bg-dark text-white",
+    hover: "bg-dark-2 text-white",
+    active: "bg-ink text-white",
+    focus: "bg-dark text-white outline-2 outline-offset-2 outline-ink",
+    disabled: "bg-line text-muted",
+    loading: "bg-dark text-white",
   };
 
   const interactive = live
-    ? "bg-pink hover:bg-[color-mix(in_oklab,var(--color-pink)_90%,var(--color-ink))] active:bg-[color-mix(in_oklab,var(--color-pink)_80%,var(--color-ink))] transition-colors"
+    ? "bg-dark text-white hover:bg-dark-2 active:bg-ink transition-colors"
     : byState[state];
 
   return (
@@ -182,13 +171,17 @@ function Button({
       aria-busy={state === "loading"}
       aria-label={state === "loading" ? "Загрузка" : undefined}
     >
-      {state === "loading" ? (
-        <span
-          aria-hidden="true"
-          className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
-        />
-      ) : null}
       Создать открытку
+      <span
+        aria-hidden="true"
+        className={`flex size-[40px] items-center justify-center rounded-full text-white ${state === "disabled" ? "bg-muted" : "bg-pink"}`}
+      >
+        {state === "loading" ? (
+          <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+        ) : (
+          <Icon name="next" size={20} />
+        )}
+      </span>
     </button>
   );
 }
@@ -203,12 +196,12 @@ function Pill({
   children: ReactNode;
 }) {
   const byState: Record<typeof state, string> = {
-    active: "bg-pink text-white border-pink",
-    normal: "bg-white text-muted-2 border-muted",
-    hover: "bg-pink-card text-ink border-ink",
-    pressed: "bg-pink-card text-ink border-ink",
-    focus: "bg-white text-muted-2 border-muted outline-2 outline-offset-2 outline-ink",
-    disabled: "bg-white text-muted/50 border-muted/40",
+    active: "bg-pink text-white",
+    normal: "bg-white text-body",
+    hover: "bg-white text-ink",
+    pressed: "bg-line text-ink",
+    focus: "bg-white text-body outline-2 outline-offset-2 outline-ink",
+    disabled: "bg-white text-photo",
   };
 
   return (
@@ -216,7 +209,7 @@ function Pill({
       type="button"
       disabled={state === "disabled"}
       // tap-zone: невидимая область нажатия, подсвечивается переключателем ниже
-      className={`tap-zone rounded-pill font-ui xl:rounded-pill-d relative inline-flex h-[31px] items-center border px-4 text-[14px] xl:h-[47px] xl:px-6 xl:text-[16px] ${byState[state]} before:h-tap before:absolute before:inset-x-0 before:top-1/2 before:-translate-y-1/2 before:content-['']`}
+      className={`tap-zone font-ui relative inline-flex h-[33px] items-center rounded-full px-5 text-[14px] xl:h-[44px] xl:px-[26px] xl:text-[16px] ${byState[state]} before:h-tap before:absolute before:inset-x-0 before:top-1/2 before:-translate-y-1/2 before:content-['']`}
     >
       {children}
     </button>
@@ -261,13 +254,13 @@ export default function StyleguidePage() {
         <Section
           id="color"
           title="Цвет"
-          note="Акцент один — розовый #c9356f. Он маркирует действие и подложку заголовка, больше нигде. Контраст #7a7a7a на белом — 4.6:1, ниже этого серого опускаться нельзя."
+          note="Монохром из design/главная.jpg. Розовый #c9356f — только точечно: кружок главной кнопки, выбранная пилюля, галочки и маркеры списков. --muted #6a6a6a даёт 4.84:1 на основе и 5.41:1 на белом — светлее для текста не брать."
         >
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {COLORS.map((c) => (
               <li key={c.name} className="flex items-start gap-3">
                 <span
-                  className="rounded-btn border-ink/15 mt-0.5 size-12 shrink-0 border"
+                  className="border-line mt-0.5 size-12 shrink-0 rounded-full border"
                   style={{ background: c.value } satisfies CSSProperties}
                 />
                 <span className="flex flex-col">
@@ -283,13 +276,13 @@ export default function StyleguidePage() {
         <Section
           id="radius"
           title="Радиусы"
-          note="Берутся из макета как есть и не унифицируются. Обводки только 1px и 2px: дробные значения в макете — артефакт масштабирования фрейма."
+          note="Три ступени. Кнопки и пилюли — полные пилюли, rounded-full. Обводки только 1px и 2px."
         >
           <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
             {RADII.map((r) => (
               <li key={r.token} className="flex flex-col gap-2">
                 <span
-                  className="border-ink bg-pink-card h-16 w-full border"
+                  className="h-16 w-full bg-white"
                   style={{ borderRadius: `${r.px}px` } satisfies CSSProperties}
                 />
                 <span className="font-ui text-[13px]">--{r.token}</span>
@@ -301,23 +294,17 @@ export default function StyleguidePage() {
           </ul>
         </Section>
 
-        <Section id="shadow" title="Тени" note="Обе почти незаметные — так и задумано.">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div className="rounded-benefit-d shadow-card bg-white p-6">
-              <span className="font-ui text-[15px]">--shadow-card</span>
-              <p className="font-ui text-muted text-[13px]">карточка преимущества</p>
-            </div>
-            <div className="rounded-faq shadow-faq bg-white p-6">
-              <span className="font-ui text-[15px]">--shadow-faq</span>
-              <p className="font-ui text-muted text-[13px]">белая карточка FAQ</p>
-            </div>
+        <Section id="shadow" title="Тени" note="Одна: наведение на карточку шаблона.">
+          <div className="rounded-card-d shadow-card bg-white p-6 sm:max-w-[50%]">
+            <span className="font-ui text-[15px]">--shadow-card</span>
+            <p className="font-ui text-muted text-[13px]">карточка шаблона, наведение</p>
           </div>
         </Section>
 
         <Section
           id="button"
           title="Кнопка"
-          note="Состояний в макете нет. Наведение и нажатие — розовый, смешанный с --color-ink на 10% и 20%. Фокус — обводка 2px цветом --ink со смещением 2px. Выключенная — --color-muted. Это предложение, его надо утвердить."
+          note="Тёмная пилюля с розовым кружком. Наведение — --dark-2, нажатие — --ink. Фокус — обводка 2px цветом --ink со смещением 2px. Выключенная — заливка --line, текст и кружок --muted. На тёмных блоках кнопка белая: наведение --canvas, нажатие --line."
         >
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">

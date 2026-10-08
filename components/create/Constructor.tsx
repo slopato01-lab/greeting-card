@@ -197,17 +197,15 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-[8px]">
-      <span className="font-display text-card xl:text-card-d font-medium">{t(label)}</span>
-      {hint === undefined ? null : (
-        <span className="font-ui text-note text-caption">{t(hint)}</span>
-      )}
+      <span className="font-ui text-card xl:text-card-d font-medium">{t(label)}</span>
+      {hint === undefined ? null : <span className="font-ui text-note text-muted">{t(hint)}</span>}
       {children}
     </label>
   );
 }
 
 const INPUT =
-  "font-display text-card xl:text-card-d border-ink rounded-btn xl:rounded-faq-btn-d " +
+  "font-ui text-card xl:text-card-d border-muted rounded-inner xl:rounded-inner-d " +
   "min-h-tap w-full border bg-white px-[16px] py-[12px] xl:px-[20px] xl:py-[16px]";
 
 export function Constructor() {
@@ -407,10 +405,10 @@ export function Constructor() {
     <div className="page-shell pt-[30px] pb-[70px] xl:pt-[50px] xl:pb-[120px]">
       {/* Полоса прогресса декоративная: то же самое сказано словами
           строкой выше, и скринридер читает именно её. */}
-      <p className="font-ui text-note text-caption">
+      <p className="font-ui text-note text-muted">
         {t("create.step")} {step + 1} {t("create.of")} {STEP_TITLES.length}
       </p>
-      <div aria-hidden="true" className="bg-pink-card mt-[10px] h-[6px] w-full rounded-full">
+      <div aria-hidden="true" className="bg-line mt-[10px] h-[6px] w-full rounded-full">
         <div
           className="bg-pink h-full rounded-full transition-[width]"
           style={{ width: `${((step + 1) / STEP_TITLES.length) * 100}%` }}
@@ -420,13 +418,13 @@ export function Constructor() {
       <h2
         ref={headingRef}
         tabIndex={-1}
-        className="font-display text-h2 xl:text-h2-d mt-[24px] font-medium xl:mt-[40px]"
+        className="font-display text-h2 xl:text-h2-d mt-[24px] font-semibold tracking-tight xl:mt-[40px]"
       >
         {t(STEP_TITLES[step] ?? "step.1.title")}
       </h2>
 
       {hint === undefined || hint === null ? null : (
-        <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15]">
+        <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4]">
           {t(hint)}
         </p>
       )}
@@ -443,7 +441,7 @@ export function Constructor() {
                 onClick={() => update({ occasion: key })}
                 className="pill-tap"
               >
-                <span className={pillVisual("catalog", draft.occasion === key)}>{t(key)}</span>
+                <span className={pillVisual("canvas", draft.occasion === key)}>{t(key)}</span>
               </button>
             ))}
           </div>
@@ -459,13 +457,16 @@ export function Constructor() {
                   aria-pressed={draft.game === key}
                   onClick={() => update({ game: key })}
                   className={
-                    "rounded-card xl:rounded-card-d flex w-full flex-col overflow-hidden border-2 text-left transition-colors " +
-                    (draft.game === key ? "border-pink bg-pink-card" : "border-ink bg-white")
+                    "rounded-card xl:rounded-card-d flex w-full flex-col border-2 bg-white p-[8px] text-left transition-colors " +
+                    (draft.game === key ? "border-pink" : "hover:border-line border-transparent")
                   }
                 >
                   {/* Живого превью нет: игровых модулей ещё не существует. */}
-                  <span aria-hidden="true" className="bg-photo block h-[150px] w-full" />
-                  <span className="font-display text-h3 xl:text-h3-d px-[20px] py-[18px] font-medium">
+                  <span
+                    aria-hidden="true"
+                    className="bg-photo rounded-inner block h-[150px] w-full"
+                  />
+                  <span className="font-display text-h3 xl:text-h3-d px-[12px] py-[14px] font-semibold tracking-tight">
                     {t(key)}
                   </span>
                 </button>
@@ -480,12 +481,12 @@ export function Constructor() {
             <label
               onDrop={onDrop}
               onDragOver={(event) => event.preventDefault()}
-              className="border-ink rounded-card xl:rounded-card-d hover:bg-pink-card flex min-h-[160px] cursor-pointer flex-col items-center justify-center border-2 border-dashed px-[20px] py-[30px] text-center transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-black"
+              className="border-muted rounded-card xl:rounded-card-d hover:bg-canvas flex min-h-[160px] cursor-pointer flex-col items-center justify-center border-2 border-dashed bg-white px-[20px] py-[30px] text-center transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-black"
             >
-              <span className="font-display text-card xl:text-card-d font-medium">
+              <span className="font-ui text-card xl:text-card-d font-medium">
                 {t("create.photos.pick")}
               </span>
-              <span className="font-ui text-note text-caption mt-[8px]">
+              <span className="font-ui text-note text-muted mt-[8px]">
                 {t("create.photos.limit")}
               </span>
               <input
@@ -498,18 +499,18 @@ export function Constructor() {
             </label>
 
             {photoError === null ? null : (
-              <p role="alert" className="font-display text-card text-pink mt-[14px] leading-[1.15]">
+              <p role="alert" className="font-ui text-card text-pink mt-[14px] leading-[1.4]">
                 {t(photoError)}
               </p>
             )}
 
             {photos.length === 0 ? (
-              <p className="font-display text-card xl:text-card-d text-body mt-[20px] leading-[1.15]">
+              <p className="font-ui text-card xl:text-card-d text-body mt-[20px] leading-[1.4]">
                 {t("empty.photos")}
               </p>
             ) : (
               <>
-                <p className="font-ui text-note text-caption mt-[20px]">
+                <p className="font-ui text-note text-muted mt-[20px]">
                   {t("create.photos.count")} {photos.length} / {MAX_PHOTOS}
                 </p>
                 <ul role="list" className="mt-[12px] grid grid-cols-2 gap-[12px] xl:grid-cols-5">
@@ -522,7 +523,7 @@ export function Constructor() {
                       <img
                         src={photo.url}
                         alt=""
-                        className="rounded-card border-ink aspect-square w-full border object-cover"
+                        className="rounded-inner aspect-square w-full object-cover"
                       />
                       <button
                         type="button"
@@ -567,7 +568,7 @@ export function Constructor() {
         {step === 4 ? (
           <div className="flex flex-col gap-[24px] xl:max-w-[800px]">
             <fieldset>
-              <legend className="font-display text-card xl:text-card-d font-medium">
+              <legend className="font-ui text-card xl:text-card-d font-medium">
                 {t("create.surprise.kind")}
               </legend>
               <div className="mt-[12px] flex flex-wrap gap-[10px]">
@@ -579,7 +580,7 @@ export function Constructor() {
                     onClick={() => update({ surpriseKind: kind.id })}
                     className="pill-tap"
                   >
-                    <span className={pillVisual("catalog", draft.surpriseKind === kind.id)}>
+                    <span className={pillVisual("canvas", draft.surpriseKind === kind.id)}>
                       {t(kind.label)}
                     </span>
                   </button>
@@ -601,17 +602,17 @@ export function Constructor() {
         {/* ── 6. Готово ────────────────────────────────────── */}
         {step === LAST_STEP ? (
           <div>
-            <p className="font-display text-card xl:text-card-d text-body leading-[1.15] xl:max-w-[900px]">
+            <p className="font-ui text-card xl:text-card-d text-body leading-[1.4] xl:max-w-[900px]">
               {t("create.done.lead")}
             </p>
 
-            <dl className="border-ink rounded-card xl:rounded-card-d mt-[24px] flex flex-col gap-[16px] border bg-white px-[22px] py-[24px] xl:mt-[40px] xl:px-[40px] xl:py-[34px]">
+            <dl className="rounded-card xl:rounded-card-d mt-[24px] flex flex-col gap-[16px] bg-white px-[22px] py-[24px] xl:mt-[40px] xl:px-[40px] xl:py-[34px]">
               {summary.map((row) => (
                 <div key={row.label} className="flex flex-col gap-[2px] xl:flex-row xl:gap-[20px]">
-                  <dt className="font-ui text-note-d text-caption xl:w-[220px] xl:shrink-0">
+                  <dt className="font-ui text-note-d text-muted xl:w-[220px] xl:shrink-0">
                     {t(row.label)}
                   </dt>
-                  <dd className="font-display text-card xl:text-card-d break-words">{row.value}</dd>
+                  <dd className="font-ui text-card xl:text-card-d break-words">{row.value}</dd>
                 </div>
               ))}
             </dl>
@@ -626,7 +627,7 @@ export function Constructor() {
                 className="xl:w-[450px]"
               />
               <Button labelKey="cta.pay" disabled className="xl:w-[450px]" />
-              <p className="font-ui text-note text-caption">{t("create.pay.soon")}</p>
+              <p className="font-ui text-note text-muted">{t("create.pay.soon")}</p>
             </div>
           </div>
         ) : null}
@@ -660,7 +661,7 @@ export function Constructor() {
         </div>
       ) : null}
 
-      <p className="font-ui text-note text-caption mt-[30px]">
+      <p className="font-ui text-note text-muted mt-[30px]">
         {t("create.draft.local")}
         {saved ? ` ${t("create.draft.saved")}.` : ""}
       </p>

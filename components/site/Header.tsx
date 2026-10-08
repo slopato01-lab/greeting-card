@@ -10,9 +10,9 @@ import { t, type TextKey } from "@/lib/i18n";
 /**
  * Шапка лендинга.
  *
- * Мобильный (макет 341:607): логотип слева, бургер справа, линия 2px
- * под шапкой. Десктоп с 1280px (макет 324:246): логотип, четыре пункта
- * навигации, розовая кнопка.
+ * Мобильный: логотип слева, бургер справа. Десктоп с 1280px: логотип,
+ * четыре пункта навигации, кнопка. Линии под шапкой нет: со стилем
+ * из design/главная.jpg (08.10.2026) шапка лежит прямо на основе.
  *
  * Панели раскрытого меню в макете нет — спроектирована от токенов,
  * описание в docs/DESIGN.md, раздел «Панель мобильного меню».
@@ -31,7 +31,7 @@ const NAV: ReadonlyArray<{ href: string; key: TextKey }> = [
 ];
 
 const NAV_LINK = {
-  light: "font-ui tracking-base text-nav hover:text-ink active:text-ink transition-colors",
+  light: "font-ui tracking-base text-body hover:text-ink active:text-ink transition-colors",
   hero: "font-ui tracking-base whitespace-nowrap text-white hover:opacity-80 active:opacity-80 transition-opacity",
 } as const;
 
@@ -86,15 +86,13 @@ export function Header({ tone = "light" }: { tone?: "light" | "hero" }) {
     <header
       ref={headerRef}
       className={
-        hero
-          ? "on-dark header-hero page-shell pt-[10px] max-md:px-0 max-md:pt-0 xl:pt-5"
-          : "border-ink border-b-2"
+        hero ? "on-dark header-hero page-shell pt-[10px] max-md:px-0 max-md:pt-0 xl:pt-5" : ""
       }
     >
       {/* В варианте hero поля живут на тёмной карточке, а не на полосе
           страницы: те же 20 / 40, что у нижней половины в Hero. */}
       <div
-        className={hero ? "bg-dark md:rounded-t-card xl:rounded-t-card-d px-[20px] xl:px-10" : ""}
+        className={hero ? "bg-dark md:rounded-t-panel xl:rounded-t-panel-d px-[20px] xl:px-10" : ""}
       >
         <div
           className={
@@ -132,7 +130,12 @@ export function Header({ tone = "light" }: { tone?: "light" | "hero" }) {
             в базовых классах уже есть inline-flex, и он перебивает
             hidden — порядок в строке классов на это не влияет. */}
           <div className="ms-auto hidden ps-5 xl:block">
-            <Button href="/create" variant="header" labelKey="cta.create" />
+            <Button
+              href="/create"
+              variant="header"
+              tone={hero ? "light" : "dark"}
+              labelKey="cta.create"
+            />
           </div>
 
           <button
@@ -143,7 +146,7 @@ export function Header({ tone = "light" }: { tone?: "light" | "hero" }) {
             aria-expanded={open}
             aria-controls={panelId}
             className={`size-tap ms-auto flex items-center justify-center transition-colors xl:hidden ${
-              hero ? "text-white hover:opacity-80" : "text-ink hover:text-pink active:text-pink"
+              hero ? "text-white hover:opacity-80" : "text-ink hover:text-body active:text-body"
             }`}
           >
             <Icon name="burger" size={40} />
@@ -161,7 +164,7 @@ export function Header({ tone = "light" }: { tone?: "light" | "hero" }) {
                 {NAV.map((item) => (
                   <li
                     key={item.href}
-                    className={`border-t ${hero ? "border-white/20" : "border-muted"}`}
+                    className={`border-t ${hero ? "border-dark-2" : "border-line"}`}
                   >
                     <Link
                       href={item.href}
@@ -175,7 +178,12 @@ export function Header({ tone = "light" }: { tone?: "light" | "hero" }) {
               </ul>
             </nav>
 
-            <Button href="/create" labelKey="cta.create" className="mt-5" />
+            <Button
+              href="/create"
+              tone={hero ? "light" : "dark"}
+              labelKey="cta.create"
+              className="mt-5"
+            />
           </div>
         ) : null}
       </div>

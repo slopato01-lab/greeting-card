@@ -37,19 +37,21 @@ export function Steps() {
         {STEPS.map((step, index) => (
           <li
             key={step.title}
-            className="border-ink bg-pink-card rounded-step xl:rounded-card-d flex min-h-[140px] items-center justify-between gap-[20px] border-2 px-[24px] py-[24px] xl:min-h-[170px] xl:gap-10 xl:px-[60px] xl:py-[34px]"
+            className="rounded-card xl:rounded-card-d flex min-h-[140px] items-center justify-between gap-[20px] bg-white px-[24px] py-[24px] xl:min-h-[170px] xl:gap-10 xl:px-[60px] xl:py-[34px]"
           >
             <div className="xl:max-w-[820px]">
-              <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t(step.title)}</h2>
+              <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+                {t(step.title)}
+              </h2>
               {/* text-card — размер, text-body — цвет, см. globals.css */}
-              <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15] xl:mt-[14px]">
+              <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4] xl:mt-[14px]">
                 {t(step.body)}
               </p>
             </div>
 
             <span
               aria-hidden="true"
-              className="font-display text-h1 xl:text-h1-d shrink-0 leading-none font-medium"
+              className="font-ui text-h1 xl:text-h1-d shrink-0 leading-none font-light tracking-tight"
             >
               {counterNumber(index)}
             </span>

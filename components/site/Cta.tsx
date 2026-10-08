@@ -17,19 +17,20 @@ export function Cta() {
   return (
     <section className="pt-[40px] pb-[10px] xl:pt-[60px] xl:pb-[20px]">
       <div className="page-shell">
-        <div className="on-dark rounded-card xl:rounded-cta-d bg-dark flex min-h-[310px] flex-col items-center justify-center px-[20px] py-[50px] text-center xl:min-h-[480px] xl:px-[100px] xl:py-[70px]">
-          <h2 className="font-display text-h2 xl:text-h2-d font-medium text-white">
+        <div className="on-dark rounded-panel xl:rounded-panel-d bg-dark flex min-h-[310px] flex-col items-center justify-center px-[20px] py-[50px] text-center xl:min-h-[480px] xl:px-[100px] xl:py-[70px]">
+          <h2 className="font-display text-h2 xl:text-h2-d font-semibold tracking-tight text-white">
             {t("cta.title")}
           </h2>
 
-          <p className="font-display text-card xl:text-card-d mt-[43px] leading-[1.15] font-medium text-white xl:mt-[30px] xl:max-w-[820px]">
+          <p className="font-ui text-card xl:text-card-d text-photo mt-[20px] leading-[1.4] xl:mt-[24px] xl:max-w-[820px]">
             {t("cta.lead")}
           </p>
 
           <Button
             href="/create"
+            tone="light"
             labelKey="cta.create"
-            className="mt-[26px] max-w-[325px] xl:mt-[45px] xl:max-w-none"
+            className="mt-[30px] max-w-[325px] xl:mt-[40px] xl:max-w-none"
           />
         </div>
       </div>

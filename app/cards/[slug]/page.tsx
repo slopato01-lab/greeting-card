@@ -45,8 +45,8 @@ export async function generateMetadata({
 function Fact({ label, value }: { label: TextKey; value: TextKey }) {
   return (
     <div>
-      <dt className="font-ui text-note-d text-caption">{t(label)}</dt>
-      <dd className="font-display text-card xl:text-card-d mt-[2px] font-medium">{t(value)}</dd>
+      <dt className="font-ui text-note-d text-muted">{t(label)}</dt>
+      <dd className="font-ui text-card xl:text-card-d mt-[2px] font-medium">{t(value)}</dd>
     </div>
   );
 }
@@ -69,7 +69,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
       <div className="page-shell pt-[24px] xl:pt-[40px]">
         <Link
           href="/cards"
-          className="font-ui text-note-d text-caption min-h-tap inline-flex items-center gap-[8px] transition-opacity hover:opacity-70"
+          className="font-ui text-note-d text-muted min-h-tap inline-flex items-center gap-[8px] transition-opacity hover:opacity-70"
         >
           <span aria-hidden="true">←</span>
           {t("tpl.back")}
@@ -83,16 +83,16 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
           {/* Превью шаблона. Пропорции те же, что у карточки каталога. */}
           <div
             aria-hidden="true"
-            className="rounded-card xl:rounded-card-d border-ink bg-photo min-h-[317px] border-2 xl:min-h-[520px]"
+            className="rounded-card xl:rounded-card-d bg-photo min-h-[317px] xl:min-h-[520px]"
           />
 
-          <div className="border-ink rounded-card xl:rounded-card-d flex flex-col border-2 bg-white px-[24px] pt-[24px] pb-[28px] xl:px-[40px] xl:pt-[40px] xl:pb-[44px]">
+          <div className="rounded-card xl:rounded-card-d flex flex-col bg-white px-[24px] pt-[24px] pb-[28px] xl:px-[40px] xl:pt-[40px] xl:pb-[44px]">
             <dl className="flex flex-col gap-[14px]">
               <Fact label="tpl.occasion" value={template.filter} />
               <Fact label="tpl.game" value={template.game} />
             </dl>
 
-            <h2 className="font-display text-h3 xl:text-h3-d mt-[28px] font-medium">
+            <h2 className="font-display text-h3 xl:text-h3-d mt-[28px] font-semibold tracking-tight">
               {t("tpl.inside")}
             </h2>
 
@@ -100,7 +100,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
               {template.items.map((item) => (
                 <li
                   key={item}
-                  className="font-display text-card xl:text-card-d text-body flex gap-[10px] leading-[1.15]"
+                  className="font-ui text-card xl:text-card-d text-body flex gap-[10px] leading-[1.4]"
                 >
                   {/* Маркер декоративный: списку он смысла не добавляет,
                       его роль уже несёт сам список. */}
@@ -124,7 +124,10 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
       </section>
 
       <section className="page-shell pb-[70px] xl:pb-[120px]">
-        <h2 id="more-templates" className="font-display text-h3 xl:text-h2-d font-medium">
+        <h2
+          id="more-templates"
+          className="font-display text-h3 xl:text-h2-d font-semibold tracking-tight"
+        >
           {t("tpl.more")}
         </h2>
 

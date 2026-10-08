@@ -51,11 +51,13 @@ export default function FaqPage() {
         >
           {QA.map((item) => (
             <li key={item.q}>
-              <details className="group rounded-faq border-ink shadow-faq border bg-white">
+              <details className="group rounded-card bg-white">
                 {/* min-h-tap на summary, а не на тексте внутри: нажимают
                     всю строку целиком, а не только заголовок. */}
                 <summary className="min-h-tap flex cursor-pointer list-none items-center justify-between gap-[16px] px-[20px] py-[18px] xl:px-[40px] xl:py-[26px] [&::-webkit-details-marker]:hidden">
-                  <h2 className="font-display text-card xl:text-h3-d font-medium">{t(item.q)}</h2>
+                  <h2 className="font-display text-card xl:text-h3-d font-semibold tracking-tight">
+                    {t(item.q)}
+                  </h2>
 
                   <span
                     aria-hidden="true"
@@ -65,7 +67,7 @@ export default function FaqPage() {
                   </span>
                 </summary>
 
-                <p className="font-display text-note xl:text-card-d text-body px-[20px] pb-[22px] leading-[1.15] xl:max-w-[900px] xl:px-[40px] xl:pb-[32px]">
+                <p className="font-ui text-note xl:text-card-d text-body px-[20px] pb-[22px] leading-[1.4] xl:max-w-[900px] xl:px-[40px] xl:pb-[32px]">
                   {t(item.a)}
                 </p>
               </details>

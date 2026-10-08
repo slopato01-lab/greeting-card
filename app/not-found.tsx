@@ -24,17 +24,17 @@ export default function NotFound() {
       <Header />
       <main className="page-shell flex min-h-[60vh] flex-col items-center justify-center py-[80px] text-center xl:py-[140px]">
         {/* Цифра декоративная, поэтому приглушённым серым, а не розовым:
-            розовый в системе означает действие. Заливкой карточки
-            (--pink-card) её брать нельзя — на белом фоне не видно. */}
-        <p aria-hidden="true" className="font-display text-h1 xl:text-h1-d text-muted font-bold">
+            розовый в системе означает действие. Тонкая, как крупные
+            цифры в design/главная.jpg. */}
+        <p aria-hidden="true" className="font-ui text-h1 xl:text-h1-d text-muted font-light">
           404
         </p>
 
-        <h1 className="font-display text-h2 xl:text-h2-d mt-[10px] font-medium">
+        <h1 className="font-display text-h2 xl:text-h2-d mt-[10px] font-semibold tracking-tight">
           {t("error.pageNotFound")}
         </h1>
 
-        <p className="font-display text-card xl:text-sub-d text-body mt-[16px] max-w-[52ch] leading-[1.15]">
+        <p className="font-ui text-card xl:text-sub-d text-body mt-[16px] max-w-[52ch] leading-[1.4]">
           {t("error.pageNotFoundBody")}
         </p>
 

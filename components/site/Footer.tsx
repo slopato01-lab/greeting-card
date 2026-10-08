@@ -65,7 +65,7 @@ export function Footer() {
           {/* О проекте */}
           <div className="xl:max-w-[520px]">
             <p className="font-display text-logo xl:text-logo-d font-medium">{t("brand.name")}</p>
-            <p className="font-display text-note xl:text-card-d text-body mt-[10px] leading-[1.15] xl:mt-[14px]">
+            <p className="font-ui text-note xl:text-card-d text-body mt-[10px] leading-[1.4] xl:mt-[14px]">
               {t("footer.about")}
             </p>
           </div>
@@ -84,7 +84,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="font-display text-card xl:text-card-d min-h-tap min-w-tap hover:text-pink active:text-pink inline-flex items-center font-medium transition-colors"
+                    className="font-ui text-card xl:text-card-d min-h-tap min-w-tap text-body hover:text-ink active:text-ink inline-flex items-center transition-colors"
                   >
                     {t(item.key)}
                   </Link>
@@ -94,12 +94,10 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="border-ink mt-[30px] flex flex-col gap-[25px] border-t pt-[25px] xl:mt-[40px] xl:flex-row xl:items-end xl:justify-between xl:pt-[30px]">
+        <div className="border-line mt-[30px] flex flex-col gap-[25px] border-t pt-[25px] xl:mt-[40px] xl:flex-row xl:items-end xl:justify-between xl:pt-[30px]">
           {/* Способы оплаты */}
           <div>
-            <p className="font-display text-note xl:text-note-d text-body font-medium">
-              {t("footer.pay.title")}
-            </p>
+            <p className="font-ui text-note xl:text-note-d text-muted">{t("footer.pay.title")}</p>
 
             <ul
               role="list"
@@ -109,7 +107,7 @@ export function Footer() {
                 <li
                   key={index}
                   aria-hidden="true"
-                  className="pay-plate rounded-pay xl:rounded-pay-d border-ink flex h-[44px] items-center justify-center border bg-white xl:h-[52px]"
+                  className="pay-plate rounded-inner xl:rounded-inner-d border-line flex h-[44px] items-center justify-center border bg-white xl:h-[52px]"
                   style={
                     {
                       "--pay-w": `${crop.w}px`,

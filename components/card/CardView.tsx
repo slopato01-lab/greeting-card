@@ -69,11 +69,11 @@ function safeUrl(value: string): string | null {
   }
 }
 
-const CARD = "border-ink rounded-card xl:rounded-card-d overflow-hidden border-2 bg-white";
+const CARD = "rounded-card xl:rounded-card-d overflow-hidden bg-white";
 
 /** Текст автора: переносы строк он ставил руками, и они значимые. */
 const AUTHOR_TEXT =
-  "font-display text-card xl:text-card-d whitespace-pre-line break-words leading-[1.15]";
+  "font-ui text-card xl:text-card-d whitespace-pre-line break-words leading-[1.4]";
 
 export function CardView({ card, onExit }: { card: CardContent; onExit: () => void }) {
   const [stage, setStage] = useState<Stage>("cover");
@@ -116,7 +116,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                 придумывать за автора нечего. */}
             <div className="px-[24px] py-[28px] xl:px-[54px] xl:py-[40px]">
               {greeting === "" ? null : (
-                <h2 className="font-display text-h3 xl:text-h3-d font-medium break-words whitespace-pre-line">
+                <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight break-words whitespace-pre-line">
                   {greeting}
                 </h2>
               )}
@@ -134,7 +134,9 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
         {stage === "game" ? (
           <div>
             {hint === null ? null : (
-              <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t(hint)}</h2>
+              <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+                {t(hint)}
+              </h2>
             )}
 
             {/* Игрового модуля не существует. Плейсхолдер тот же, что
@@ -142,7 +144,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                 нельзя. */}
             <div
               aria-hidden="true"
-              className="bg-photo border-ink rounded-card xl:rounded-card-d mt-[20px] h-[300px] w-full border-2 xl:mt-[30px] xl:h-[460px]"
+              className="bg-photo rounded-card xl:rounded-card-d mt-[20px] h-[300px] w-full xl:mt-[30px] xl:h-[460px]"
             />
 
             <Button
@@ -167,7 +169,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                   href={link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-display text-card xl:text-card-d min-h-tap text-pink inline-flex items-center break-all underline"
+                  className="font-ui text-card xl:text-card-d min-h-tap text-pink inline-flex items-center break-all underline"
                 >
                   {link}
                 </a>

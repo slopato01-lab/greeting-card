@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { pillVisual } from "@/components/site/pill";
+import { pillVisual, type PillSurface } from "@/components/site/pill";
 import { TemplateCard } from "@/components/site/TemplateCard";
 import {
   CATALOG_ALL,
@@ -37,11 +37,14 @@ import { t } from "@/lib/i18n";
  */
 export function TemplateGrid({
   labelledBy,
+  surface = "canvas",
   rowClassName = "mt-[38px] xl:mt-20",
   gridClassName = "mt-[63px] xl:mt-[75px]",
 }: {
   /** id заголовка, которому подчинён ряд фильтров. */
   labelledBy: string;
+  /** На чём лежит ряд пилюль: на главной — белая панель, на /cards — основа. */
+  surface?: PillSurface;
   rowClassName?: string;
   gridClassName?: string;
 }) {
@@ -61,7 +64,7 @@ export function TemplateGrid({
           onClick={() => setFilter(null)}
           className="pill-tap"
         >
-          <span className={pillVisual("catalog", filter === null)}>{t(CATALOG_ALL)}</span>
+          <span className={pillVisual(surface, filter === null)}>{t(CATALOG_ALL)}</span>
         </button>
 
         {CATALOG_FILTERS.map((key) => (
@@ -72,14 +75,14 @@ export function TemplateGrid({
             onClick={() => setFilter(key)}
             className="pill-tap"
           >
-            <span className={pillVisual("catalog", filter === key)}>{t(key)}</span>
+            <span className={pillVisual(surface, filter === key)}>{t(key)}</span>
           </button>
         ))}
 
         {/* Не фильтр, а ссылка: плюс в макете и означает «собрать свой».
             Плюс декоративный, скринридеру он не нужен. */}
         <Link href="/create" className="pill-tap">
-          <span className={pillVisual("catalog", false)}>
+          <span className={pillVisual(surface, false)}>
             {t(CATALOG_CUSTOM)}
             <span aria-hidden="true">&nbsp;&nbsp;+</span>
           </span>
@@ -91,7 +94,7 @@ export function TemplateGrid({
         className={`grid gap-[70px] xl:grid-cols-4 xl:gap-x-5 xl:gap-y-[30px] ${gridClassName}`}
       >
         {shown.map((template) => (
-          <TemplateCard key={template.slug} template={template} />
+          <TemplateCard key={template.slug} template={template} surface={surface} />
         ))}
       </ul>
     </>

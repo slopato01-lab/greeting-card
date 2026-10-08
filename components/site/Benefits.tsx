@@ -6,7 +6,8 @@ import { type TextKey, t } from "@/lib/i18n";
  * Секция «Больше, чем просто открытка»: четыре карточки преимуществ.
  *
  * Карточка — фото сверху, заголовок, абзац и три чек-строки. Фото
- * в макете нет, там серая заливка --color-photo; в коде она же.
+ * нет, на его месте плейсхолдер --color-photo со своим скруглением
+ * внутри белой карточки — как картинки в карточках design/главная.jpg.
  *
  * Раскладка — второй блок макета главной (design/главная.jpg), тот же,
  * что у «Что спрятать внутри»: счётчик, подводка и заголовок слева,
@@ -44,13 +45,18 @@ export function Benefits() {
         {CARDS.map((card) => (
           <li
             key={card.title}
-            className="rounded-feat xl:rounded-benefit-d shadow-card flex w-[300px] flex-col overflow-hidden bg-white xl:w-[380px]"
+            className="rounded-card xl:rounded-card-d flex w-[300px] flex-col bg-white p-[8px] xl:w-[380px] xl:p-[10px]"
           >
-            <div aria-hidden="true" className="bg-photo h-[198px] shrink-0 xl:h-[220px]" />
+            <div
+              aria-hidden="true"
+              className="bg-photo rounded-inner xl:rounded-inner-d h-[190px] shrink-0 xl:h-[210px]"
+            />
 
-            <div className="flex flex-1 flex-col items-center px-[20px] pt-[23px] pb-[30px] text-center xl:px-[25px] xl:pt-[26px] xl:pb-[35px]">
-              <h3 className="font-display text-feat xl:text-feat-d font-bold">{t(card.title)}</h3>
-              <p className="font-display text-note xl:text-note-d text-caption mt-[14px] leading-[1.15] font-medium">
+            <div className="flex flex-1 flex-col px-[14px] pt-[20px] pb-[22px] xl:px-[18px] xl:pt-[24px] xl:pb-[26px]">
+              <h3 className="font-display text-feat xl:text-feat-d font-semibold tracking-tight">
+                {t(card.title)}
+              </h3>
+              <p className="font-ui text-note xl:text-note-d text-body mt-[10px] leading-[1.4]">
                 {t(card.body)}
               </p>
 
@@ -60,9 +66,7 @@ export function Benefits() {
                 {CHECKS.map((key) => (
                   <li key={key} className="flex items-center gap-[13px] xl:gap-4">
                     <Icon name="tick" size={20} className="text-pink shrink-0 xl:size-[22px]" />
-                    <span className="font-display text-pill xl:text-note-d text-caption font-medium">
-                      {t(key)}
-                    </span>
+                    <span className="font-ui text-note xl:text-note-d text-body">{t(key)}</span>
                   </li>
                 ))}
               </ul>

@@ -19,7 +19,7 @@ import { type TextKey, t } from "@/lib/i18n";
 
 /** Линия после активного номера — она и показывает, где ты. */
 export function CounterLine() {
-  return <span aria-hidden="true" className="bg-ink mx-[10px] h-px min-w-[30px] flex-1" />;
+  return <span aria-hidden="true" className="bg-muted mx-[10px] h-px min-w-[30px] flex-1" />;
 }
 
 /**
@@ -42,10 +42,11 @@ export function SliderArrows({
   canNext: boolean;
   className?: string;
 }) {
+  // Крайнее положение: кружок гаснет до --line, иконка — до --photo.
+  // Наведение в нём ничего не меняет.
   const base =
-    "size-tap flex items-center justify-center rounded-full border transition-colors " +
-    "aria-disabled:border-muted aria-disabled:text-muted aria-disabled:cursor-not-allowed " +
-    "aria-disabled:bg-white aria-disabled:hover:border-muted aria-disabled:hover:bg-white";
+    "size-tap flex items-center justify-center rounded-full transition-colors " +
+    "aria-disabled:cursor-not-allowed aria-disabled:text-photo";
 
   return (
     <div className={`flex items-center gap-[10px] ${className}`}>
@@ -56,7 +57,7 @@ export function SliderArrows({
         onClick={() => {
           if (canPrev) onPrev();
         }}
-        className={`${base} border-ink text-ink hover:bg-pink-card active:bg-pink-card bg-white`}
+        className={`${base} border-line text-ink hover:bg-canvas active:bg-line border bg-white aria-disabled:hover:bg-white`}
       >
         <Icon name="prev" size={20} />
       </button>
@@ -67,7 +68,7 @@ export function SliderArrows({
         onClick={() => {
           if (canNext) onNext();
         }}
-        className={`${base} border-ink bg-ink hover:bg-pink hover:border-pink text-white active:bg-[color-mix(in_oklab,var(--color-pink)_80%,var(--color-ink))]`}
+        className={`${base} bg-dark hover:bg-dark-2 active:bg-ink aria-disabled:bg-line aria-disabled:hover:bg-line text-white`}
       >
         <Icon name="next" size={20} />
       </button>
@@ -221,14 +222,14 @@ export function SplitSlider({
         </ol>
 
         {lead ? (
-          <p className="font-display text-card xl:text-card-d text-body mt-[25px] leading-[1.15] xl:max-w-[520px]">
+          <p className="font-ui text-card xl:text-card-d text-body mt-[25px] leading-[1.4] xl:max-w-[520px]">
             {t(lead)}
           </p>
         ) : null}
 
         <h2
           id={titleId}
-          className="font-display text-h2 xl:text-h2-d mt-[30px] font-medium xl:mt-auto xl:pt-[60px]"
+          className="font-display text-h2 xl:text-h2-d mt-[30px] font-semibold tracking-tight xl:mt-auto xl:pt-[60px]"
         >
           {t(title)}
         </h2>

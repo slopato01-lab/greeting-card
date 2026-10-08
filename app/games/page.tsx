@@ -64,8 +64,8 @@ const GAMES = [
 function Fact({ label, value }: { label: TextKey; value: TextKey }) {
   return (
     <div>
-      <dt className="font-ui text-note-d text-caption">{t(label)}</dt>
-      <dd className="font-display text-card xl:text-card-d mt-[2px] font-medium">{t(value)}</dd>
+      <dt className="font-ui text-note-d text-muted">{t(label)}</dt>
+      <dd className="font-ui text-card xl:text-card-d mt-[2px] font-medium">{t(value)}</dd>
     </div>
   );
 }
@@ -84,16 +84,18 @@ export default function GamesPage() {
           {GAMES.map((game) => (
             <li
               key={game.title}
-              className="rounded-card xl:rounded-card-d border-ink flex flex-col overflow-hidden border-2 bg-white"
+              className="rounded-card xl:rounded-card-d flex flex-col overflow-hidden bg-white"
             >
               {/* Живого превью нет: игровых модулей ещё не существует.
                   Плейсхолдер тот же, что в карточках шаблонов. */}
               <div aria-hidden="true" className="bg-photo min-h-[200px] xl:min-h-[240px]" />
 
               <div className="flex flex-1 flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[30px] xl:pt-[30px] xl:pb-[34px]">
-                <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t(game.title)}</h2>
+                <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+                  {t(game.title)}
+                </h2>
 
-                <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15]">
+                <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4]">
                   {t(game.body)}
                 </p>
 
@@ -104,14 +106,12 @@ export default function GamesPage() {
 
                 {/* Поводы — подписи, а не фильтры: нажимать здесь
                     не на что, каталог отбирает по своим пилюлям. */}
-                <p className="font-ui text-note-d text-caption mt-[24px]">
-                  {t("games.suits.label")}
-                </p>
+                <p className="font-ui text-note-d text-muted mt-[24px]">{t("games.suits.label")}</p>
                 <ul role="list" className="mt-[10px] flex flex-wrap gap-[8px]">
                   {game.suits.map((tag) => (
                     <li
                       key={tag}
-                      className="rounded-pill border-muted font-display text-note text-body flex h-[33px] items-center border px-[16px]"
+                      className="bg-canvas font-ui text-note text-body flex h-[33px] items-center rounded-full px-[16px]"
                     >
                       {t(tag)}
                     </li>
@@ -124,9 +124,11 @@ export default function GamesPage() {
 
         {/* Почему механики разные — это решение продукта, а не
             украшение страницы: см. docs/PRODUCT.md. */}
-        <div className="border-ink rounded-card xl:rounded-card-d bg-pink-card mt-[40px] border-2 px-[24px] py-[28px] xl:mt-[60px] xl:px-[54px] xl:py-[40px]">
-          <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t("games.note.title")}</h2>
-          <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15] xl:max-w-[1100px]">
+        <div className="rounded-panel xl:rounded-panel-d mt-[40px] bg-white px-[24px] py-[28px] xl:mt-[60px] xl:px-[54px] xl:py-[40px]">
+          <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+            {t("games.note.title")}
+          </h2>
+          <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4] xl:max-w-[1100px]">
             {t("games.note.body")}
           </p>
         </div>

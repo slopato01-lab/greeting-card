@@ -3,7 +3,8 @@ import Link from "next/link";
 import { t, type TextKey } from "@/lib/i18n";
 
 /**
- * Вторичная кнопка: в макете без заливки и обводки, только текст.
+ * Вторичная кнопка: пилюля без заливки с тонкой обводкой --line,
+ * той же высоты, что главная (design/главная.jpg, стиль с 08.10.2026).
  *
  * Появилась в карточке FAQ на лендинге, теперь та же нужна шагам
  * конструктора — «Назад» рядом с «Дальше». Классы вынесены сюда,
@@ -32,9 +33,9 @@ type GhostButtonProps =
     });
 
 const BASE =
-  "font-ui text-btn xl:text-btn-header-d rounded-btn xl:rounded-faq-btn-d text-btn-ghost " +
-  "min-h-tap hover:bg-pink-card flex h-[45px] w-full items-center justify-center " +
-  "font-medium transition-colors xl:h-[61px]";
+  "font-ui tracking-base text-btn xl:text-btn-d text-ink border-line min-h-tap flex h-[52px] w-full " +
+  "items-center justify-center rounded-full border px-6 font-medium transition-colors " +
+  "hover:bg-canvas active:bg-line xl:h-[64px] xl:px-8";
 
 export function GhostButton(props: GhostButtonProps) {
   const { labelKey, className } = props;

@@ -53,17 +53,15 @@ export default function PricesPage() {
           {PRICES.map((row) => (
             <li
               key={row.nameKey}
-              className="border-ink/10 flex flex-col gap-[6px] border-b py-[18px] first:border-t xl:flex-row xl:items-baseline xl:justify-between xl:gap-6 xl:py-[24px]"
+              className="border-line flex flex-col gap-[6px] border-b py-[18px] first:border-t xl:flex-row xl:items-baseline xl:justify-between xl:gap-6 xl:py-[24px]"
             >
-              <span className="font-display text-card xl:text-card-d font-medium">
-                {t(row.nameKey)}
-              </span>
+              <span className="font-ui text-card xl:text-card-d font-medium">{t(row.nameKey)}</span>
 
-              <span className="font-display text-card xl:text-card-d text-body flex gap-[16px] whitespace-nowrap">
+              <span className="font-ui text-card xl:text-card-d text-body flex gap-[16px] whitespace-nowrap">
                 <span>
                   {row.byn}&nbsp;{t("price.byn")}
                 </span>
-                <span aria-hidden="true" className="text-caption">
+                <span aria-hidden="true" className="text-muted">
                   ·
                 </span>
                 <span>

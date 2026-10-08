@@ -29,8 +29,8 @@ const DETAILS = [
 
 function Block({ title, children }: { title: TextKey; children: React.ReactNode }) {
   return (
-    <section className="border-ink rounded-card xl:rounded-card-d border-2 px-[24px] py-[28px] xl:px-[40px] xl:py-[34px]">
-      <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t(title)}</h2>
+    <section className="rounded-card xl:rounded-card-d bg-white px-[24px] py-[28px] xl:px-[40px] xl:py-[34px]">
+      <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">{t(title)}</h2>
       <div className="mt-[14px]">{children}</div>
     </section>
   );
@@ -46,11 +46,11 @@ export default function ContactsPage() {
           <Block title="contacts.mail.title">
             <a
               href={`mailto:${t("legal.email")}`}
-              className="font-display text-card xl:text-card-d min-h-tap inline-flex items-center font-medium underline underline-offset-4 transition-opacity hover:opacity-70"
+              className="font-ui text-card xl:text-card-d min-h-tap inline-flex items-center font-medium underline underline-offset-4 transition-opacity hover:opacity-70"
             >
               {t("legal.email")}
             </a>
-            <p className="font-ui text-note-d text-caption mt-[8px]">{t("contacts.reply")}</p>
+            <p className="font-ui text-note-d text-muted mt-[8px]">{t("contacts.reply")}</p>
           </Block>
 
           <Block title="contacts.social.title">
@@ -74,10 +74,7 @@ export default function ContactsPage() {
           <Block title="contacts.details.title">
             <ul role="list" className="flex flex-col gap-[8px]">
               {DETAILS.map((key) => (
-                <li
-                  key={key}
-                  className="font-display text-card xl:text-card-d text-body leading-[1.15]"
-                >
+                <li key={key} className="font-ui text-card xl:text-card-d text-body leading-[1.4]">
                   {t(key)}
                 </li>
               ))}

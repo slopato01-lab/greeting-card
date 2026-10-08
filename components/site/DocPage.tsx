@@ -23,8 +23,8 @@ export type DocSection = {
  */
 export function DocNotice({ textKey }: { textKey: TextKey }) {
   return (
-    <div className="border-ink rounded-card xl:rounded-card-d bg-pink-card border-2 px-[24px] py-[24px] xl:max-w-[900px] xl:px-[40px] xl:py-[30px]">
-      <p className="font-display text-card xl:text-card-d leading-[1.15]">{t(textKey)}</p>
+    <div className="rounded-card xl:rounded-card-d bg-white px-[24px] py-[24px] xl:max-w-[900px] xl:px-[40px] xl:py-[30px]">
+      <p className="font-ui text-card xl:text-card-d leading-[1.4]">{t(textKey)}</p>
     </div>
   );
 }
@@ -59,13 +59,15 @@ export function DocSections({ sections }: { sections: readonly DocSection[] }) {
     <div className="flex flex-col gap-[40px] xl:max-w-[900px] xl:gap-[60px]">
       {sections.map((section) => (
         <section key={section.title}>
-          <h2 className="font-display text-h3 xl:text-h3-d font-medium">{t(section.title)}</h2>
+          <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+            {t(section.title)}
+          </h2>
 
           <ul role="list" className="mt-[14px] flex flex-col gap-[12px] xl:mt-[20px]">
             {section.items.map((item) => (
               <li
                 key={item}
-                className="font-display text-card xl:text-card-d text-body flex gap-[10px] leading-[1.15]"
+                className="font-ui text-card xl:text-card-d text-body flex gap-[10px] leading-[1.4]"
               >
                 {/* Маркер декоративный: роль списка уже несёт сам список. */}
                 <span aria-hidden="true" className="text-pink">

@@ -43,7 +43,10 @@ export default function HowPage() {
       </div>
 
       <section className="page-shell pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
-        <h2 id="how-steps-title" className="font-display text-h2 xl:text-h2-d font-medium">
+        <h2
+          id="how-steps-title"
+          className="font-display text-h2 xl:text-h2-d font-semibold tracking-tight"
+        >
           {t("how.steps.title")}
         </h2>
 
@@ -58,18 +61,20 @@ export default function HowPage() {
           {STEPS.map((step, index) => (
             <li
               key={step.title}
-              className="border-ink rounded-card xl:rounded-card-d flex gap-[18px] border bg-white px-[22px] py-[24px] xl:gap-[25px] xl:px-[40px] xl:py-[34px]"
+              className="rounded-card xl:rounded-card-d flex gap-[18px] bg-white px-[22px] py-[24px] xl:gap-[25px] xl:px-[40px] xl:py-[34px]"
             >
               <span
                 aria-hidden="true"
-                className="bg-dark-badge rounded-step-badge xl:rounded-step-badge-d font-display text-card xl:text-h3-d flex size-[40px] shrink-0 items-center justify-center font-medium text-white xl:size-[56px]"
+                className="bg-dark rounded-inner xl:rounded-inner-d font-display text-card xl:text-h3-d flex size-[40px] shrink-0 items-center justify-center font-semibold tracking-tight text-white xl:size-[56px]"
               >
                 {index + 1}
               </span>
 
               <div>
-                <h3 className="font-display text-h3 xl:text-h3-d font-medium">{t(step.title)}</h3>
-                <p className="font-display text-card xl:text-card-d text-body mt-[8px] leading-[1.15]">
+                <h3 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+                  {t(step.title)}
+                </h3>
+                <p className="font-ui text-card xl:text-card-d text-body mt-[8px] leading-[1.4]">
                   {t(step.body)}
                 </p>
               </div>
@@ -81,11 +86,11 @@ export default function HowPage() {
       <Inside />
 
       <section className="page-shell pt-[60px] pb-[20px] xl:pt-[100px] xl:pb-[40px]">
-        <div className="on-dark bg-dark rounded-card xl:rounded-cta-d px-[24px] py-[34px] xl:px-[100px] xl:py-[60px]">
-          <h2 className="font-display text-h2 xl:text-h2-d font-medium text-white">
+        <div className="on-dark bg-dark rounded-card xl:rounded-panel-d px-[24px] py-[34px] xl:px-[100px] xl:py-[60px]">
+          <h2 className="font-display text-h2 xl:text-h2-d font-semibold tracking-tight text-white">
             {t("how.player.title")}
           </h2>
-          <p className="font-display text-card xl:text-card-d mt-[16px] leading-[1.15] text-white xl:mt-[25px] xl:max-w-[1000px]">
+          <p className="font-ui text-card xl:text-card-d mt-[16px] leading-[1.4] text-white xl:mt-[25px] xl:max-w-[1000px]">
             {t("how.player.body")}
           </p>
         </div>
