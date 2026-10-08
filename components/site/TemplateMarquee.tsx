@@ -2,8 +2,10 @@ import { AnimatedTemplateCard } from "@/components/site/AnimatedTemplateCard";
 import { ANIMATED_TEMPLATES, type AnimatedTemplate } from "@/lib/catalog/templates";
 
 /**
- * Три ряда анимированных шаблонов, бесконечно едущих сами — в шахматном
- * порядке (просьба пользователя 08.10.2026): соседние ряды едут
+ * Два ряда анимированных шаблонов, бесконечно едущих сами — в шахматном
+ * порядке (просьба пользователя 08.10.2026; третий ряд снят тем же
+ * днём — карточек было слишком много, оба ряда должны вставать в один
+ * экран десктопа): соседние ряды едут
  * навстречу и сдвинуты на полкарточки, у каждого ряда свой порядок
  * карточек, чтобы одна и та же не стояла столбиком.
  *
@@ -22,8 +24,8 @@ import { ANIMATED_TEMPLATES, type AnimatedTemplate } from "@/lib/catalog/templat
  */
 
 /** Порядок карточек в каждом ряду — сдвиг по кругу, разный у рядов. */
-const ROW_SHIFTS = [0, 2, 1] as const;
-/** Сколько раз повторить порядок в половине ряда: 10 карточек по 390px шире 1920px. */
+const ROW_SHIFTS = [0, 3] as const;
+/** Сколько раз повторить порядок в половине ряда: 12 карточек по 220px шире 1920px. */
 const REPEAT = 2;
 
 function rotate<T>(items: readonly T[], by: number): T[] {
@@ -39,7 +41,7 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
         role="list"
         className={`marquee ${reverse ? "marquee-reverse" : ""} ${
           // Шахматный порядок: средний ряд сдвинут на полкарточки.
-          index === 1 ? "ms-[-145px] xl:ms-[-195px]" : ""
+          index === 1 ? "ms-[-100px] xl:ms-[-110px]" : ""
         }`}
       >
         {[...half, ...half].map((template, i) => (
@@ -47,7 +49,7 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
             key={`${template.id}-${i}`}
             template={template}
             inert={i >= half.length}
-            className="w-[290px] shrink-0 xl:w-[390px]"
+            className="w-[200px] shrink-0 xl:w-[220px]"
           />
         ))}
       </ul>

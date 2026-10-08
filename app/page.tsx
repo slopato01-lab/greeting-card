@@ -14,14 +14,15 @@ export default function Page() {
   return (
     <SitePage>
       <Hero />
-      {/* Ряд из двух карточек под героем: тёмная и золотая. */}
-      <div className="page-shell mt-[12px] grid gap-[12px] xl:mt-[20px] xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:gap-[20px]">
-        <Inside />
-        <Steps />
-      </div>
       <Catalog />
       <Faq />
       <Benefits />
+      {/* Ряд из двух карточек: «что внутри» и золотые этапы. С 08.10.2026
+          стоит перед CTA, а не сразу под героем (просьба пользователя). */}
+      <div className="page-shell grid gap-[12px] xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:gap-[20px]">
+        <Inside />
+        <Steps />
+      </div>
       <Cta />
     </SitePage>
   );
