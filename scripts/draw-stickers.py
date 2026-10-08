@@ -228,4 +228,29 @@ svg(
     '<radialGradient id="head" cx=".45" cy=".4"><stop offset="0" stop-color="#e2e2e2"/><stop offset="1" stop-color="#a9a9a9"/></radialGradient>',
 )
 
+# ── Афиша-приглашение (снимок экрана от 08.10.2026) ──────────
+# Бумажная бирка: белый лист в чёрной рамке, на нём дата и время.
+svg(
+    "paper-label",
+    300,
+    104,
+    '<rect x="4" y="4" width="292" height="96" fill="#fff" stroke="#111" stroke-width="4"/>',
+)
+# Розовое сердечко, залитое, как на афише.
+svg(
+    "heart-pink",
+    160,
+    150,
+    f'<path d="{HEART}" fill="#ff8fcf"/>',
+)
+# Стрелка-завиток от руки: петля и наконечник.
+svg(
+    "arrow-doodle",
+    220,
+    160,
+    '<g fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'
+    '<path d="M14 40 C40 10 92 8 110 40 C126 70 96 96 76 74 C58 54 92 22 128 34 C168 48 186 92 190 138"/>'
+    '<path d="M168 116 L190 140 L204 112"/></g>',
+)
+
 print("Готово:", len(list(OUT.glob("*.svg"))), "стикеров")

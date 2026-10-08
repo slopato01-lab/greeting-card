@@ -31,7 +31,7 @@ import { type TextKey, t } from "@/lib/i18n";
  * (docs/DESIGN.md, «Цвета и шрифты содержимого открытки»).
  */
 
-export const TEMPLATE_IDS = ["birthday", "newyear", "march8", "love"] as const;
+export const TEMPLATE_IDS = ["birthday", "party", "newyear", "march8", "love"] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
 export type TemplateInfo = { id: TemplateId; label: TextKey; build: () => EditorDoc };
@@ -151,6 +151,97 @@ function card(options: {
   };
 }
 
+/**
+ * Афиша-приглашение — по снимку экрана из design/ (08.10.2026): три строки
+ * огромного розового «ДЕНЬ РОЖДЕНИЯ», дата и время на бумажных бирках,
+ * чёрно-белое фото без фона, настоящий торт (фото, ч/б), сердечки. QR-кода из образца нет:
+ * ссылок на открытки ещё нет, а нерабочий код хуже никакого — вместо
+ * подписи «Сканируй qr-код» рукописное «Приходи — будет торт!».
+ *
+ * Своя раскладка, не card(): у афиши нет заголовка над фото, буквы
+ * лежат фоном под всем коллажем.
+ */
+function party(): EditorDoc {
+  const pink = "#ff9fd6";
+  const row = (y: number, delay: number, from: "slide-left" | "slide-right"): TextLayer => ({
+    ...text("tpl.party.title", y, pink, "oswald", 90, {
+      bold: false,
+      anim: anim({ in: from, inDuration: 0.7, delay }),
+    }),
+    // Узкие высокие буквы, как на афише: Oswald, вытянутый по высоте.
+    scaleY: 2.4,
+  });
+  const label = (x: number, y: number, angle: number, key: TextKey, delay: number): Layer[] => {
+    const motion = anim({ in: "toss-top", inDuration: 0.6, delay });
+    // Бирка и надпись на ней влетают одним движением: одинаковая анимация.
+    return [
+      sticker("paper-label", x, y, 0.9, angle, motion),
+      { ...text(key, y + 4, "#111111", "marck", 66, { anim: motion }), x, angle },
+    ];
+  };
+  return {
+    format: EDITOR_FORMAT,
+    version: EDITOR_VERSION,
+    background: "#f7f7f7",
+    duration: 6,
+    layers: [
+      row(112, 0, "slide-left"),
+      row(302, 0.15, "slide-right"),
+      row(492, 0.3, "slide-left"),
+      sticker(
+        "sample-party",
+        452,
+        590,
+        0.6,
+        0,
+        anim({ in: "slide-bottom", inDuration: 0.8, delay: 0.55 }),
+      ),
+      ...label(210, 186, -6, "tpl.party.date", 1.1),
+      ...label(330, 300, 5, "tpl.party.time", 1.3),
+      sticker(
+        "cake-photo",
+        160,
+        700,
+        0.5,
+        -3,
+        anim({ in: "toss-bottom", inDuration: 0.6, delay: 1.6 }),
+      ),
+      {
+        ...text("tpl.party.note", 486, "#111111", "caveat", 30, {
+          anim: anim({ in: "typewriter", inDuration: 0.9, delay: 2.1 }),
+        }),
+        x: 96,
+        align: "left",
+      },
+      sticker("arrow-doodle", 214, 520, 0.36, 8, anim({ in: "fade", inDuration: 0.4, delay: 2.9 })),
+      sticker(
+        "heart-pink",
+        296,
+        500,
+        0.26,
+        -8,
+        anim({ in: "pop", inDuration: 0.5, delay: 2.3, loop: "heartbeat", loopPeriod: 1.3 }),
+      ),
+      sticker(
+        "heart-pink",
+        36,
+        702,
+        0.18,
+        10,
+        anim({ in: "pop", inDuration: 0.5, delay: 2.45, loop: "heartbeat", loopPeriod: 1.5 }),
+      ),
+      sticker(
+        "heart-pink",
+        320,
+        760,
+        0.14,
+        -6,
+        anim({ in: "pop", inDuration: 0.5, delay: 2.6, loop: "heartbeat", loopPeriod: 1.7 }),
+      ),
+    ],
+  };
+}
+
 export const TEMPLATES: readonly TemplateInfo[] = [
   {
     id: "birthday",
@@ -212,6 +303,11 @@ export const TEMPLATES: readonly TemplateInfo[] = [
           ),
         ],
       }),
+  },
+  {
+    id: "party",
+    label: "tpl.party.label",
+    build: party,
   },
   {
     id: "newyear",

@@ -55,6 +55,33 @@ export const STICKERS: readonly StickerInfo[] = [
     hidden: true,
     ext: "png",
   },
+  // Пример фото в афише-приглашении — девушка с пучком, как на снимке
+  // экрана из design/. Unsplash, источник — CREDITS.md.
+  {
+    id: "sample-party",
+    theme: "birthday",
+    label: "sticker.sample-party",
+    width: 608,
+    height: 760,
+    placeholder: true,
+    cutout: true,
+    hidden: true,
+    ext: "png",
+  },
+  { id: "paper-label", theme: "common", label: "sticker.paper-label", width: 300, height: 104 },
+  { id: "heart-pink", theme: "love", label: "sticker.heart-pink", width: 160, height: 150 },
+  { id: "arrow-doodle", theme: "common", label: "sticker.arrow-doodle", width: 220, height: 160 },
+  { id: "cake-mono", theme: "birthday", label: "sticker.cake-mono", width: 512, height: 512 },
+  // Настоящий торт для афиши: фото с Unsplash, белый фон снят заливкой,
+  // ч/б — в одном ключе с фото именинницы. Источник — CREDITS.md.
+  {
+    id: "cake-photo",
+    theme: "birthday",
+    label: "sticker.cake-photo",
+    width: 520,
+    height: 750,
+    ext: "png",
+  },
   { id: "party-hat", theme: "birthday", label: "sticker.party-hat", width: 400, height: 480 },
   { id: "candle", theme: "birthday", label: "sticker.candle", width: 120, height: 520 },
   { id: "flame", theme: "birthday", label: "sticker.flame", width: 120, height: 200 },

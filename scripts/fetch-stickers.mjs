@@ -43,6 +43,24 @@ for (const [id, icon] of Object.entries(NOTO)) {
   console.log(`${id.padEnd(18)} ← noto:${icon}`);
 }
 
+// Чёрно-белый торт для афиши-приглашения: тот же Noto, обесцвеченный
+// фильтром внутри SVG — так он в одном ключе с чёрно-белым фото.
+{
+  const response = await fetch(
+    "https://api.iconify.design/noto/birthday-cake.svg?width=512&height=512",
+  );
+  if (!response.ok) throw new Error(`noto:birthday-cake — ${response.status}`);
+  const svg = await response.text();
+  const mono = svg
+    .replace(
+      /(<svg[^>]*>)/,
+      '$1<defs><filter id="mono"><feColorMatrix type="saturate" values="0"/></filter></defs><g filter="url(#mono)">',
+    )
+    .replace(/<\/svg>\s*$/, "</g></svg>");
+  await writeFile(resolve(DIR, "cake-mono.svg"), mono);
+  console.log(`${"cake-mono".padEnd(18)} ← noto:birthday-cake, ч/б`);
+}
+
 await writeFile(
   resolve(DIR, "CREDITS.md"),
   `# Стикеры
@@ -61,6 +79,15 @@ https://github.com/googlefonts/noto-emoji:
 ${Object.entries(NOTO)
   .map(([id, icon]) => `- \`${id}.svg\` — noto:${icon}`)
   .join("\n")}
+- \`cake-mono.svg\` — noto:birthday-cake, обесцвечен фильтром
+
+\`sample-party.png\` — пример фото в афише-приглашении: Unsplash,
+https://images.unsplash.com/photo-1531746020798-e6953c6e8e04 (лицензия Unsplash).
+Фон убран моделью MediaPipe selfie_segmenter, фото переведено в ч/б.
+
+\`cake-photo.png\` — торт в афише-приглашении: Unsplash,
+https://images.unsplash.com/photo-1562440499-64c9a111f713 (лицензия Unsplash).
+Белый фон снят заливкой (ImageMagick), фото переведено в ч/б.
 `,
 );
 console.log(`Готово: ${Object.keys(NOTO).length} стикеров Noto.`);

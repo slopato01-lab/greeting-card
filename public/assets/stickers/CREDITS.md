@@ -25,3 +25,12 @@ https://github.com/googlefonts/noto-emoji:
 - `kiss-mark.svg` — noto:kiss-mark
 - `ribbon.svg` — noto:ribbon
 - `clinking-glasses.svg` — noto:clinking-glasses
+- `cake-mono.svg` — noto:birthday-cake, обесцвечен фильтром
+
+`sample-party.png` — пример фото в афише-приглашении: Unsplash,
+https://images.unsplash.com/photo-1531746020798-e6953c6e8e04 (лицензия Unsplash).
+Фон убран моделью MediaPipe selfie_segmenter, фото переведено в ч/б.
+
+`cake-photo.png` — торт в афише-приглашении: Unsplash,
+https://images.unsplash.com/photo-1562440499-64c9a111f713 (лицензия Unsplash).
+Белый фон снят заливкой (ImageMagick), фото переведено в ч/б.
