@@ -29,7 +29,7 @@ import { ANIMATED_TEMPLATES, type AnimatedTemplate } from "@/lib/catalog/templat
  * половину: соседние ряды показывают разные темы.
  */
 const ROW_SHIFTS = [0, 10] as const;
-/** Сколько раз повторить порядок в половине ряда: 21 карточка по 360px и так шире 1920px. */
+/** Сколько раз повторить порядок в половине ряда: 21 карточка по 170px и так шире 1920px. */
 const REPEAT = 1;
 
 function rotate<T>(items: readonly T[], by: number): T[] {
@@ -45,7 +45,7 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
         role="list"
         className={`marquee ${reverse ? "marquee-reverse" : ""} ${
           // Шахматный порядок: средний ряд сдвинут на полкарточки.
-          index === 1 ? "ms-[-170px] xl:ms-[calc(var(--mq-card)/-2)]" : ""
+          index === 1 ? "ms-[-85px] md:ms-[-110px] xl:ms-[calc(var(--mq-card)/-2)]" : ""
         }`}
       >
         {[...half, ...half].map((template, i) => (
@@ -53,7 +53,9 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
             key={`${template.id}-${i}`}
             template={template}
             inert={i >= half.length}
-            className="w-[340px] shrink-0 xl:w-(--mq-card)"
+            // Мобильный — 170px, видно две с половиной карточки (просьба
+            // пользователя 08.10.2026: 340px были почти во весь экран).
+            className="w-[170px] shrink-0 md:w-[220px] xl:w-(--mq-card)"
           />
         ))}
       </ul>

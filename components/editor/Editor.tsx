@@ -213,7 +213,12 @@ export function Editor() {
 
       {/* Сцена: открытка вписана в свободное место. Контейнер size только
           на десктопе: на мобильном у сцены нет своей высоты, и
-          контейнерные единицы схлопнули бы открытку в ноль. */}
+          контейнерные единицы схлопнули бы открытку в ноль. На мобильном
+          ширина = min(ширина полосы, (окно − шапка − полоса просмотра) × 3/4):
+          открытка целиком в экране, а под ней остаётся место, за которое
+          палец листает страницу, — сам холст прокрутку не пропускает
+          (touch-none, им таскают слои). 72px = поле сверху + промежуток +
+          ряд кнопки «Просмотр». */}
       <div className="relative order-1 flex min-h-0 items-center justify-center xl:[container-type:size] xl:order-none xl:col-start-3 xl:row-start-1 xl:p-[24px]">
         <div
           ref={frameRef}
@@ -222,7 +227,7 @@ export function Editor() {
           aria-label={t("editor.canvas.label")}
           aria-describedby="editor-hint"
           aria-busy={status === "loading" || busy || undefined}
-          className="rounded-inner xl:rounded-inner-d bg-photo relative aspect-[3/4] w-full max-w-[600px] touch-none overflow-hidden xl:w-[min(100cqw,75cqh)] xl:max-w-none"
+          className="rounded-inner xl:rounded-inner-d bg-photo relative aspect-[3/4] w-[min(100%,calc((100svh-var(--spacing-header)-72px)*3/4))] max-w-[600px] touch-none overflow-hidden xl:w-[min(100cqw,75cqh)] xl:max-w-none"
         >
           <div ref={hostRef} className="absolute inset-0" />
 

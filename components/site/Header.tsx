@@ -24,9 +24,10 @@ import { t, type TextKey } from "@/lib/i18n";
  *
  * На мобильном — название и бургер. Панели раскрытого меню в макете
  * нет — спроектирована от токенов, описание в docs/DESIGN.md, раздел
- * «Панель мобильного меню». Панель раскрывается в потоке и сдвигает
- * содержимое вниз: так не нужны ни оверлей, ни блокировка прокрутки,
- * ни ловушка фокуса.
+ * «Панель мобильного меню». С 08.10.2026 панель накладывается поверх
+ * страницы под шапкой, а не сдвигает первый экран вниз (просьба
+ * пользователя). Закрывается по Esc, нажатию и фокусу вне шапки —
+ * поэтому ни блокировка прокрутки, ни ловушка фокуса не нужны.
  */
 const NAV: ReadonlyArray<{ href: string; key: TextKey }> = [
   { href: "/cards", key: "nav.cards" },
@@ -175,27 +176,35 @@ export function Header() {
       </div>
 
       {open ? (
-        <div id={panelId} ref={panelRef} className="page-shell pb-5 xl:hidden">
-          <nav aria-label={t("nav.menu")}>
-            <ul>
-              {NAV.map((item) => (
-                <li key={item.href} className="border-line border-t">
-                  <Link
-                    href={item.href}
-                    aria-current={current(item.href)}
-                    onClick={() => setOpen(false)}
-                    className={`${NAV_LINK} text-menu min-h-tap flex items-center`}
-                  >
-                    {t(item.key)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+        // Поверх страницы: абсолютом от низа шапки (она sticky — это
+        // тоже позиционированный предок), во всю ширину экрана.
+        <div
+          id={panelId}
+          ref={panelRef}
+          className="bg-canvas border-line shadow-card absolute inset-x-0 top-full border-b xl:hidden"
+        >
+          <div className="page-shell pb-5">
+            <nav aria-label={t("nav.menu")}>
+              <ul>
+                {NAV.map((item) => (
+                  <li key={item.href} className="border-line border-t">
+                    <Link
+                      href={item.href}
+                      aria-current={current(item.href)}
+                      onClick={() => setOpen(false)}
+                      className={`${NAV_LINK} text-menu min-h-tap flex items-center`}
+                    >
+                      {t(item.key)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-          {/* В панели меню — «Создать открытку»: профиль уже есть значком
+            {/* В панели меню — «Создать открытку»: профиль уже есть значком
               в строке шапки. */}
-          <Button href="/editor" labelKey="cta.create" className="mt-5" />
+            <Button href="/editor" labelKey="cta.create" className="mt-5" />
+          </div>
         </div>
       ) : null}
     </header>

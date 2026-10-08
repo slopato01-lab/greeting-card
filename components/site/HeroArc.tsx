@@ -72,20 +72,35 @@ export function HeroArc() {
     // тот учитывает уже наложенный поворот, и дуга раскачивалась бы
     // от собственного прошлого кадра. Ряд — position: relative,
     // поэтому offsetLeft отсчитывается от его начала.
+    //
+    // Центры карточек и ширина ряда считаются один раз и при смене
+    // размера окна, а не в каждом кадре; трансформ пишется, только
+    // если изменился, — карточки за краем стоят с одним и тем же
+    // предельным наклоном. На телефоне чтение 84 положений и запись
+    // 84 трансформов в каждом кадре и роняли частоту кадров.
+    let centers: number[] = [];
+    let reach = 0;
+    const transforms: string[] = [];
+    const measure = () => {
+      reach = row.clientWidth / 2;
+      centers = cards.map((card) => card.offsetLeft + card.offsetWidth / 2);
+    };
+
     const bend = () => {
-      const reach = row.clientWidth / 2;
       const scroll = row.scrollLeft;
-      for (const card of cards) {
-        if (reduce.matches) {
-          card.style.transform = "";
-          continue;
+      cards.forEach((card, i) => {
+        let next = "";
+        if (!reduce.matches && reach > 0) {
+          // От −1 (левый край ряда) до 1 (правый), дальше — за краем.
+          const raw = ((centers[i] ?? 0) - scroll - reach) / reach;
+          const d = Math.max(-1.4, Math.min(1.4, raw));
+          const grow = 1 + MAX_GROW * d * d;
+          next = `perspective(900px) rotateY(${(-d * MAX_TURN).toFixed(2)}deg) scale(${grow.toFixed(3)})`;
         }
-        // От −1 (левый край ряда) до 1 (правый), дальше — за краем.
-        const raw = (card.offsetLeft + card.offsetWidth / 2 - scroll - reach) / reach;
-        const d = Math.max(-1.4, Math.min(1.4, raw));
-        const grow = 1 + MAX_GROW * d * d;
-        card.style.transform = `perspective(900px) rotateY(${(-d * MAX_TURN).toFixed(2)}deg) scale(${grow.toFixed(3)})`;
-      }
+        if (transforms[i] === next) return;
+        transforms[i] = next;
+        card.style.transform = next;
+      });
     };
 
     const wrap = () => {
@@ -107,16 +122,30 @@ export function HeroArc() {
       frame = requestAnimationFrame(tick);
     };
 
+    // Кадры крутятся, только пока дуга на экране и вкладка видна:
+    // раньше rAF шёл всё время, и прокрутка главной ниже первого
+    // экрана на телефоне тормозила из-за невидимой дуги.
+    let onScreen = true;
     const start = () => {
       cancelAnimationFrame(frame);
+      frame = 0;
+      if (!onScreen || document.hidden) return;
       last = 0;
       frame = requestAnimationFrame(tick);
     };
 
+    measure();
     // Начинаем с середины первого полуряда: слева тоже есть карточки.
     position = halfWidth() / 2;
     wrap();
     start();
+
+    const observer = new IntersectionObserver(([entry]) => {
+      onScreen = entry?.isIntersecting ?? false;
+      start();
+    });
+    observer.observe(row);
+    document.addEventListener("visibilitychange", start, { signal });
 
     // Прокрутили рукой — подхватываем позицию и ненадолго замираем.
     row.addEventListener(
@@ -147,9 +176,19 @@ export function HeroArc() {
     row.addEventListener("focusin", hold, { signal });
     row.addEventListener("focusout", release, { signal });
     reduce.addEventListener("change", bend, { signal });
-    window.addEventListener("resize", bend, { signal });
+    window.addEventListener(
+      "resize",
+      () => {
+        measure();
+        bend();
+      },
+      { signal },
+    );
 
-    signal.addEventListener("abort", () => cancelAnimationFrame(frame));
+    signal.addEventListener("abort", () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    });
     return () => controller.abort();
   }, []);
 

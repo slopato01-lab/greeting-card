@@ -817,6 +817,8 @@ export const ru = {
 
   // ── Редактор как в Canva: вкладки и заготовки (08.10.2026) ──
   "editor.templates": "Шаблоны",
+  // Текст пользователя (08.10.2026): на мобильном сначала три шаблона.
+  "editor.templates.more": "Смотреть ещё",
   "editor.tabs": "Инструменты редактора",
   "editor.tab.templates": "Шаблоны",
   "editor.tab.elements": "Элементы",

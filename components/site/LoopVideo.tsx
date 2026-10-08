@@ -11,8 +11,63 @@ import { useEffect, useRef } from "react";
  * полный кадр открытки. preload="none": видео начинает грузиться,
  * только когда карточка доехала до экрана.
  *
+ * С 08.10.2026 на узких экранах одновременно играет ограниченное число
+ * видео (PLAY_LIMITS): на телефоне дуга и бегущие ряды держали
+ * по десятку декодеров сразу, и главная проседала. Остальные видимые
+ * ждут в очереди с обложкой и запускаются, как только освободится место.
+ * Запуск — через PLAY_DELAY после появления: карточка, мелькнувшая
+ * на краю бегущего ряда, видео не трогает.
+ *
  * Подписки снимаются одним AbortController, как требует CLAUDE.md.
  */
+
+/** Сколько видео играет одновременно: до 768, до 1280, шире. */
+const PLAY_LIMITS = [
+  { query: "(max-width: 767px)", limit: 4 },
+  { query: "(max-width: 1279px)", limit: 8 },
+] as const;
+/** Через сколько мс после появления на экране видео запускается. */
+const PLAY_DELAY = 300;
+
+// Общая очередь для всех видео страницы. Порядок вставки в Set —
+// порядок появления на экране: первыми запускаются те, кто ждёт дольше.
+const playing = new Set<HTMLVideoElement>();
+const waiting = new Set<HTMLVideoElement>();
+
+function limit(): number {
+  for (const item of PLAY_LIMITS) {
+    if (window.matchMedia(item.query).matches) return item.limit;
+  }
+  return Number.POSITIVE_INFINITY;
+}
+
+function start(video: HTMLVideoElement) {
+  playing.add(video);
+  // Автоигру браузер может запретить (режим экономии) — тогда
+  // просто остаётся обложка.
+  video.play().catch(() => {});
+}
+
+function promote() {
+  for (const video of waiting) {
+    if (playing.size >= limit()) return;
+    waiting.delete(video);
+    start(video);
+  }
+}
+
+function enqueue(video: HTMLVideoElement) {
+  if (playing.has(video) || waiting.has(video)) return;
+  if (playing.size < limit()) start(video);
+  else waiting.add(video);
+}
+
+function release(video: HTMLVideoElement) {
+  waiting.delete(video);
+  if (playing.delete(video)) video.pause();
+  promote();
+}
+
 export function LoopVideo({
   src,
   poster,
@@ -30,14 +85,14 @@ export function LoopVideo({
     const controller = new AbortController();
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false;
+    let timer = 0;
 
     const sync = () => {
+      window.clearTimeout(timer);
       if (visible && !reduce.matches) {
-        // Автоигру браузер может запретить (режим экономии) — тогда
-        // просто остаётся обложка.
-        video.play().catch(() => {});
+        timer = window.setTimeout(() => enqueue(video), PLAY_DELAY);
       } else {
-        video.pause();
+        release(video);
       }
     };
 
@@ -50,7 +105,11 @@ export function LoopVideo({
     );
     observer.observe(video);
     reduce.addEventListener("change", sync, { signal: controller.signal });
-    controller.signal.addEventListener("abort", () => observer.disconnect());
+    controller.signal.addEventListener("abort", () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+      release(video);
+    });
 
     return () => controller.abort();
   }, []);
