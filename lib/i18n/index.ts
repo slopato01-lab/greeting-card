@@ -17,3 +17,16 @@ export type TextKey = keyof typeof ru;
 export function t(key: TextKey): string {
   return ru[key];
 }
+
+/**
+ * Подпись к числу по правилам русского языка: 1 шаблон, 2 шаблона,
+ * 5 шаблонов, 21 шаблон, 12 шаблонов. Формы — ключами словаря.
+ */
+export function plural(count: number, forms: readonly [TextKey, TextKey, TextKey]): string {
+  const n = Math.abs(Math.trunc(count));
+  const last = n % 10;
+  const lastTwo = n % 100;
+  if (last === 1 && lastTwo !== 11) return t(forms[0]);
+  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return t(forms[1]);
+  return t(forms[2]);
+}

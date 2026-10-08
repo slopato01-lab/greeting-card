@@ -9,7 +9,8 @@ import { t } from "@/lib/i18n";
  * Карточка анимированного шаблона — по третьей карточке блока
  * «New Ice Jewelry / By Type» из design/главная greetinh-cards.jpg
  * (просьба пользователя 08.10.2026): изображение во всю карточку,
- * сверху метка и короткий заголовок, внизу поверх — кнопка.
+ * сверху метка и короткий заголовок, внизу поверх — кнопка. Метки
+ * повода у нас нет с 08.10.2026 — плашки делали ряд грязным.
  *
  * Отличия от макета, и почему:
  * - метка и заголовок стоят в полосе над открыткой, на её же
@@ -46,13 +47,11 @@ export function AnimatedTemplateCard({
         style={{ backgroundColor: template.background }}
         className="group rounded-card xl:rounded-card-d flex w-full flex-col overflow-hidden transition-transform active:translate-y-px"
       >
-        {/* Шапка карточки — на однотонном фоне открытки: метка повода
-            и короткий заголовок. Тёмный текст на светлом фоне шаблона,
+        {/* Шапка карточки — на однотонном фоне открытки: короткий
+            заголовок. Метку повода сняли 08.10.2026 (просьба пользователя:
+            плашки «День рождения», «14 февраля» делали ряд грязным). Тёмный текст на светлом фоне шаблона,
             открытку под собой не закрывает. */}
         <span className="flex flex-col items-start gap-[6px] px-[8px] pt-[8px] pb-[4px] md:px-[12px] md:pt-[12px] xl:gap-[6px] xl:px-[10px] xl:pt-[10px]">
-          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-ink text-gold max-w-full truncate rounded-full px-[8px] py-[3px] font-medium whitespace-nowrap md:px-[10px]">
-            {t(template.filter)}
-          </span>
           <span
             className={`font-display text-note xl:text-note-d max-w-full truncate font-medium tracking-tight ${
               template.dark ? "text-canvas" : "text-ink"
@@ -70,8 +69,8 @@ export function AnimatedTemplateCard({
           />
           {/* Кружок со стрелкой вместо кнопки «Редактировать» (просьба
               пользователя 08.10.2026: кнопка на каждой карточке была
-              аляповатой). Подпись не нужна: имя ссылке дают метка
-              и заголовок карточки, нажимается вся карточка. */}
+              аляповатой). Подпись не нужна: имя ссылке даёт заголовок
+              карточки, нажимается вся карточка. */}
           <span
             aria-hidden="true"
             className="bg-ink text-canvas group-hover:bg-gold group-hover:text-ink group-focus-visible:bg-gold group-focus-visible:text-ink absolute start-[10px] bottom-[10px] grid size-[36px] place-items-center rounded-full transition-colors xl:start-[14px] xl:bottom-[14px] xl:size-[44px]"
