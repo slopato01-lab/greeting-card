@@ -1014,4 +1014,5 @@ export const ru = {
   "sticker.sunflower": "Подсолнух",
   "sticker.strawberry": "Клубника",
   "sticker.cherries": "Вишни",
+  "sticker.sample-person": "Пример фото",
 } as const;

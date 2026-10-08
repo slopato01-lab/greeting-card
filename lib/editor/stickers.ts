@@ -221,6 +221,29 @@ export const STICKERS: readonly StickerInfo[] = [
     (id): StickerInfo => ({ ...SAMPLE, id, width: 560, height: 420, mono: true }),
   ),
   { ...SAMPLE, id: "sample-bw-sq", width: 400, height: 400, mono: true },
+  // Вырезанные примеры (08.10.2026, просьба пользователя): дети в цвете
+  // для «жениха и невесты», девушка в кресле для «Кинопремьеры», парень
+  // для «Диско» — в позе ребёнка с макета. StockSnap, CC0, CREDITS.md.
+  // Своё фото на их месте вырезается само (cutout).
+  ...(
+    [
+      ["sample-groom", 472, 640, false],
+      ["sample-bride", 569, 640, false],
+      ["sample-cinema", 373, 760, false],
+      ["sample-disco", 386, 760, true],
+    ] as const
+  ).map(([id, width, height, mono]): StickerInfo => ({
+    id,
+    theme: "common",
+    label: "sticker.sample-person",
+    width,
+    height,
+    placeholder: true,
+    cutout: true,
+    hidden: true,
+    ext: "png",
+    ...(mono ? { mono: true } : {}),
+  })),
   { id: "grid-paper", theme: "common", label: "sticker.grid-paper", width: 300, height: 260 },
   { id: "paperclip", theme: "common", label: "sticker.paperclip", width: 80, height: 220 },
   { id: "film-strip", theme: "common", label: "sticker.film-strip", width: 220, height: 600 },

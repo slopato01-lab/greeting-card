@@ -10,7 +10,7 @@ import type { TextKey } from "@/lib/i18n";
  * - раскладка, цвета, характер шрифтов и тексты — как на макете,
  *   английские надписи не переводились (решение пользователя);
  * - фото людей с макетов чужие — вместо них примеры с Unsplash
- *   (`sample-*`, CREDITS.md) и вырезанные примеры из прежних шаблонов;
+ *   и StockSnap (`sample-*`, CREDITS.md), людей — уже без фона;
  *   своё фото встаёт на их место и обрезается под окно;
  * - фирменные знаки и чужие ники с макетов не переносились: вместо
  *   ника автора — «@yourname», логотип киностудии убран совсем.
@@ -427,20 +427,14 @@ function bdDisco(): EditorDoc {
     text("tpl.bd-disco.place", 440, 482, wine, "montserrat", 13, {
       anim: anim({ in: "fade", inDuration: 0.6, delay: 2.3 }),
     }),
-    sticker(
-      "sample-birthday",
-      206,
-      604,
-      0.46,
-      0,
-      anim({ in: "fade", inDuration: 0.8, delay: 1.2 }),
-    ),
+    // Парень лет двадцати трёх в позе ребёнка с макета: сидит, ноги вперёд.
+    sticker("sample-disco", 200, 588, 0.5, 0, anim({ in: "fade", inDuration: 0.8, delay: 1.2 })),
     sticker(
       "party-hat",
-      196,
-      446,
-      0.24,
-      -16,
+      212,
+      370,
+      0.2,
+      -10,
       anim({ in: "toss-left", inDuration: 0.6, delay: 1.8 }),
     ),
     sticker("cocktail", 520, 560, 0.22, 8, anim({ in: "toss-right", inDuration: 0.6, delay: 2.5 })),
@@ -473,11 +467,13 @@ function bdCinema(): EditorDoc {
       bold: true,
       anim: anim({ in: "land", inDuration: 0.7, delay: 1.0 }),
     }),
+    // Девушка сидит в кресле по центру зала, как на макете; голова
+    // заходит на нижнюю строку заголовка.
     sticker(
-      "sample-party",
+      "sample-cinema",
       300,
-      600,
-      0.48,
+      590,
+      0.52,
       0,
       anim({ in: "slide-bottom", inDuration: 0.8, delay: 1.6 }),
     ),
@@ -490,8 +486,8 @@ function bdCinema(): EditorDoc {
     sticker(
       "popcorn",
       300,
-      752,
-      0.3,
+      690,
+      0.26,
       -4,
       anim({ in: "toss-bottom", inDuration: 0.6, delay: 2.6, loop: "swing", loopPeriod: 2.6 }),
     ),
@@ -945,19 +941,20 @@ function wdKids(): EditorDoc {
       spacing: 80,
       anim: anim({ in: "letters", inDuration: 0.8, delay: 1.1 }),
     }),
+    // Жених и невеста — малыши, в цвете (просьба пользователя 08.10.2026).
     sticker(
-      "sample-birthday",
-      234,
-      446,
-      0.36,
+      "sample-groom",
+      208,
+      470,
+      0.42,
       0,
       anim({ in: "toss-left", inDuration: 0.7, delay: 1.7 }),
     ),
     sticker(
-      "sample-party",
-      384,
-      448,
-      0.31,
+      "sample-bride",
+      398,
+      470,
+      0.42,
       0,
       anim({ in: "toss-right", inDuration: 0.7, delay: 1.9 }),
     ),

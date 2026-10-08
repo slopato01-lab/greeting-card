@@ -134,6 +134,15 @@ picsum.photos по номеру, обрезаны по центру, \`bw\` — 
 - \`sample-bw-3\` — Jessica Polar, https://unsplash.com/photos/l5d9Zp7HO6o
 - \`sample-bw-4\` — Julia Caesar, https://unsplash.com/photos/DpoMKEARZe4
 - \`sample-bw-5\` — Brooklyn Morgan, https://unsplash.com/photos/vlSyS1VLCoQ
+
+Вырезанные примеры людей (08.10.2026) — StockSnap, CC0. Фон убран
+моделью MediaPipe selfie_segmenter, дыры в силуэте залиты, у невесты
+контуром срезана мама за спиной; \`sample-disco\` — в ч/б:
+
+- \`sample-groom.png\` — Direct Media, https://stocksnap.io/photo/child-toddler-D5VVUIQNDL
+- \`sample-bride.png\` — Direct Media, https://stocksnap.io/photo/baby-girl-TOPVUEPEKK
+- \`sample-cinema.png\` — Kristin Hardwick, https://stocksnap.io/photo/woman-business-B9BEJYBUZ5
+- \`sample-disco.png\` — Kristin Hardwick, https://stocksnap.io/photo/young-man-SEZ0BOQJBD
 `,
 );
 console.log(`Готово: ${Object.keys(NOTO).length} стикеров Noto.`);

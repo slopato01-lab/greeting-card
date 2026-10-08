@@ -21,9 +21,7 @@ import type { TextKey } from "@/lib/i18n";
 export type CatalogFilter =
   | "catalog.filter.2"
   | "catalog.filter.3"
-  | "catalog.filter.4"
   | "catalog.filter.5"
-  | "catalog.filter.7"
   | "catalog.filter.8"
   | "catalog.filter.9"
   | "catalog.filter.10";
@@ -71,9 +69,9 @@ export const CATALOG_ALL = "catalog.filter.1" satisfies TextKey;
 export const CATALOG_CUSTOM = "catalog.filter.6" satisfies TextKey;
 
 /**
- * «Любовь» (catalog.filter.7) — с 08.10.2026, под анимированный шаблон
- * «Сердце и письмо». Номер 7, а не 6: шестой — «Собрать свой +»,
- * и он стоит в ряду последним.
+ * Номера не сдвигаются: «Хорошие новости» (4) и «Любовь» (7) сняты
+ * с сайта 08.10.2026 (просьба пользователя) вместе с их шаблонами,
+ * а ключи остальных фильтров уже живут в словаре и docs/PRODUCT.md.
  */
 export const CATALOG_FILTERS = [
   "catalog.filter.2",
@@ -82,8 +80,6 @@ export const CATALOG_FILTERS = [
   "catalog.filter.8",
   "catalog.filter.9",
   "catalog.filter.10",
-  "catalog.filter.7",
-  "catalog.filter.4",
   "catalog.filter.5",
 ] as const satisfies ReadonlyArray<CatalogFilter>;
 
@@ -166,28 +162,6 @@ export const TEMPLATES = [
     game: "games.card.1.title",
     lead: "tpl.6.lead",
     items: ["tpl.6.item.1", "tpl.6.item.2", "tpl.6.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
-  },
-  {
-    slug: "zhdyom-malysha",
-    nameKey: "catalog.card.7",
-    filter: "catalog.filter.4",
-    game: "games.card.3.title",
-    lead: "tpl.7.lead",
-    items: ["tpl.7.item.1", "tpl.7.item.2", "tpl.7.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
-  },
-  {
-    slug: "pereezzhaem",
-    nameKey: "catalog.card.8",
-    filter: "catalog.filter.4",
-    game: "games.card.3.title",
-    lead: "tpl.8.lead",
-    items: ["tpl.8.item.1", "tpl.8.item.2", "tpl.8.item.3"],
     theme: null,
     cover: null,
     track: null,
@@ -275,10 +249,7 @@ function animated(
 export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
   animated("birthday", "catalog.filter.2", "anim.birthday.name", "anim.birthday.lead"),
   animated("party", "catalog.filter.2", "anim.party.name", "anim.party.lead"),
-  animated("newyear", "catalog.filter.3", "anim.newyear.name", "anim.newyear.lead"),
   animated("polaroid", "catalog.filter.3", "anim.polaroid.name", "anim.polaroid.lead"),
-  animated("march8", "catalog.filter.5", "anim.march8.name", "anim.march8.lead"),
-  animated("love", "catalog.filter.7", "anim.love.name", "anim.love.lead"),
   // Серия по design/открытки/ (08.10.2026), lib/editor/series.ts.
   animated("val-wishing", "catalog.filter.8", "anim.val-wishing.name", "anim.val-wishing.lead"),
   animated("val-film", "catalog.filter.8", "anim.val-film.name", "anim.val-film.lead"),
