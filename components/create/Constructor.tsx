@@ -517,6 +517,30 @@ export function Constructor() {
           </div>
         ) : null}
 
+        {/* Выход в свободный редактор /editor — только на первом шаге:
+            здесь ещё выбирают, как делать открытку. Дальше по шагам
+            он уводил бы с уже начатого пути. Черновик конструктора
+            при этом не теряется: он в localStorage. */}
+        {step === 0 ? (
+          <aside
+            aria-labelledby="create-editor-title"
+            className="rounded-card xl:rounded-card-d bg-surface mt-[30px] flex flex-col gap-[16px] p-[20px] xl:mt-[45px] xl:flex-row xl:items-center xl:justify-between xl:gap-[40px] xl:p-[28px]"
+          >
+            <div>
+              <h3
+                id="create-editor-title"
+                className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight"
+              >
+                {t("create.editor.title")}
+              </h3>
+              <p className="font-ui text-card xl:text-card-d text-body mt-[8px] leading-[1.4]">
+                {t("create.editor.body")}
+              </p>
+            </div>
+            <GhostButton href="/editor" labelKey="cta.editor" className="xl:w-auto xl:shrink-0" />
+          </aside>
+        ) : null}
+
         {/* ── 2. Игра ──────────────────────────────────────── */}
         {step === 1 ? (
           <ul role="list" className="grid gap-[20px] xl:grid-cols-3 xl:gap-5">
