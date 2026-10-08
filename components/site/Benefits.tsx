@@ -32,7 +32,7 @@ const CHECKS = [
 
 export function Benefits() {
   return (
-    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
+    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[40px] xl:pb-[40px]">
       <div className="flex flex-col gap-[16px] xl:flex-row xl:items-end xl:justify-between xl:gap-[60px]">
         <h2
           id="benefits-title"
@@ -48,14 +48,14 @@ export function Benefits() {
       <ul
         role="list"
         aria-labelledby="benefits-title"
-        className="carousel mt-[30px] items-stretch gap-[12px] xl:mx-0 xl:mt-[50px] xl:grid xl:grid-cols-4 xl:gap-5 xl:overflow-visible xl:px-0"
+        className="carousel mt-[30px] items-stretch gap-[12px] xl:mx-0 xl:mt-[30px] xl:grid xl:grid-cols-4 xl:gap-5 xl:overflow-visible xl:px-0"
       >
         {CARDS.map((card) => (
           <li
             key={card.title}
             className="rounded-card xl:rounded-card-d bg-surface flex w-[280px] flex-col p-[8px] xl:w-auto xl:p-[10px]"
           >
-            <div className="bg-photo rounded-inner xl:rounded-inner-d relative h-[180px] shrink-0 overflow-hidden xl:h-[220px]">
+            <div className="bg-photo rounded-inner xl:rounded-inner-d relative h-[180px] shrink-0 overflow-hidden xl:h-[180px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`/assets/benefits/${card.photo}.webp`}

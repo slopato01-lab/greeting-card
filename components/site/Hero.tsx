@@ -4,30 +4,29 @@ import { t } from "@/lib/i18n";
 
 /**
  * Первый экран главной — по design/главный экран.jpg (08.10.2026):
- * всё по центру на белом — золотая плашка-бейдж, огромный H1, вводный
+ * всё по центру на белом — огромный H1, вводный
  * абзац, под ним дуга анимированных открыток во всю ширину экрана
  * и главная кнопка в пунктирном кольце. Рядом две подписи от руки
  * со стрелками.
  *
  * Тексты наши, из словаря. Отличия от макета:
- * - «Join over 100,000 happy creators» — у нас подзаголовок героя
- *   `hero.badge`: цифр пользователей нет;
  * - фото в карточках — наши анимированные шаблоны (HeroArc);
  * - подпись «Выбери свою» видна только с 1280: на телефоне ей негде
  *   встать рядом с заголовком, не налезая на текст.
+ *
+ * Золотой плашки «Открытка, которую хочется отправить» над H1 нет
+ * с 08.10.2026, а промежутки ужаты на 150px: первый экран целиком
+ * встаёт в окно 1440 × 900 (просьба пользователя). Ключ `hero.badge`
+ * в словаре остался.
  *
  * H1 из трёх ключей — три строки и на десктопе: в макете две, но наш
  * текст длиннее, и «Маленький подарок по ссылке» не влезал в строку.
  */
 export function Hero() {
   return (
-    <section className="page-shell relative pt-[32px] text-center xl:pt-[56px]">
-      <p className="font-ui caps text-badge xl:text-badge-d bg-gold text-ink inline-block rounded-full px-[14px] py-[6px] font-medium">
-        {t("hero.badge")}
-      </p>
-
+    <section className="page-shell relative pt-[16px] text-center xl:pt-[16px]">
       <div className="relative mx-auto max-w-[1100px]">
-        <h1 className="font-display text-h1 xl:text-h1-d mt-[20px] font-medium tracking-tight xl:mt-[28px]">
+        <h1 className="font-display text-h1 xl:text-h1-d font-medium tracking-tight">
           <span className="block">{t("hero.title.1")}</span>
           <span className="block">{t("hero.title.2")}</span>
           <span className="block">{t("hero.title.3")}</span>
@@ -42,15 +41,19 @@ export function Hero() {
         </p>
       </div>
 
-      <p className="font-ui text-lead xl:text-lead-d text-body mx-auto mt-[16px] max-w-[560px] leading-[1.5] xl:mt-[24px]">
+      <p className="font-ui text-lead xl:text-lead-d text-body mx-auto mt-[12px] max-w-[560px] leading-[1.5] xl:mt-[12px]">
         {t("hero.lead")}
       </p>
 
-      <div className="mt-[8px] xl:mt-[12px]">
+      {/* Дуга и кнопка заходят на пустые поля ряда открыток: поле —
+          запас под увеличенные крайние карточки, они растут у краёв
+          экрана, а абзац и кнопка стоят по центру. Кнопка позже в DOM —
+          рисуется поверх поля и нажимается. */}
+      <div className="-mt-[16px] xl:-mt-[38px]">
         <HeroArc />
       </div>
 
-      <div className="relative mx-auto flex flex-col items-center xl:w-max">
+      <div className="relative mx-auto -mt-[16px] flex flex-col items-center xl:-mt-[48px] xl:w-max">
         <span className="border-ink w-full rounded-full border border-dashed p-[5px] xl:w-auto">
           <Button href="/create" labelKey="cta.create" />
         </span>

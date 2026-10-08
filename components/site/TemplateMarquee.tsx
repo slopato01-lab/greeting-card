@@ -45,7 +45,7 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
         role="list"
         className={`marquee ${reverse ? "marquee-reverse" : ""} ${
           // Шахматный порядок: средний ряд сдвинут на полкарточки.
-          index === 1 ? "ms-[-170px] xl:ms-[-180px]" : ""
+          index === 1 ? "ms-[-170px] xl:ms-[calc(var(--mq-card)/-2)]" : ""
         }`}
       >
         {[...half, ...half].map((template, i) => (
@@ -53,7 +53,7 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
             key={`${template.id}-${i}`}
             template={template}
             inert={i >= half.length}
-            className="w-[340px] shrink-0 xl:w-[360px]"
+            className="w-[340px] shrink-0 xl:w-(--mq-card)"
           />
         ))}
       </ul>
@@ -63,7 +63,14 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
 
 export function TemplateMarquee({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex flex-col gap-[12px] xl:gap-[20px] ${className}`}>
+    // С 1280 ширина карточки считается от высоты окна: оба ряда вместе
+    // с заголовком секции встают в один экран (просьба пользователя
+    // 08.10.2026). 37.5dvh − 150px − 3.5vw — ряд = (окно − шапка − заголовок −
+    // поля) / 2, минус полоса подписи, открытка 3:4; заголовок растёт
+    // вместе с шириной окна — отсюда −3.5vw.
+    <div
+      className={`flex flex-col gap-[12px] xl:gap-[16px] xl:[--mq-card:clamp(110px,calc(37.5dvh-150px-3.5vw),360px)] ${className}`}
+    >
       {ROW_SHIFTS.map((shift, index) => (
         <Row key={shift} index={index} items={rotate(ANIMATED_TEMPLATES, shift)} />
       ))}

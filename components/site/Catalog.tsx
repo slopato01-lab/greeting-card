@@ -39,7 +39,7 @@ export function Catalog() {
   const [first, last] = splitLast(title);
 
   return (
-    <section className="page-shell pt-[60px] pb-[30px] xl:pt-[120px] xl:pb-[60px]">
+    <section className="page-shell pt-[60px] pb-[30px] xl:pt-[40px] xl:pb-[40px]">
       <h2 id="catalog-title" className="sr-only">
         {title}
       </h2>
@@ -70,9 +70,9 @@ export function Catalog() {
         </div>
       </div>
 
-      <div aria-hidden="true" className="bg-line mt-[30px] h-px xl:mt-[40px]" />
+      <div aria-hidden="true" className="bg-line mt-[30px] h-px xl:mt-[20px]" />
 
-      <TemplateMarquee className="mt-[24px] xl:mt-[32px]" />
+      <TemplateMarquee className="mt-[24px] xl:mt-[20px]" />
     </section>
   );
 }

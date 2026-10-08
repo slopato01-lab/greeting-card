@@ -125,7 +125,7 @@ export function Faq() {
   };
 
   return (
-    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
+    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[32px] xl:pb-[32px]">
       <h2
         id="faq-title"
         className="font-display text-h1 xl:text-h1-d max-w-[1300px] font-medium tracking-tight"
@@ -133,9 +133,9 @@ export function Faq() {
         <AccentTitle text={t("faq.title")} />
       </h2>
 
-      <div className="mt-[30px] grid gap-[20px] xl:mt-[50px] xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="mt-[30px] grid gap-[20px] xl:mt-[24px] xl:grid-cols-[minmax(0,4fr)_minmax(0,8fr)]">
         {/* Карточка в рамке: номер и подводка выбранного повода. */}
-        <div className="border-line rounded-panel xl:rounded-panel-d flex flex-col border p-[24px] xl:p-[40px]">
+        <div className="border-line rounded-panel xl:rounded-panel-d flex flex-col border p-[24px] xl:p-[32px]">
           <div className="flex items-start justify-between">
             <Icon name="planet" className="text-gold-deep size-[48px] xl:size-[72px]" />
             <Link
@@ -149,7 +149,7 @@ export function Faq() {
 
           <p
             aria-hidden="true"
-            className="font-display text-display xl:text-display-d mt-[30px] leading-none font-medium xl:mt-auto xl:pt-[80px]"
+            className="font-display text-display xl:text-display-d mt-[30px] leading-none font-medium xl:mt-auto xl:pt-[24px]"
           >
             {counterNumber(active)}
           </p>
@@ -229,15 +229,18 @@ export function Faq() {
                   >
                     <div
                       aria-hidden="true"
-                      className="bg-photo rounded-inner xl:rounded-inner-d h-[140px] xl:h-[180px]"
+                      className="bg-photo rounded-inner xl:rounded-inner-d h-[140px] xl:hidden"
                     />
 
-                    <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[14px] xl:px-[20px] xl:pt-[28px] xl:pb-[20px]">
+                    <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[14px] xl:px-[20px] xl:pt-[18px] xl:pb-[16px]">
                       <h3 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
                         {t(occasion.title)}
                       </h3>
 
-                      <ul role="list" className="mt-[20px] flex flex-col gap-[14px] xl:gap-[16px]">
+                      <ul
+                        role="list"
+                        className="mt-[20px] flex flex-col gap-[14px] xl:mt-[14px] xl:gap-[8px]"
+                      >
                         {occasion.items.map((key) => (
                           <li key={key} className="flex items-start gap-[14px]">
                             {/* Точка списка — кружок фоном: своего рисунка у неё нет. */}
@@ -252,18 +255,10 @@ export function Faq() {
                         ))}
                       </ul>
 
-                      <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:pt-[28px] 2xl:flex-row">
-                        <Button
-                          href="/create"
-                          labelKey="cta.create"
-                          className="xl:w-full 2xl:w-auto"
-                        />
+                      <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:flex-row xl:pt-[18px]">
+                        <Button href="/create" labelKey="cta.create" className="xl:w-auto" />
                         {/* Каталог живёт на /cards. */}
-                        <GhostButton
-                          href="/cards"
-                          labelKey="cta.templates"
-                          className="2xl:w-auto"
-                        />
+                        <GhostButton href="/cards" labelKey="cta.templates" className="xl:w-auto" />
                       </div>
                     </div>
                   </div>
