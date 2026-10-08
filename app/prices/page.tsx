@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Cta } from "@/components/site/Cta";
 import { DocNotice, DocSections, type DocSection } from "@/components/site/DocPage";
 import { PAGE_TITLE_ID, PageHead } from "@/components/site/PageHead";
+import { Blocks } from "@/components/site/Blocks";
 import { SitePage } from "@/components/site/SitePage";
 import { t } from "@/lib/i18n";
 import { PRICES } from "@/lib/pricing";
@@ -38,46 +39,51 @@ const SECTIONS = [
 export default function PricesPage() {
   return (
     <SitePage>
-      <PageHead title="page.prices.title" lead="page.prices.lead" />
+      <Blocks>
+        <div>
+          <PageHead title="page.prices.title" lead="page.prices.lead" />
 
-      <section className="page-shell pt-[30px] pb-[70px] xl:pt-[40px] xl:pb-[120px]">
-        <DocNotice textKey="price.note" />
+          <section className="page-shell pt-[30px] pb-[70px] xl:pt-[40px] xl:pb-[120px]">
+            <DocNotice textKey="price.note" />
 
-        {/* Цена — не просто число: у каждой суммы стоит валюта,
+            {/* Цена — не просто число: у каждой суммы стоит валюта,
             иначе «12» и «390» рядом читаются как одна цена. */}
-        <ul
-          role="list"
-          aria-labelledby={PAGE_TITLE_ID}
-          className="mt-[40px] flex flex-col xl:mt-[60px] xl:max-w-[900px]"
-        >
-          {PRICES.map((row) => (
-            <li
-              key={row.nameKey}
-              className="border-line flex flex-col gap-[6px] border-b py-[18px] first:border-t xl:flex-row xl:items-baseline xl:justify-between xl:gap-6 xl:py-[24px]"
+            <ul
+              role="list"
+              aria-labelledby={PAGE_TITLE_ID}
+              className="mt-[40px] flex flex-col xl:mt-[60px] xl:max-w-[900px]"
             >
-              <span className="font-ui text-card xl:text-card-d font-medium">{t(row.nameKey)}</span>
+              {PRICES.map((row) => (
+                <li
+                  key={row.nameKey}
+                  className="border-line flex flex-col gap-[6px] border-b py-[18px] first:border-t xl:flex-row xl:items-baseline xl:justify-between xl:gap-6 xl:py-[24px]"
+                >
+                  <span className="font-ui text-card xl:text-card-d font-medium">
+                    {t(row.nameKey)}
+                  </span>
 
-              <span className="font-ui text-card xl:text-card-d text-body flex gap-[16px] whitespace-nowrap">
-                <span>
-                  {row.byn}&nbsp;{t("price.byn")}
-                </span>
-                <span aria-hidden="true" className="text-muted">
-                  ·
-                </span>
-                <span>
-                  {row.rub}&nbsp;{t("price.rub")}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ul>
+                  <span className="font-ui text-card xl:text-card-d text-body flex gap-[16px] whitespace-nowrap">
+                    <span>
+                      {row.byn}&nbsp;{t("price.byn")}
+                    </span>
+                    <span aria-hidden="true" className="text-muted">
+                      ·
+                    </span>
+                    <span>
+                      {row.rub}&nbsp;{t("price.rub")}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
 
-        <div className="mt-[40px] xl:mt-[60px]">
-          <DocSections sections={SECTIONS} />
+            <div className="mt-[40px] xl:mt-[60px]">
+              <DocSections sections={SECTIONS} />
+            </div>
+          </section>
         </div>
-      </section>
-
-      <Cta />
+        <Cta />
+      </Blocks>
     </SitePage>
   );
 }

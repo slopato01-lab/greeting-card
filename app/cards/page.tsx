@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Cta } from "@/components/site/Cta";
 import { PageHead } from "@/components/site/PageHead";
+import { Blocks } from "@/components/site/Blocks";
 import { SitePage } from "@/components/site/SitePage";
 import { TemplateGrid } from "@/components/site/TemplateGrid";
 import { t } from "@/lib/i18n";
@@ -19,19 +20,22 @@ export const metadata: Metadata = {
 export default function CardsPage() {
   return (
     <SitePage>
-      <PageHead title="page.cards.title" lead="page.cards.lead" />
+      <Blocks>
+        <div>
+          <PageHead title="page.cards.title" lead="page.cards.lead" />
 
-      <section className="page-shell pb-[70px] xl:pb-[120px]">
-        {/* Заголовок страницы уже назвал этот ряд — ссылаемся на него,
+          <section className="page-shell">
+            {/* Заголовок страницы уже назвал этот ряд — ссылаемся на него,
             второго заголовка над фильтрами здесь не нужно. */}
-        <TemplateGrid
-          labelledBy="page-title"
-          rowClassName="mt-[30px] xl:mt-[50px]"
-          gridClassName="mt-[50px] xl:mt-[60px]"
-        />
-      </section>
-
-      <Cta />
+            <TemplateGrid
+              labelledBy="page-title"
+              rowClassName="mt-[30px] xl:mt-[50px]"
+              gridClassName="mt-[50px] xl:mt-[60px]"
+            />
+          </section>
+        </div>
+        <Cta />
+      </Blocks>
     </SitePage>
   );
 }

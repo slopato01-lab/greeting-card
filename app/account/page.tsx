@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Account } from "@/components/account/Account";
 import { PageHead } from "@/components/site/PageHead";
+import { Blocks } from "@/components/site/Blocks";
 import { SitePage } from "@/components/site/SitePage";
 import { t } from "@/lib/i18n";
 
@@ -15,10 +16,14 @@ export const metadata: Metadata = {
 export default function AccountPage() {
   return (
     <SitePage>
-      <PageHead title="page.account.title" />
-      <div className="page-shell pt-[20px] pb-[60px] xl:pt-[30px] xl:pb-[100px]">
-        <Account />
-      </div>
+      <Blocks>
+        <div>
+          <PageHead title="page.account.title" />
+          <div className="page-shell pt-[20px] xl:pt-[30px]">
+            <Account />
+          </div>
+        </div>
+      </Blocks>
     </SitePage>
   );
 }

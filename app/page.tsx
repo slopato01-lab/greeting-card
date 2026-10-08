@@ -1,4 +1,5 @@
 import { Benefits } from "@/components/site/Benefits";
+import { Blocks } from "@/components/site/Blocks";
 import { Catalog } from "@/components/site/Catalog";
 import { Cta } from "@/components/site/Cta";
 import { Faq } from "@/components/site/Faq";
@@ -14,9 +15,8 @@ import { Steps } from "@/components/site/Steps";
 export default function Page() {
   return (
     <SitePage>
-      {/* Промежуток между блоками — сверх их собственных полей
-          (docs/DESIGN.md, «Раскладка главной»). Нижний — до подвала. */}
-      <div className="flex flex-col gap-[100px] pb-[100px] md:gap-[160px] md:pb-[160px] xl:gap-[250px] xl:pb-[250px]">
+      {/* Промежуток между блоками — общий для сайта, см. Blocks. */}
+      <Blocks>
         <Hero />
         {/* «Какие поздравления…» перед каталогом — с 08.10.2026
             (просьба пользователя). */}
@@ -32,7 +32,7 @@ export default function Page() {
         <Cta />
         {/* Вопросы и ответы — после CTA, вместо страницы /faq (08.10.2026). */}
         <Questions />
-      </div>
+      </Blocks>
     </SitePage>
   );
 }

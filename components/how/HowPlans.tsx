@@ -34,7 +34,7 @@ export function HowPlans() {
     <section
       id="plans"
       aria-labelledby="how-plans-title"
-      className="grid gap-[20px] pt-[40px] xl:grid-cols-[minmax(0,4fr)_minmax(0,9fr)] xl:gap-[40px] xl:pt-[80px]"
+      className="grid gap-[20px] xl:grid-cols-[minmax(0,4fr)_minmax(0,9fr)] xl:gap-[40px]"
     >
       <Photo src="/assets/benefits/confetti.webp" className="min-h-[300px] xl:min-h-[560px]">
         <HowNav current="plans" />

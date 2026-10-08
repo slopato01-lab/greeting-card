@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Cta } from "@/components/site/Cta";
 import { PAGE_TITLE_ID, PageHead } from "@/components/site/PageHead";
+import { Blocks } from "@/components/site/Blocks";
 import { SitePage } from "@/components/site/SitePage";
 import { type TextKey, t } from "@/lib/i18n";
 
@@ -73,68 +74,73 @@ function Fact({ label, value }: { label: TextKey; value: TextKey }) {
 export default function GamesPage() {
   return (
     <SitePage>
-      <PageHead title="page.games.title" lead="page.games.lead" />
+      <Blocks>
+        <div>
+          <PageHead title="page.games.title" lead="page.games.lead" />
 
-      <section className="page-shell pt-[30px] pb-[60px] xl:pt-[50px] xl:pb-[100px]">
-        <ul
-          role="list"
-          aria-labelledby={PAGE_TITLE_ID}
-          className="grid gap-[30px] xl:grid-cols-3 xl:gap-5"
-        >
-          {GAMES.map((game) => (
-            <li
-              key={game.title}
-              className="rounded-card xl:rounded-card-d bg-surface flex flex-col overflow-hidden"
+          <section className="page-shell pt-[30px] xl:pt-[50px]">
+            <ul
+              role="list"
+              aria-labelledby={PAGE_TITLE_ID}
+              className="grid gap-[30px] xl:grid-cols-3 xl:gap-5"
             >
-              {/* Живого превью нет: игровых модулей ещё не существует.
+              {GAMES.map((game) => (
+                <li
+                  key={game.title}
+                  className="rounded-card xl:rounded-card-d bg-surface flex flex-col overflow-hidden"
+                >
+                  {/* Живого превью нет: игровых модулей ещё не существует.
                   Плейсхолдер тот же, что в карточках шаблонов. */}
-              <div aria-hidden="true" className="bg-photo min-h-[200px] xl:min-h-[240px]" />
+                  <div aria-hidden="true" className="bg-photo min-h-[200px] xl:min-h-[240px]" />
 
-              <div className="flex flex-1 flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[30px] xl:pt-[30px] xl:pb-[34px]">
-                <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
-                  {t(game.title)}
-                </h2>
+                  <div className="flex flex-1 flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[30px] xl:pt-[30px] xl:pb-[34px]">
+                    <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+                      {t(game.title)}
+                    </h2>
 
-                <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4]">
-                  {t(game.body)}
-                </p>
+                    <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4]">
+                      {t(game.body)}
+                    </p>
 
-                <dl className="mt-[24px] flex flex-col gap-[14px]">
-                  <Fact label="games.photos.label" value={game.photos} />
-                  <Fact label="games.level.label" value={game.level} />
-                </dl>
+                    <dl className="mt-[24px] flex flex-col gap-[14px]">
+                      <Fact label="games.photos.label" value={game.photos} />
+                      <Fact label="games.level.label" value={game.level} />
+                    </dl>
 
-                {/* Поводы — подписи, а не фильтры: нажимать здесь
+                    {/* Поводы — подписи, а не фильтры: нажимать здесь
                     не на что, каталог отбирает по своим пилюлям. */}
-                <p className="font-ui text-note-d text-muted mt-[24px]">{t("games.suits.label")}</p>
-                <ul role="list" className="mt-[10px] flex flex-wrap gap-[8px]">
-                  {game.suits.map((tag) => (
-                    <li
-                      key={tag}
-                      className="bg-raised font-ui text-note text-body flex h-[33px] items-center rounded-full px-[16px]"
-                    >
-                      {t(tag)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-          ))}
-        </ul>
+                    <p className="font-ui text-note-d text-muted mt-[24px]">
+                      {t("games.suits.label")}
+                    </p>
+                    <ul role="list" className="mt-[10px] flex flex-wrap gap-[8px]">
+                      {game.suits.map((tag) => (
+                        <li
+                          key={tag}
+                          className="bg-raised font-ui text-note text-body flex h-[33px] items-center rounded-full px-[16px]"
+                        >
+                          {t(tag)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-        {/* Почему механики разные — это решение продукта, а не
+            {/* Почему механики разные — это решение продукта, а не
             украшение страницы: см. docs/PRODUCT.md. */}
-        <div className="rounded-panel xl:rounded-panel-d bg-surface mt-[40px] px-[24px] py-[28px] xl:mt-[60px] xl:px-[54px] xl:py-[40px]">
-          <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
-            {t("games.note.title")}
-          </h2>
-          <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4] xl:max-w-[1100px]">
-            {t("games.note.body")}
-          </p>
+            <div className="rounded-panel xl:rounded-panel-d bg-surface mt-[40px] px-[24px] py-[28px] xl:mt-[60px] xl:px-[54px] xl:py-[40px]">
+              <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
+                {t("games.note.title")}
+              </h2>
+              <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4] xl:max-w-[1100px]">
+                {t("games.note.body")}
+              </p>
+            </div>
+          </section>
         </div>
-      </section>
-
-      <Cta />
+        <Cta />
+      </Blocks>
     </SitePage>
   );
 }

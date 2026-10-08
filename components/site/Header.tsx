@@ -11,9 +11,9 @@ import { t, type TextKey } from "@/lib/i18n";
 /**
  * Шапка сайта. Вид — из design/главная greetinh-cards.jpg: знак
  * и название слева, навигация капсом по центру (текущий раздел
- * подчёркнут), справа пилюля. С 08.10.2026 справа «Профиль» —
- * личный кабинет /account, а не «Создать открытку» (просьба
- * пользователя). Одна на все страницы.
+ * подчёркнут), справа — значок профиля в кружке: личный кабинет
+ * /account вместо кнопки «Создать открытку» (просьба пользователя
+ * 08.10.2026). Одна на все страницы.
  *
  * Шапка прилипает к верху экрана на всех страницах и ширинах
  * (решение 08.10.2026). Фон сплошной --canvas: контент под ней не
@@ -31,7 +31,6 @@ import { t, type TextKey } from "@/lib/i18n";
 const NAV: ReadonlyArray<{ href: string; key: TextKey }> = [
   { href: "/cards", key: "nav.cards" },
   { href: "/games", key: "nav.games" },
-  { href: "/#faq", key: "nav.faq" },
   { href: "/how", key: "nav.how" },
 ];
 
@@ -150,26 +149,16 @@ export function Header() {
         {/* Кнопка прячется обёрткой, а не своим классом: у самой кнопки
             в базовых классах уже есть inline-flex, и он перебивает
             hidden — порядок в строке классов на это не влияет. */}
-        <div className="hidden xl:block">
-          <Link
-            href="/account"
-            aria-current={current("/account")}
-            className="font-ui caps text-btn-header-d bg-ink text-canvas hover:bg-body active:bg-muted aria-[current=page]:bg-gold aria-[current=page]:text-ink min-h-tap inline-flex items-center gap-[10px] rounded-full ps-[8px] pe-[20px] font-medium transition-colors"
-          >
-            <Icon name="user" size={28} />
-            {t("nav.account")}
-          </Link>
-        </div>
-
-        {/* На мобильном профиль — значком рядом с бургером: до него
-            один тап, а не два через меню. */}
+        {/* Профиль — значок в кружке (просьба пользователя 08.10.2026),
+            на всех ширинах. На мобильном стоит рядом с бургером. */}
         <Link
           href="/account"
           aria-label={t("nav.account")}
+          title={t("nav.account")}
           aria-current={current("/account")}
-          className="size-tap text-ink hover:text-gold-deep active:text-gold-deep aria-[current=page]:text-gold-deep ms-auto flex items-center justify-center transition-colors xl:hidden"
+          className="border-line text-ink hover:bg-raised hover:border-muted active:bg-line aria-[current=page]:bg-gold aria-[current=page]:border-gold ms-auto flex size-[44px] shrink-0 items-center justify-center rounded-full border transition-colors xl:ms-0"
         >
-          <Icon name="user" size={30} />
+          <Icon name="user" size={24} />
         </Link>
 
         <button
@@ -179,7 +168,7 @@ export function Header() {
           aria-label={t("nav.menu")}
           aria-expanded={open}
           aria-controls={panelId}
-          className="size-tap text-ink hover:text-gold-deep active:text-gold-deep flex items-center justify-center transition-colors xl:hidden"
+          className="size-tap text-ink hover:text-gold-deep active:text-gold-deep ms-[6px] flex items-center justify-center transition-colors xl:hidden"
         >
           <Icon name="burger" size={32} />
         </button>

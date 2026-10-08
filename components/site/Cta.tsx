@@ -66,7 +66,7 @@ export function Cta() {
   const right = pick(RIGHT);
 
   return (
-    <section className="page-shell pt-[40px] pb-[10px] xl:pt-[60px] xl:pb-[20px]">
+    <section className="page-shell">
       <div className="rounded-panel xl:rounded-panel-d bg-gold relative flex min-h-[320px] items-center justify-center overflow-hidden px-[20px] py-[40px] xl:min-h-[440px] xl:px-[60px] xl:py-[70px]">
         <div
           aria-hidden="true"

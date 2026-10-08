@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Cta } from "@/components/site/Cta";
 import { PageHead } from "@/components/site/PageHead";
+import { Blocks } from "@/components/site/Blocks";
 import { SitePage } from "@/components/site/SitePage";
 import { TemplateCard } from "@/components/site/TemplateCard";
 import { relatedTemplates, TEMPLATES, templateBySlug } from "@/lib/catalog/templates";
@@ -64,97 +65,101 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
 
   return (
     <SitePage>
-      {/* Выход обратно в каталог стоит над заголовком: со страницы
+      <Blocks>
+        <div>
+          {/* Выход обратно в каталог стоит над заголовком: со страницы
           шаблона чаще возвращаются к выбору, чем идут дальше. */}
-      <div className="page-shell pt-[24px] xl:pt-[40px]">
-        <Link
-          href="/cards"
-          className="font-ui text-note-d text-muted min-h-tap inline-flex items-center gap-[8px] transition-opacity hover:opacity-70"
-        >
-          <span aria-hidden="true">←</span>
-          {t("tpl.back")}
-        </Link>
-      </div>
-
-      <PageHead title={template.nameKey} lead={template.lead} />
-
-      <section className="page-shell pt-[30px] pb-[60px] xl:pt-[50px] xl:pb-[100px]">
-        <div className="grid gap-[30px] xl:grid-cols-2 xl:items-start xl:gap-5">
-          {/* Превью шаблона. Пропорции те же, что у карточки каталога. */}
-          <div
-            aria-hidden="true"
-            className="rounded-card xl:rounded-card-d bg-photo relative min-h-[317px] overflow-hidden xl:min-h-[520px]"
-          >
-            {template.cover === null ? null : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={template.cover}
-                alt=""
-                className="absolute inset-0 size-full object-cover"
-              />
-            )}
+          <div className="page-shell pt-[24px] xl:pt-[40px]">
+            <Link
+              href="/cards"
+              className="font-ui text-note-d text-muted min-h-tap inline-flex items-center gap-[8px] transition-opacity hover:opacity-70"
+            >
+              <span aria-hidden="true">←</span>
+              {t("tpl.back")}
+            </Link>
           </div>
 
-          <div className="rounded-card xl:rounded-card-d bg-surface flex flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[40px] xl:pt-[40px] xl:pb-[44px]">
-            <dl className="flex flex-col gap-[14px]">
-              <Fact label="tpl.occasion" value={template.filter} />
-              <Fact label="tpl.game" value={template.game} />
-            </dl>
+          <PageHead title={template.nameKey} lead={template.lead} />
 
-            <h2 className="font-display text-h3 xl:text-h3-d mt-[28px] font-semibold tracking-tight">
-              {t("tpl.inside")}
-            </h2>
+          <section className="page-shell pt-[30px] xl:pt-[50px]">
+            <div className="grid gap-[30px] xl:grid-cols-2 xl:items-start xl:gap-5">
+              {/* Превью шаблона. Пропорции те же, что у карточки каталога. */}
+              <div
+                aria-hidden="true"
+                className="rounded-card xl:rounded-card-d bg-photo relative min-h-[317px] overflow-hidden xl:min-h-[520px]"
+              >
+                {template.cover === null ? null : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={template.cover}
+                    alt=""
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                )}
+              </div>
 
-            <ul role="list" className="mt-[14px] flex flex-col gap-[12px]">
-              {template.items.map((item) => (
-                <li
-                  key={item}
-                  className="font-ui text-card xl:text-card-d text-body flex gap-[10px] leading-[1.4]"
-                >
-                  {/* Маркер декоративный: списку он смысла не добавляет,
+              <div className="rounded-card xl:rounded-card-d bg-surface flex flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[40px] xl:pt-[40px] xl:pb-[44px]">
+                <dl className="flex flex-col gap-[14px]">
+                  <Fact label="tpl.occasion" value={template.filter} />
+                  <Fact label="tpl.game" value={template.game} />
+                </dl>
+
+                <h2 className="font-display text-h3 xl:text-h3-d mt-[28px] font-semibold tracking-tight">
+                  {t("tpl.inside")}
+                </h2>
+
+                <ul role="list" className="mt-[14px] flex flex-col gap-[12px]">
+                  {template.items.map((item) => (
+                    <li
+                      key={item}
+                      className="font-ui text-card xl:text-card-d text-body flex gap-[10px] leading-[1.4]"
+                    >
+                      {/* Маркер декоративный: списку он смысла не добавляет,
                       его роль уже несёт сам список. */}
-                  <span aria-hidden="true" className="text-gold-deep">
-                    —
-                  </span>
-                  {t(item)}
-                </li>
-              ))}
-            </ul>
+                      <span aria-hidden="true" className="text-gold-deep">
+                        —
+                      </span>
+                      {t(item)}
+                    </li>
+                  ))}
+                </ul>
 
-            {/* С 08.10.2026 все кнопки «Создать открытку» ведут
+                {/* С 08.10.2026 все кнопки «Создать открытку» ведут
                 в редактор, а не в конструктор (просьба пользователя). */}
-            <Button
-              href="/editor"
-              labelKey="cta.create"
-              className="mt-[30px] xl:mt-[40px] xl:w-full"
-            />
-          </div>
+                <Button
+                  href="/editor"
+                  labelKey="cta.create"
+                  className="mt-[30px] xl:mt-[40px] xl:w-full"
+                />
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
 
-      <section className="page-shell pb-[70px] xl:pb-[120px]">
-        <h2
-          id="more-templates"
-          className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
-        >
-          {t("tpl.more")}
-        </h2>
+        <section className="page-shell">
+          <h2
+            id="more-templates"
+            className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
+          >
+            {t("tpl.more")}
+          </h2>
 
-        {/* На мобильном ряд шире экрана и прокручивается пальцем,
+          {/* На мобильном ряд шире экрана и прокручивается пальцем,
             как остальные ряды карточек: сеткой он ужал бы карточки
             до нечитаемых. */}
-        <ul
-          role="list"
-          aria-labelledby="more-templates"
-          className="carousel mt-[30px] items-stretch gap-[20px] xl:mt-[50px] xl:grid xl:grid-cols-3 xl:gap-5 xl:overflow-visible"
-        >
-          {related.map((item) => (
-            <TemplateCard key={item.slug} template={item} className="w-[300px] xl:w-auto" />
-          ))}
-        </ul>
-      </section>
+          <ul
+            role="list"
+            aria-labelledby="more-templates"
+            className="carousel mt-[30px] items-stretch gap-[20px] xl:mt-[50px] xl:grid xl:grid-cols-3 xl:gap-5 xl:overflow-visible"
+          >
+            {related.map((item) => (
+              <TemplateCard key={item.slug} template={item} className="w-[300px] xl:w-auto" />
+            ))}
+          </ul>
+        </section>
 
-      <Cta />
+        <Cta />
+      </Blocks>
     </SitePage>
   );
 }

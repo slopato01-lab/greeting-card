@@ -125,7 +125,7 @@ export function Faq() {
   };
 
   return (
-    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[32px] xl:pb-[32px]">
+    <section className="page-shell">
       <h2
         id="faq-title"
         className="font-display text-h1 xl:text-h1-d max-w-[1300px] font-medium tracking-tight"

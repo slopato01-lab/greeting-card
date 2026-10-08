@@ -39,7 +39,7 @@ export function Catalog() {
   const [first, last] = splitLast(title);
 
   return (
-    <section className="page-shell pt-[60px] pb-[30px] xl:pt-[40px] xl:pb-[40px]">
+    <section className="page-shell">
       <h2 id="catalog-title" className="sr-only">
         {title}
       </h2>

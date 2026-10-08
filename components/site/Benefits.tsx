@@ -33,7 +33,7 @@ const CHECKS = [
 
 export function Benefits() {
   return (
-    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[40px] xl:pb-[40px]">
+    <section className="page-shell">
       <div className="flex flex-col gap-[16px] xl:flex-row xl:items-end xl:justify-between xl:gap-[60px]">
         <h2
           id="benefits-title"

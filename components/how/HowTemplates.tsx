@@ -30,7 +30,7 @@ export function HowTemplates() {
     <section
       id="templates"
       aria-labelledby="how-templates-title"
-      className="flex flex-col gap-[20px] pt-[40px] xl:gap-[28px] xl:pt-[80px]"
+      className="flex flex-col gap-[20px] xl:gap-[28px]"
     >
       <div className="grid gap-[12px] xl:grid-cols-2 xl:gap-[60px]">
         <h2

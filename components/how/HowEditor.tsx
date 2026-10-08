@@ -51,7 +51,7 @@ export function HowEditor() {
     <section
       id="editor"
       aria-labelledby="how-editor-title"
-      className="flex flex-col gap-[24px] pt-[40px] xl:gap-[32px] xl:pt-[80px]"
+      className="flex flex-col gap-[24px] xl:gap-[32px]"
     >
       <div className="flex flex-col gap-[16px]">
         <h2

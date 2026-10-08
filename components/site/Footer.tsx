@@ -52,7 +52,6 @@ const COLUMNS = [
     title: "footer.col.help",
     links: [
       { href: "/how", key: "nav.how" },
-      { href: "/#faq", key: "nav.faq" },
       { href: "/prices", key: "page.prices.title" },
     ],
   },

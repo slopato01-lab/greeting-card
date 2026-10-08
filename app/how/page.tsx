@@ -4,6 +4,7 @@ import { HowEditor } from "@/components/how/HowEditor";
 import { HowHero } from "@/components/how/HowHero";
 import { HowPlans } from "@/components/how/HowPlans";
 import { HowTemplates } from "@/components/how/HowTemplates";
+import { Blocks } from "@/components/site/Blocks";
 import { SitePage } from "@/components/site/SitePage";
 import { t } from "@/lib/i18n";
 
@@ -28,12 +29,12 @@ export const metadata: Metadata = {
 export default function HowPage() {
   return (
     <SitePage>
-      <div className="page-shell flex flex-col gap-[12px] pt-[8px] pb-[60px] xl:gap-[20px] xl:pt-[16px] xl:pb-[100px]">
+      <Blocks className="page-shell pt-[8px] xl:pt-[16px]">
         <HowHero />
         <HowEditor />
         <HowTemplates />
         <HowPlans />
-      </div>
+      </Blocks>
     </SitePage>
   );
 }
