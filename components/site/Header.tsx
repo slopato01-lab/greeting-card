@@ -13,6 +13,13 @@ import { t, type TextKey } from "@/lib/i18n";
  * и название слева, навигация капсом по центру (текущий раздел
  * подчёркнут), справа белая пилюля. Одна на все страницы.
  *
+ * Шапка прилипает к верху экрана на всех страницах и ширинах
+ * (решение 08.10.2026). Фон сплошной --canvas: контент под ней не
+ * просвечивает. Линия --line снизу появляется, только когда страница
+ * прокручена, — наверху страницы шапка лежит на основе, как в макете.
+ * Высота — токены --spacing-header / -d, на них же отступает прокрутка
+ * к фокусу (globals.css).
+ *
  * На мобильном — название и бургер. Панели раскрытого меню в макете
  * нет — спроектирована от токенов, описание в docs/DESIGN.md, раздел
  * «Панель мобильного меню». Панель раскрывается в потоке и сдвигает
@@ -33,13 +40,14 @@ const NAV_LINK =
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const panelId = useId();
   const headerRef = useRef<HTMLElement>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Пока панель открыта, слушаем Esc и нажатие вне шапки.
-  // Оба слушателя снимаются одним AbortSignal — вместе с закрытием
+  // Пока панель открыта, слушаем Esc, нажатие и фокус вне шапки.
+  // Все слушатели снимаются одним AbortSignal — вместе с закрытием
   // панели и при размонтировании.
   useEffect(() => {
     if (!open) return;
@@ -57,6 +65,19 @@ export function Header() {
       { signal },
     );
 
+    // Фокус ушёл из шапки (Tab за последний пункт) — панель закрывается:
+    // шапка прилипает к экрану, и открытая панель накрыла бы элемент
+    // в фокусе.
+    document.addEventListener(
+      "focusin",
+      (event) => {
+        const target = event.target;
+        if (target instanceof Node && headerRef.current?.contains(target)) return;
+        setOpen(false);
+      },
+      { signal },
+    );
+
     document.addEventListener(
       "pointerdown",
       (event) => {
@@ -69,6 +90,16 @@ export function Header() {
 
     return () => controller.abort();
   }, [open]);
+
+  // Прокручена ли страница — от этого зависит линия под шапкой.
+  // Слушатель пассивный и снимается по AbortSignal.
+  useEffect(() => {
+    const controller = new AbortController();
+    const update = () => setScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", update, { passive: true, signal: controller.signal });
+    update();
+    return () => controller.abort();
+  }, []);
 
   // Фокус уходит в панель сразу после раскрытия: иначе с клавиатуры
   // следующий Tab уводит мимо только что открытого меню.
@@ -83,8 +114,11 @@ export function Header() {
     pathname === href || pathname.startsWith(`${href}/`) ? "page" : undefined;
 
   return (
-    <header ref={headerRef}>
-      <div className="page-shell flex min-h-16 items-center xl:min-h-[88px]">
+    <header
+      ref={headerRef}
+      className={`bg-canvas sticky top-0 z-40 border-b transition-colors ${scrolled ? "border-line" : "border-transparent"}`}
+    >
+      <div className="page-shell min-h-header xl:min-h-header-d flex items-center">
         <Link
           href="/"
           className="font-display text-logo xl:text-logo-d min-h-tap inline-flex items-center gap-[10px] font-medium"
