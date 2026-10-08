@@ -149,7 +149,7 @@ export function Header() {
             в базовых классах уже есть inline-flex, и он перебивает
             hidden — порядок в строке классов на это не влияет. */}
         <div className="hidden xl:block">
-          <Button href="/create" variant="header" tone="dark" labelKey="cta.create" />
+          <Button href="/editor" variant="header" tone="dark" labelKey="cta.create" />
         </div>
 
         <button
@@ -184,7 +184,7 @@ export function Header() {
             </ul>
           </nav>
 
-          <Button href="/create" labelKey="cta.create" className="mt-5" />
+          <Button href="/editor" labelKey="cta.create" className="mt-5" />
         </div>
       ) : null}
     </header>

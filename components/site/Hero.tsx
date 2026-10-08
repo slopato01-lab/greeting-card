@@ -55,7 +55,7 @@ export function Hero() {
 
       <div className="relative mx-auto -mt-[16px] flex flex-col items-center xl:-mt-[48px] xl:w-max">
         <span className="border-ink w-full rounded-full border border-dashed p-[5px] xl:w-auto">
-          <Button href="/create" labelKey="cta.create" />
+          <Button href="/editor" labelKey="cta.create" />
         </span>
 
         {/* На телефоне подпись под кнопкой, стрелка вверх. С 1280 —

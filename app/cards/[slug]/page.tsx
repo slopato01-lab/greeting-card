@@ -121,10 +121,10 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
               ))}
             </ul>
 
-            {/* Повод и игра уезжают в конструктор параметром: человек
-                уже выбрал их здесь, спрашивать второй раз незачем. */}
+            {/* С 08.10.2026 все кнопки «Создать открытку» ведут
+                в редактор, а не в конструктор (просьба пользователя). */}
             <Button
-              href={`/create?t=${template.slug}`}
+              href="/editor"
               labelKey="cta.create"
               className="mt-[30px] xl:mt-[40px] xl:w-full"
             />

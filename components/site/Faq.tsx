@@ -256,7 +256,7 @@ export function Faq() {
                       </ul>
 
                       <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:flex-row xl:pt-[18px]">
-                        <Button href="/create" labelKey="cta.create" className="xl:w-auto" />
+                        <Button href="/editor" labelKey="cta.create" className="xl:w-auto" />
                         {/* Каталог живёт на /cards. */}
                         <GhostButton href="/cards" labelKey="cta.templates" className="xl:w-auto" />
                       </div>

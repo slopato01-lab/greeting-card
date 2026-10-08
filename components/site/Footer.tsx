@@ -45,7 +45,7 @@ const COLUMNS = [
     links: [
       { href: "/cards", key: "cta.templates" },
       { href: "/games", key: "nav.games" },
-      { href: "/create", key: "cta.create" },
+      { href: "/editor", key: "cta.create" },
     ],
   },
   {

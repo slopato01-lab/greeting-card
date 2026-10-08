@@ -101,7 +101,7 @@ export function Cta() {
           </p>
 
           <Button
-            href="/create"
+            href="/editor"
             labelKey="cta.create"
             tone="dark"
             className="mt-[30px] max-w-[325px] xl:mt-[40px] xl:max-w-none"
