@@ -48,6 +48,14 @@ const ICONS = [
   { name: "planet", source: "tabler:planet", mono: true, where: "декор в герое, десктоп" },
   { name: "prev", source: "tabler:arrow-left", mono: true, where: "стрелки рядов на главной" },
   { name: "next", source: "tabler:arrow-right", mono: true, where: "стрелки рядов на главной" },
+  // Редактор открытки — Tabler, MIT.
+  { name: "text", source: "tabler:typography", mono: true, where: "редактор: добавить текст" },
+  { name: "rect", source: "tabler:square", mono: true, where: "редактор: добавить прямоугольник" },
+  { name: "circle", source: "tabler:circle", mono: true, where: "редактор: добавить круг" },
+  { name: "trash", source: "tabler:trash", mono: true, where: "редактор: удалить элемент" },
+  { name: "download", source: "tabler:download", mono: true, where: "редактор: скачать PNG" },
+  { name: "save", source: "tabler:device-floppy", mono: true, where: "редактор: сохранить шаблон" },
+  { name: "open", source: "tabler:folder-open", mono: true, where: "редактор: открыть шаблон" },
   // Наклейки открытки «С днём рождения!» — Noto, Apache 2.0.
   { name: "balloon", source: "noto:balloon", where: "наклейка в открытке «С днём рождения!»" },
   { name: "cake", source: "noto:birthday-cake", where: "наклейка в открытке «С днём рождения!»" },

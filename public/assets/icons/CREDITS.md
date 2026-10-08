@@ -36,6 +36,13 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `planet.svg` | `tabler:planet` | декор в герое, десктоп |
 | `prev.svg` | `tabler:arrow-left` | стрелки рядов на главной |
 | `next.svg` | `tabler:arrow-right` | стрелки рядов на главной |
+| `text.svg` | `tabler:typography` | редактор: добавить текст |
+| `rect.svg` | `tabler:square` | редактор: добавить прямоугольник |
+| `circle.svg` | `tabler:circle` | редактор: добавить круг |
+| `trash.svg` | `tabler:trash` | редактор: удалить элемент |
+| `download.svg` | `tabler:download` | редактор: скачать PNG |
+| `save.svg` | `tabler:device-floppy` | редактор: сохранить шаблон |
+| `open.svg` | `tabler:folder-open` | редактор: открыть шаблон |
 | `balloon.svg` | `noto:balloon` | наклейка в открытке «С днём рождения!» |
 | `cake.svg` | `noto:birthday-cake` | наклейка в открытке «С днём рождения!» |
 | `popper.svg` | `noto:party-popper` | наклейка в открытке «С днём рождения!» |

@@ -67,6 +67,8 @@ Figma и перестанут работать примерно через не�
 | Декор в карточке FAQ | `tabler:route` | `path` |
 | Декор-планета в герое (десктоп) | `tabler:planet` | `planet` |
 | Стрелки рядов на главной | `tabler:arrow-left`, `tabler:arrow-right` | `prev`, `next` |
+| Редактор: добавить текст, прямоугольник, круг | `tabler:typography`, `tabler:square`, `tabler:circle` | `text`, `rect`, `circle` |
+| Редактор: удалить, скачать PNG, сохранить и открыть шаблон | `tabler:trash`, `tabler:download`, `tabler:device-floppy`, `tabler:folder-open` | `trash`, `download`, `save`, `open` |
 | Маркер списка | простой круг, рисуется CSS | — |
 
 **Три иконки заменены 02.08.2026.** В макете стояли

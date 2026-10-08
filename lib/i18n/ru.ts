@@ -530,4 +530,40 @@ export const ru = {
   "done.body":
     "Отправьте ссылку в любой мессенджер. Она откроется на любом телефоне, ничего устанавливать не нужно",
   "done.storage": "Открытка хранится год. За месяц до конца мы напомним",
+
+  // ── Редактор открытки (/editor) ─────────────────────────
+  // Черновики 08.10.2026, ждут утверждения: см. docs/PRODUCT.md.
+  "editor.title": "Редактор открытки",
+  "editor.tools": "Добавить",
+  "editor.add.text": "Текст",
+  "editor.add.rect": "Прямоугольник",
+  "editor.add.circle": "Круг",
+  "editor.text.default": "Ваш текст",
+  "editor.background": "Фон",
+  "editor.file": "Файл",
+  "editor.export.png": "Скачать PNG",
+  "editor.export.json": "Сохранить шаблон",
+  "editor.import.json": "Открыть шаблон",
+  "editor.props": "Свойства",
+  "editor.props.empty": "Выберите элемент на открытке или добавьте новый",
+  "editor.props.color": "Цвет",
+  "editor.props.fontSize": "Размер шрифта",
+  "editor.props.font": "Шрифт",
+  "editor.font.display": "Заголовочный",
+  "editor.font.ui": "Основной",
+  "editor.props.delete": "Удалить элемент",
+  "editor.canvas.label": "Открытка",
+  "editor.canvas.hint":
+    "Стрелки двигают выбранный элемент, с Shift — быстрее. Delete удаляет. Двойное нажатие на текст открывает правку.",
+  "editor.color.paper": "Белый",
+  "editor.color.body": "Светло-серый",
+  "editor.color.muted": "Серый",
+  "editor.color.raised": "Графитовый",
+  "editor.color.canvas": "Чёрный",
+  "editor.color.gold": "Золотой",
+  "editor.draft.local": "Черновик сохраняется в этом браузере каждые три секунды",
+  "editor.error.template":
+    "Этот файл не похож на шаблон открытки. Подойдёт JSON, сохранённый в этом редакторе",
+  "error.editorFailed": "Редактор не загрузился. Проверьте соединение и попробуйте снова",
+  "loading.editor": "Готовим холст",
 } as const;
