@@ -416,36 +416,44 @@
     display: flex;
     gap: 10px;
     overflow-x: auto;
+    /* overflow-x: auto без явного overflow-y делает ряд прокручиваемым
+       и по вертикали: увеличенные карточки торчат за его край, и палец
+       или колесо листали ряд вместо страницы — карточки уезжали
+       за невидимую рамку. По вертикали ряд не прокручивается никогда. */
+    overflow-y: hidden;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
     margin-inline: calc(-1 * var(--shell-pad));
-    padding: 28px var(--shell-pad);
+    /* Поле считается от ширины карточки: крайние вырастают на треть
+       и разворачиваются, и чем шире карточка, тем дальше они торчат.
+       Фиксированное поле обрезало их на широких экранах. */
+    padding: calc(var(--arc-card) * 0.38) var(--shell-pad);
   }
 
   .hero-arc::-webkit-scrollbar {
     display: none;
   }
 
+  .hero-arc {
+    --arc-card: 112px;
+  }
+
   .hero-arc-card {
     flex: none;
-    width: 112px;
+    width: var(--arc-card);
     will-change: transform;
   }
 
   @media (min-width: 768px) {
-    .hero-arc-card {
-      width: 160px;
+    .hero-arc {
+      --arc-card: 160px;
     }
   }
 
   @media (min-width: 1280px) {
     .hero-arc {
+      --arc-card: clamp(190px, 13vw, 260px);
       gap: 22px;
-      padding-block: 48px;
-    }
-
-    .hero-arc-card {
-      width: clamp(190px, 13vw, 260px);
     }
   }
 

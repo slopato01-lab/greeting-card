@@ -156,12 +156,7 @@ export function HeroArc() {
   const half = Array.from({ length: REPEAT }, () => ANIMATED_TEMPLATES).flat();
 
   return (
-    <ul
-      ref={rowRef}
-      role="list"
-      aria-label={t("hero.cards")}
-      className="hero-arc"
-    >
+    <ul ref={rowRef} role="list" aria-label={t("hero.cards")} className="hero-arc">
       {[...half, ...half].map((template, i) => (
         <li
           key={`${template.id}-${i}`}

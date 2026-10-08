@@ -82,7 +82,7 @@ function Arrow({ loading = false }: { loading?: boolean }) {
   return loading ? (
     <span
       aria-hidden="true"
-      className="border-current/30 border-t-current size-4 shrink-0 animate-spin rounded-full border-2"
+      className="size-4 shrink-0 animate-spin rounded-full border-2 border-current/30 border-t-current"
     />
   ) : (
     <Icon name="next" size={18} className="shrink-0 -rotate-45" />

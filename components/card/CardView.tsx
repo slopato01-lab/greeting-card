@@ -358,7 +358,11 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                       <p aria-live="polite" className="font-ui text-note text-muted">
                         {copied ? (
                           <>
-                            <Icon name="tick" size={16} className="text-gold-deep me-[6px] inline" />
+                            <Icon
+                              name="tick"
+                              size={16}
+                              className="text-gold-deep me-[6px] inline"
+                            />
                             {t("card.copied")}
                           </>
                         ) : null}

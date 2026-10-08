@@ -552,7 +552,9 @@ export function Constructor() {
                   onClick={() => update({ game: key })}
                   className={
                     "rounded-card xl:rounded-card-d bg-surface flex w-full flex-col border-2 p-[8px] text-left transition-colors " +
-                    (draft.game === key ? "border-gold-deep" : "hover:border-line border-transparent")
+                    (draft.game === key
+                      ? "border-gold-deep"
+                      : "hover:border-line border-transparent")
                   }
                 >
                   {/* Живого превью нет: игровых модулей ещё не существует. */}

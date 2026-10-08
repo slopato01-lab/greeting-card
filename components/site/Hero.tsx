@@ -59,7 +59,7 @@ export function Hero() {
             слева от кнопки, стрелка вправо, как в макете. */}
         <p
           aria-hidden="true"
-          className="font-hand text-hand xl:text-hand-d text-ink mt-[8px] flex -rotate-[6deg] items-center gap-[6px] xl:absolute xl:top-1/2 xl:right-full xl:mt-0 xl:me-[20px] xl:-translate-y-1/4 xl:flex-row-reverse xl:rotate-[12deg] xl:whitespace-nowrap"
+          className="font-hand text-hand xl:text-hand-d text-ink mt-[8px] flex -rotate-[6deg] items-center gap-[6px] xl:absolute xl:top-1/2 xl:right-full xl:me-[20px] xl:mt-0 xl:-translate-y-1/4 xl:rotate-[12deg] xl:flex-row-reverse xl:whitespace-nowrap"
         >
           <ArrowSide className="h-[36px] w-[48px] -rotate-90 xl:rotate-0" />
           {t("hero.note.free")}

@@ -382,7 +382,9 @@ export default function StyleguidePage() {
               <li key={name} className="flex flex-col gap-2">
                 <span className="flex items-center gap-3">
                   <Icon name={name} size={32} />
-                  {icons[name].mono ? <Icon name={name} size={32} className="text-gold-deep" /> : null}
+                  {icons[name].mono ? (
+                    <Icon name={name} size={32} className="text-gold-deep" />
+                  ) : null}
                 </span>
                 <span className="font-ui text-[13px]">{name}</span>
                 <span className="font-ui text-muted text-[12px]">{icons[name].source}</span>
