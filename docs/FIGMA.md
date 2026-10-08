@@ -72,6 +72,7 @@ Figma и перестанут работать примерно через не�
 | Редактор: фото, просмотр, стоп | `tabler:photo`, `tabler:player-play`, `tabler:player-stop` | `photo`, `play`, `stop` |
 | Редактор: жирный, курсив, выравнивание, свой цвет | `tabler:bold`, `tabler:italic`, `tabler:align-left`, `tabler:align-center`, `tabler:align-right`, `tabler:color-picker` | `bold`, `italic`, `alignLeft`, `alignCenter`, `alignRight`, `picker` |
 | Редактор: стикеры | `tabler:sticker` | `sticker` |
+| Редактор: убрать фон | `tabler:background` | `cutout` |
 | Маркер списка | простой круг, рисуется CSS | — |
 
 **Три иконки заменены 02.08.2026.** В макете стояли

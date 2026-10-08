@@ -40,6 +40,7 @@ export function Editor() {
     duration,
     playing,
     busy,
+    busyText,
     saved,
     notice,
     previews,
@@ -137,7 +138,7 @@ export function Editor() {
           )}
           {busy ? (
             <p aria-live="polite" className="font-ui text-note xl:text-note-d text-body">
-              {t("loading.upload")}
+              {t(busyText)}
             </p>
           ) : null}
 
@@ -159,6 +160,7 @@ export function Editor() {
           onAnimation={actions.setAnimation}
           onRemove={actions.remove}
           onReplaceImage={(file) => void actions.replaceImage(file)}
+          onRemoveBackground={() => void actions.removeBackground()}
           onMono={actions.setMono}
           onSpacing={actions.setSpacing}
           className="xl:col-start-3 xl:row-span-3 xl:row-start-1"

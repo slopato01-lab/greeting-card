@@ -51,6 +51,10 @@ await writeFile(
 конфетти, ёлочные шары, снежинка, заглушка фото) — свои,
 scripts/draw-stickers.py.
 
+\`sample-birthday.png\` — пример фото в шаблоне «День рождения»: Unsplash,
+https://images.unsplash.com/photo-1471286174890-9c112ffca5b4 (лицензия Unsplash).
+Фон убран моделью MediaPipe selfie_segmenter, фото переведено в ч/б.
+
 Остальные — Noto Emoji, © Google, лицензия Apache 2.0,
 https://github.com/googlefonts/noto-emoji:
 

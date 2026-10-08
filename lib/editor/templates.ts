@@ -100,9 +100,15 @@ function card(options: {
   who: TextKey;
   wish: TextKey;
   heart: StickerId;
+  /**
+   * Фото по центру. По умолчанию — серый силуэт; в «Дне рождения» —
+   * пример уже вырезанного фото, своё на его место встаёт без фона.
+   */
+  photo?: { sticker: StickerId; x: number; y: number; scale: number };
   /** Стикеры между фото и пожеланием — у каждой темы свои. */
   decor: Layer[];
 }): EditorDoc {
+  const photo = options.photo ?? { sticker: "photo-placeholder", x: 288, y: 468, scale: 0.62 };
   const titleY = options.titleLines === 2 ? 108 : 92;
   const whoY = options.titleLines === 2 ? 206 : 160;
   const layers: Layer[] = [
@@ -115,10 +121,10 @@ function card(options: {
       anim: anim({ in: "letters", inDuration: 0.6, delay: 0.85 }),
     }),
     sticker(
-      "photo-placeholder",
-      288,
-      468,
-      0.62,
+      photo.sticker,
+      photo.x,
+      photo.y,
+      photo.scale,
       0,
       anim({ in: "fade", inDuration: 0.7, delay: 1.3 }),
     ),
@@ -149,7 +155,9 @@ export const TEMPLATES: readonly TemplateInfo[] = [
   {
     id: "birthday",
     label: "tpl.birthday.label",
-    // Ближе всех к видео: колпак, свеча с огоньком, спичка, розовая лента.
+    // Ближе всех к видео: настоящий ребёнок без фона, колпак на голове,
+    // свеча с огоньком и спичка сбоку, розовая лента. Своё фото встаёт
+    // на место примера уже вырезанным (lib/editor/cutout.ts).
     build: () =>
       card({
         background: "#efefef",
@@ -160,37 +168,38 @@ export const TEMPLATES: readonly TemplateInfo[] = [
         who: "tpl.birthday.who",
         wish: "tpl.birthday.wish",
         heart: "heart-doodle-pink",
+        photo: { sticker: "sample-birthday", x: 296, y: 470, scale: 0.5 },
         decor: [
           sticker(
             "party-hat",
-            262,
-            318,
-            0.36,
-            -10,
+            304,
+            298,
+            0.28,
+            -8,
             anim({ in: "toss-left", delay: 1.6, inDuration: 0.6 }),
           ),
           sticker(
             "candle",
-            400,
-            476,
-            0.56,
-            10,
+            492,
+            490,
+            0.5,
+            8,
             anim({ in: "toss-bottom", delay: 1.75, inDuration: 0.6 }),
           ),
           sticker(
             "flame",
-            425,
-            318,
-            0.42,
-            10,
+            510,
+            346,
+            0.4,
+            8,
             anim({ in: "fade", delay: 2.3, inDuration: 0.4, loop: "flicker", loopPeriod: 0.9 }),
           ),
           sticker(
             "match",
-            440,
-            540,
-            0.5,
-            18,
+            535,
+            557,
+            0.46,
+            16,
             anim({ in: "toss-bottom", delay: 1.9, inDuration: 0.6 }),
           ),
           sticker(

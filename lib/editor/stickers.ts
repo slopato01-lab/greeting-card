@@ -22,7 +22,14 @@ export type StickerInfo = {
   label: TextKey;
   width: number;
   height: number;
+  /** Заменяется своим фото: «Заменить на своё фото» в свойствах. */
   placeholder?: true;
+  /** При замене фото автоматически убирается фон (lib/editor/cutout.ts). */
+  cutout?: true;
+  /** Не показывать в каталоге стикеров — живёт только в шаблоне. */
+  hidden?: true;
+  /** Расширение файла, если не SVG. */
+  ext?: "png";
 };
 
 export const STICKERS: readonly StickerInfo[] = [
@@ -33,6 +40,20 @@ export const STICKERS: readonly StickerInfo[] = [
     width: 400,
     height: 500,
     placeholder: true,
+  },
+  // Пример фото в шаблоне «День рождения»: мальчик, уже вырезанный из
+  // фона и чёрно-белый, как ребёнок в design/пример анимации и дизайна.MP4.
+  // Unsplash, источник — public/assets/stickers/CREDITS.md.
+  {
+    id: "sample-birthday",
+    theme: "birthday",
+    label: "sticker.sample-birthday",
+    width: 623,
+    height: 640,
+    placeholder: true,
+    cutout: true,
+    hidden: true,
+    ext: "png",
   },
   { id: "party-hat", theme: "birthday", label: "sticker.party-hat", width: 400, height: 480 },
   { id: "candle", theme: "birthday", label: "sticker.candle", width: 120, height: 520 },
@@ -106,5 +127,5 @@ export function stickerInfo(id: StickerId): StickerInfo {
 }
 
 export function stickerUrl(id: StickerId): string {
-  return `/assets/stickers/${id}.svg`;
+  return `/assets/stickers/${id}.${BY_ID.get(id)?.ext ?? "svg"}`;
 }

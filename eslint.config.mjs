@@ -39,6 +39,8 @@ const config = [
       "node_modules/**",
       // Эталоны из Figma — статические копии макета, не продакшн-код
       "design/**",
+      // WASM-среда MediaPipe — копия из node_modules (scripts/copy-mediapipe.mjs)
+      "public/mediapipe/**",
     ],
   },
 

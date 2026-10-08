@@ -22,3 +22,6 @@ cloudflare-env.d.ts
 # Прочее
 .DS_Store
 *.log
+
+# WASM MediaPipe — копия из node_modules, кладёт scripts/copy-mediapipe.mjs
+public/mediapipe/wasm/

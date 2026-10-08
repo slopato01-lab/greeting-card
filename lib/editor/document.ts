@@ -88,6 +88,7 @@ export type LayerKind = (typeof LAYER_KINDS)[number];
  */
 export const STICKER_IDS = [
   "photo-placeholder",
+  "sample-birthday",
   "party-hat",
   "candle",
   "flame",

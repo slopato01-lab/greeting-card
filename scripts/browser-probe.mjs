@@ -17,6 +17,7 @@
  * <pre id="probe"> на documentElement (в body его снесёт гидратация).
  *
  * Без зависимостей: Chrome по протоколу DevTools, WebSocket из Node 22.
+ * PROBE_WEBGL=1 включает программный WebGL — нужен для вырезки фона.
  * Браузер — $CHROME или Chromium из кеша playwright.
  */
 import { spawn } from "node:child_process";
@@ -41,7 +42,11 @@ const chrome = spawn(
   CHROME,
   [
     "--headless=new",
-    "--disable-gpu",
+    // PROBE_WEBGL=1 — программный WebGL (SwiftShader): без него в headless
+    // нет WebGL, а MediaPipe (вырезка фона) без него не работает.
+    ...(process.env.PROBE_WEBGL === "1"
+      ? ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"]
+      : ["--disable-gpu"]),
     "--no-sandbox",
     `--window-size=${width},1400`,
     `--remote-debugging-port=${PORT}`,

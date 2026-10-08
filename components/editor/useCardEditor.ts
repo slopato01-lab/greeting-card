@@ -36,12 +36,12 @@ import {
   resolveColor,
   restoreObject,
   showFrame,
-  stickerOf,
   type TextStyle,
   type Theme,
   usedAssets,
 } from "@/lib/editor/fabric";
 import { loadFont } from "@/lib/editor/fonts";
+import { cutoutPerson } from "@/lib/editor/cutout";
 import { blobToDataUrl, dataUrlToBlob, newAssetId, prepareImage } from "@/lib/editor/image";
 import { stickerInfo } from "@/lib/editor/stickers";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
@@ -130,6 +130,8 @@ export function useCardEditor() {
   const durationRef = useRef(DEFAULT_DURATION);
   const [playing, setPlaying] = useState(false);
   const [busy, setBusy] = useState(false);
+  /** Что именно сейчас занимает редактор — подпись под холстом. */
+  const [busyText, setBusyText] = useState<TextKey>("loading.upload");
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState<TextKey | null>(null);
   const [previews, setPreviews] = useState<Partial<Record<TemplateId, string>>>({});
@@ -516,6 +518,7 @@ export function useCardEditor() {
         setNotice("editor.error.photoLimit");
         return;
       }
+      setBusyText("loading.upload");
       setBusy(true);
       try {
         const result = await prepareImage(file);
@@ -562,11 +565,37 @@ export function useCardEditor() {
     [assetUrl, placeNew],
   );
 
+  /** Ставит новый объект на место старого: тот же слой по глубине, выделен. */
+  const swapObject = useCallback(
+    (current: Live, old: FabricObject, object: FabricObject) => {
+      const index = current.canvas.getObjects().indexOf(old);
+      current.canvas.remove(old);
+      current.canvas.insertAt(Math.max(0, index), object);
+      current.canvas.setActiveObject(object);
+      current.canvas.requestRenderAll();
+      markDirty();
+      syncSelection();
+    },
+    [markDirty, syncSelection],
+  );
+
+  /** Убирает фон; не вышло — объясняет почему и отдаёт исходник. */
+  const tryCutout = useCallback(async (blob: Blob) => {
+    setBusyText("loading.cutout");
+    const cut = await cutoutPerson(blob);
+    if (cut.ok) return cut;
+    setNotice(cut.error);
+    return null;
+  }, []);
+
   /**
    * Своё фото вместо выделенной заглушки или фото. Встаёт в ту же рамку
    * (вписывается по большей стороне), на тот же слой и с той же анимацией.
    * Вместо заглушки фото по умолчанию чёрно-белое — как в шаблонах
    * по образцу видео; выключается в свойствах.
+   *
+   * Заглушка с флагом `cutout` (пример фото в шаблоне «День рождения»)
+   * сама убирает фон у нового фото: человек встаёт вместо примера.
    */
   const replaceImage = useCallback(
     async (file: File) => {
@@ -575,8 +604,10 @@ export function useCardEditor() {
       if (current === null || old === undefined || playback.current !== null) return;
       const before = objectToLayer(current.fabric, old);
       if (before === null || (before.kind !== "image" && before.kind !== "sticker")) return;
+      const autoCutout = before.kind === "sticker" && stickerInfo(before.sticker).cutout === true;
 
       setNotice(null);
+      setBusyText("loading.upload");
       setBusy(true);
       try {
         const result = await prepareImage(file);
@@ -584,7 +615,11 @@ export function useCardEditor() {
           setNotice(result.error);
           return;
         }
-        const { blob, width, height } = result.image;
+        let { blob, width, height } = result.image;
+        if (autoCutout) {
+          const cut = await tryCutout(blob);
+          if (cut !== null) ({ blob, width, height } = cut);
+        }
         const id = newAssetId();
         registerAsset(id, blob);
         if (!(await putAsset(id, blob))) setNotice("editor.error.photoStorage");
@@ -601,26 +636,66 @@ export function useCardEditor() {
           scaleY: fit,
           opacity: before.opacity,
           anim: before.anim,
-          mono: before.kind === "image" ? before.mono : stickerOf(old) === "photo-placeholder",
+          mono: before.kind === "image" ? before.mono : true,
         };
         const object = await createObject(current.fabric, layer, current.theme, assetUrl);
         if (object === null || live.current !== current) {
           setNotice("editor.error.photoDecode");
           return;
         }
-        const index = current.canvas.getObjects().indexOf(old);
-        current.canvas.remove(old);
-        current.canvas.insertAt(Math.max(0, index), object);
-        current.canvas.setActiveObject(object);
-        current.canvas.requestRenderAll();
-        markDirty();
-        syncSelection();
+        swapObject(current, old, object);
       } finally {
         setBusy(false);
       }
     },
-    [assetUrl, markDirty, registerAsset, syncSelection],
+    [assetUrl, registerAsset, swapObject, tryCutout],
   );
+
+  /**
+   * «Убрать фон» у выделенного фото. Вырезка меньше исходника: масштаб
+   * тот же, а центр сдвигается на центр фигуры — с учётом поворота, —
+   * чтобы человек остался на своём месте холста.
+   */
+  const removeBackground = useCallback(async () => {
+    const current = live.current;
+    const old = current?.canvas.getActiveObject();
+    if (current === null || old === undefined || playback.current !== null) return;
+    const before = objectToLayer(current.fabric, old);
+    if (before === null || before.kind !== "image") return;
+    const source = assets.current.get(before.asset);
+    if (source === undefined) return;
+
+    setNotice(null);
+    setBusyText("loading.cutout");
+    setBusy(true);
+    try {
+      const cut = await tryCutout(source.blob);
+      if (cut === null) return;
+      const id = newAssetId();
+      registerAsset(id, cut.blob);
+      if (!(await putAsset(id, cut.blob))) setNotice("editor.error.photoStorage");
+
+      const rad = (before.angle * Math.PI) / 180;
+      const dx = cut.offsetX * before.scaleX;
+      const dy = cut.offsetY * before.scaleY;
+      const layer: Layer = {
+        ...before,
+        asset: id,
+        width: cut.width,
+        height: cut.height,
+        x: before.x + dx * Math.cos(rad) - dy * Math.sin(rad),
+        y: before.y + dx * Math.sin(rad) + dy * Math.cos(rad),
+      };
+      const object = await createObject(current.fabric, layer, current.theme, assetUrl);
+      if (object === null || live.current !== current) {
+        setNotice("editor.error.cutoutFailed");
+        return;
+      }
+      swapObject(current, old, object);
+    } finally {
+      setBusy(false);
+    }
+  }, [assetUrl, registerAsset, swapObject, tryCutout]);
 
   const setMono = useCallback(
     (mono: boolean) => editActive((object, { fabric }) => applyMono(fabric, object, mono)),
@@ -903,6 +978,7 @@ export function useCardEditor() {
     duration,
     playing,
     busy,
+    busyText,
     saved,
     notice,
     previews,
@@ -914,6 +990,7 @@ export function useCardEditor() {
       addImage,
       addSticker,
       replaceImage,
+      removeBackground,
       setMono,
       setSpacing,
       applyTemplate,

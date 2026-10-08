@@ -196,6 +196,7 @@ export function Inspector({
   onAnimation,
   onRemove,
   onReplaceImage,
+  onRemoveBackground,
   onMono,
   onSpacing,
   className,
@@ -209,12 +210,13 @@ export function Inspector({
   onAnimation: (change: Partial<Animation>) => void;
   onRemove: () => void;
   onReplaceImage: (file: File) => void;
+  onRemoveBackground: () => void;
   onMono: (mono: boolean) => void;
   onSpacing: (spacing: number) => void;
   className?: string;
 }) {
-  const placeholder =
-    selected?.kind === "sticker" && stickerInfo(selected.sticker).placeholder === true;
+  const sticker = selected?.kind === "sticker" ? stickerInfo(selected.sticker) : null;
+  const placeholder = sticker?.placeholder === true;
   return (
     <Panel labelledBy="editor-props" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-props" labelKey="editor.props" />
@@ -234,7 +236,11 @@ export function Inspector({
             <div className="flex flex-col gap-[8px]">
               {placeholder ? (
                 <p className="font-ui text-note xl:text-note-d text-body leading-[1.4]">
-                  {t("editor.photo.replaceHint")}
+                  {t(
+                    sticker?.cutout === true
+                      ? "editor.photo.replaceHintCutout"
+                      : "editor.photo.replaceHint",
+                  )}
                 </p>
               ) : null}
               <FileButton
@@ -245,6 +251,10 @@ export function Inspector({
                 onFile={onReplaceImage}
               />
             </div>
+          ) : null}
+
+          {selected.kind === "image" ? (
+            <ToolButton icon="cutout" labelKey="editor.photo.cutout" onClick={onRemoveBackground} />
           ) : null}
 
           {selected.kind === "image" ? (

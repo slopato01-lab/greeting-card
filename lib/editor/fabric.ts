@@ -192,11 +192,6 @@ export function applyMono(fabric: FabricModule, object: FabricObject, mono: bool
   meta.set(object, { ...info, mono });
 }
 
-/** Это заглушка на месте фото? */
-export function stickerOf(object: FabricObject): StickerId | null {
-  return meta.get(object)?.sticker ?? null;
-}
-
 /**
  * Обратное превращение. Объекты, которых редактор не создавал,
  * пропускаются. Результат всегда в пределах LIMITS — см. clampLayer.

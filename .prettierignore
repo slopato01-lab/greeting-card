@@ -17,3 +17,5 @@ design/
 # и переносы, а её читает человек, а не сборщик.
 *.md
 
+# WASM-среда MediaPipe — копия из node_modules, не наш код
+public/mediapipe/wasm/

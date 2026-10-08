@@ -45,26 +45,28 @@ function StickerCatalog({
         <div key={theme} className="flex flex-col gap-[6px]">
           <span className="font-ui caps text-badge text-muted">{t(THEME_NAME[theme])}</span>
           <div className="flex flex-wrap gap-[4px]">
-            {STICKERS.filter((sticker) => sticker.theme === theme).map((sticker) => (
-              <button
-                key={sticker.id}
-                type="button"
-                disabled={disabled}
-                aria-label={t(sticker.label)}
-                title={t(sticker.label)}
-                onClick={() => onPick(sticker.id)}
-                className="rounded-inner bg-raised hover:bg-line active:bg-photo flex size-[56px] items-center justify-center p-[6px] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {/* Подпись у кнопки, картинка декоративная. */}
-                {/* eslint-disable-next-line @next/next/no-img-element -- SVG из public, оптимизатор не нужен */}
-                <img
-                  src={stickerUrl(sticker.id)}
-                  alt=""
-                  loading="lazy"
-                  className="max-h-full max-w-full"
-                />
-              </button>
-            ))}
+            {STICKERS.filter((sticker) => sticker.theme === theme && sticker.hidden !== true).map(
+              (sticker) => (
+                <button
+                  key={sticker.id}
+                  type="button"
+                  disabled={disabled}
+                  aria-label={t(sticker.label)}
+                  title={t(sticker.label)}
+                  onClick={() => onPick(sticker.id)}
+                  className="rounded-inner bg-raised hover:bg-line active:bg-photo flex size-[56px] items-center justify-center p-[6px] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {/* Подпись у кнопки, картинка декоративная. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element -- SVG из public, оптимизатор не нужен */}
+                  <img
+                    src={stickerUrl(sticker.id)}
+                    alt=""
+                    loading="lazy"
+                    className="max-h-full max-w-full"
+                  />
+                </button>
+              ),
+            )}
           </div>
         </div>
       ))}
