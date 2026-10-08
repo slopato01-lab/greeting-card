@@ -2,9 +2,10 @@
 
 import { useRef, type ChangeEvent } from "react";
 
-import { GroupLabel, Panel, Swatches, ToolButton } from "@/components/editor/controls";
-import type { ColorToken, LayerKind } from "@/lib/editor/document";
-import { t, type TextKey } from "@/lib/i18n";
+import { ColorPicker, GroupLabel, Panel, ToolButton } from "@/components/editor/controls";
+import type { Color, LayerKind } from "@/lib/editor/document";
+import type { TextKey } from "@/lib/i18n";
+import type { IconName } from "@/lib/icons/generated";
 
 /**
  * Панели инструментов. Две отдельные, а не одна: на мобильном «Файл»
@@ -12,18 +13,62 @@ import { t, type TextKey } from "@/lib/i18n";
  * На десктопе обе стоят в левой колонке, раскладку задаёт Editor.tsx.
  */
 
+/** Кнопка, которая открывает скрытое поле выбора файла. */
+function FileButton({
+  icon,
+  labelKey,
+  accept,
+  disabled,
+  onFile,
+}: {
+  icon: IconName;
+  labelKey: TextKey;
+  accept: string;
+  disabled: boolean;
+  onFile: (file: File) => void;
+}) {
+  const input = useRef<HTMLInputElement>(null);
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    // Сбрасываем, чтобы повторный выбор того же файла снова сработал.
+    event.target.value = "";
+    if (file !== undefined) onFile(file);
+  };
+  return (
+    <>
+      <ToolButton
+        icon={icon}
+        labelKey={labelKey}
+        disabled={disabled}
+        onClick={() => input.current?.click()}
+      />
+      <input
+        ref={input}
+        type="file"
+        accept={accept}
+        className="hidden"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={onChange}
+      />
+    </>
+  );
+}
+
 /** Добавить слой и выбрать фон. Кнопки переносятся по ширине, а не режут подписи. */
 export function AddPanel({
   disabled,
   background,
   onAdd,
+  onAddImage,
   onBackground,
   className,
 }: {
   disabled: boolean;
-  background: ColorToken;
-  onAdd: (kind: LayerKind) => void;
-  onBackground: (token: ColorToken) => void;
+  background: Color;
+  onAdd: (kind: Exclude<LayerKind, "image">) => void;
+  onAddImage: (file: File) => void;
+  onBackground: (color: Color) => void;
   className?: string;
 }) {
   return (
@@ -48,10 +93,19 @@ export function AddPanel({
           disabled={disabled}
           onClick={() => onAdd("circle")}
         />
+        {/* HEIC принимаем: Safari его откроет. Остальные браузеры
+            честно скажут, что не смогли, — см. lib/editor/image.ts. */}
+        <FileButton
+          icon="photo"
+          labelKey="editor.add.photo"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+          disabled={disabled}
+          onFile={onAddImage}
+        />
       </div>
 
       <GroupLabel id="editor-background" labelKey="editor.background" />
-      <Swatches labelledBy="editor-background" value={background} onChange={onBackground} />
+      <ColorPicker labelledBy="editor-background" value={background} onChange={onBackground} />
     </Panel>
   );
 }
@@ -59,28 +113,17 @@ export function AddPanel({
 /** PNG, сохранить и открыть шаблон. Шаг 5 гайда. */
 export function FilePanel({
   disabled,
-  fileError,
   onExportPng,
   onExportJson,
   onImport,
   className,
 }: {
   disabled: boolean;
-  fileError: TextKey | null;
   onExportPng: () => void;
   onExportJson: () => void;
   onImport: (file: File) => void;
   className?: string;
 }) {
-  const fileInput = useRef<HTMLInputElement>(null);
-
-  const onFile = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    // Сбрасываем, чтобы повторный выбор того же файла снова сработал.
-    event.target.value = "";
-    if (file !== undefined) onImport(file);
-  };
-
   return (
     <Panel labelledBy="editor-file" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-file" labelKey="editor.file" />
@@ -97,27 +140,14 @@ export function FilePanel({
           disabled={disabled}
           onClick={onExportJson}
         />
-        <ToolButton
+        <FileButton
           icon="open"
           labelKey="editor.import.json"
-          disabled={disabled}
-          onClick={() => fileInput.current?.click()}
-        />
-        <input
-          ref={fileInput}
-          type="file"
           accept="application/json,.json"
-          className="hidden"
-          tabIndex={-1}
-          aria-hidden="true"
-          onChange={onFile}
+          disabled={disabled}
+          onFile={onImport}
         />
       </div>
-      {fileError === null ? null : (
-        <p role="alert" className="font-ui text-note xl:text-note-d text-ink">
-          {t(fileError)}
-        </p>
-      )}
     </Panel>
   );
 }

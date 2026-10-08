@@ -43,6 +43,15 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `download.svg` | `tabler:download` | редактор: скачать PNG |
 | `save.svg` | `tabler:device-floppy` | редактор: сохранить шаблон |
 | `open.svg` | `tabler:folder-open` | редактор: открыть шаблон |
+| `photo.svg` | `tabler:photo` | редактор: добавить фото |
+| `play.svg` | `tabler:player-play` | редактор: просмотр анимации |
+| `stop.svg` | `tabler:player-stop` | редактор: остановить просмотр |
+| `bold.svg` | `tabler:bold` | редактор: жирный |
+| `italic.svg` | `tabler:italic` | редактор: курсив |
+| `alignLeft.svg` | `tabler:align-left` | редактор: по левому краю |
+| `alignCenter.svg` | `tabler:align-center` | редактор: по центру |
+| `alignRight.svg` | `tabler:align-right` | редактор: по правому краю |
+| `picker.svg` | `tabler:color-picker` | редактор: свой цвет |
 | `balloon.svg` | `noto:balloon` | наклейка в открытке «С днём рождения!» |
 | `cake.svg` | `noto:birthday-cake` | наклейка в открытке «С днём рождения!» |
 | `popper.svg` | `noto:party-popper` | наклейка в открытке «С днём рождения!» |

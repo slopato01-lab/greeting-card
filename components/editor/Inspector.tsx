@@ -1,33 +1,205 @@
 "use client";
 
-import { GroupLabel, Panel, Swatches, ToolButton } from "@/components/editor/controls";
-import type { EditorSelection } from "@/components/editor/useCardEditor";
-import { pillVisual } from "@/components/site/pill";
-import { type ColorToken, FONT_ROLES, type FontRole, LIMITS } from "@/lib/editor/document";
-import { t, type TextKey } from "@/lib/i18n";
+import {
+  ColorPicker,
+  GroupLabel,
+  IconToggle,
+  Panel,
+  SelectField,
+  Slider,
+  ToolButton,
+} from "@/components/editor/controls";
+import {
+  type Animation,
+  animInFor,
+  animLoopFor,
+  ANIM_OUT,
+  type AnimIn,
+  type AnimLoop,
+  type AnimOut,
+  type Color,
+  type FontId,
+  type Layer,
+  LIMITS,
+  type TextAlign,
+} from "@/lib/editor/document";
+import { FONT_GROUPS, FONTS, type FontGroup, type FontInfo } from "@/lib/editor/fonts";
+import type { TextStyle } from "@/lib/editor/fabric";
+import { type TextKey, t } from "@/lib/i18n";
+import type { IconName } from "@/lib/icons/generated";
 
-const FONT_NAME: Record<FontRole, TextKey> = {
-  display: "editor.font.display",
-  ui: "editor.font.ui",
+const GROUP_NAME: Record<FontGroup, TextKey> = {
+  sans: "editor.fontGroup.sans",
+  serif: "editor.fontGroup.serif",
+  accent: "editor.fontGroup.accent",
+  hand: "editor.fontGroup.hand",
 };
 
+const ALIGNS: { value: TextAlign; icon: IconName; label: TextKey }[] = [
+  { value: "left", icon: "alignLeft", label: "editor.align.left" },
+  { value: "center", icon: "alignCenter", label: "editor.align.center" },
+  { value: "right", icon: "alignRight", label: "editor.align.right" },
+];
+
+/** Семейство для превью названия шрифта. Шрифты сайта — из его переменных. */
+function previewFamily(font: FontInfo): string {
+  if (font.family !== null) return font.family;
+  return font.id === "unbounded" ? "var(--font-display)" : "var(--font-ui)";
+}
+
+const seconds = (value: number) => `${value.toFixed(1)} ${t("editor.unit.seconds")}`;
+
 /**
- * Панель свойств выделенного слоя. Шаг 4 гайда: цвет, размер шрифта
- * и удаление; плюс выбор из двух шрифтов DESIGN.md. Пока ничего
- * не выделено — пустое состояние с подсказкой.
+ * Список шрифтов по группам. Каждое название написано своим шрифтом:
+ * выбирать шрифт по имени без образца бесполезно. Цена — браузер
+ * скачивает файлы шрифтов, когда список впервые показан, то есть
+ * только на /editor и только когда выделен текст.
+ */
+function FontList({ value, onChange }: { value: FontId; onChange: (font: FontId) => void }) {
+  return (
+    <div
+      role="group"
+      aria-labelledby="editor-font"
+      className="border-line rounded-inner max-h-[280px] overflow-y-auto border p-[4px]"
+    >
+      {FONT_GROUPS.map((group) => (
+        <div key={group} className="flex flex-col">
+          <span className="font-ui caps text-badge text-muted px-[12px] pt-[10px] pb-[2px]">
+            {t(GROUP_NAME[group])}
+          </span>
+          {FONTS.filter((font) => font.group === group).map((font) => {
+            const active = font.id === value;
+            return (
+              <button
+                key={font.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => onChange(font.id)}
+                // Шрифт — выбор пользователя, а не оформление сайта:
+                // образец обязан быть написан именно им.
+                style={{ fontFamily: previewFamily(font) }}
+                className={[
+                  "rounded-inner min-h-tap text-sub px-[12px] text-left transition-colors",
+                  active ? "bg-paper text-canvas" : "text-ink hover:bg-raised active:bg-line",
+                ].join(" ")}
+              >
+                {t(font.label)}
+              </button>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AnimationFields({
+  layer,
+  onChange,
+}: {
+  layer: Layer;
+  onChange: (change: Partial<Animation>) => void;
+}) {
+  const { anim } = layer;
+  return (
+    <>
+      <GroupLabel id="editor-anim" labelKey="editor.anim" />
+
+      <SelectField<AnimIn>
+        labelKey="editor.anim.in"
+        value={anim.in}
+        options={animInFor(layer.kind)}
+        optionLabel={(option) => `editor.anim.in.${option}`}
+        onChange={(value) => onChange({ in: value })}
+      />
+      {anim.in === "none" ? null : (
+        <>
+          <Slider
+            labelKey="editor.anim.delay"
+            value={anim.delay}
+            min={LIMITS.delay.min}
+            max={10}
+            step={0.1}
+            display={seconds(anim.delay)}
+            onChange={(delay) => onChange({ delay })}
+          />
+          <Slider
+            labelKey="editor.anim.inDuration"
+            value={anim.inDuration}
+            min={0.2}
+            max={3}
+            step={0.1}
+            display={seconds(anim.inDuration)}
+            onChange={(inDuration) => onChange({ inDuration })}
+          />
+        </>
+      )}
+
+      <SelectField<AnimLoop>
+        labelKey="editor.anim.loop"
+        value={anim.loop}
+        options={animLoopFor(layer.kind)}
+        optionLabel={(option) => `editor.anim.loop.${option}`}
+        onChange={(value) => onChange({ loop: value })}
+      />
+      {/* Медленный наезд идёт весь показ целиком — циклов у него нет. */}
+      {anim.loop === "none" || anim.loop === "kenburns" ? null : (
+        <Slider
+          labelKey="editor.anim.loopPeriod"
+          value={anim.loopPeriod}
+          min={0.3}
+          max={6}
+          step={0.1}
+          display={seconds(anim.loopPeriod)}
+          onChange={(loopPeriod) => onChange({ loopPeriod })}
+        />
+      )}
+
+      <SelectField<AnimOut>
+        labelKey="editor.anim.out"
+        value={anim.out}
+        options={ANIM_OUT}
+        optionLabel={(option) => `editor.anim.out.${option}`}
+        onChange={(value) => onChange({ out: value })}
+      />
+      {anim.out === "none" ? null : (
+        <Slider
+          labelKey="editor.anim.outDuration"
+          value={anim.outDuration}
+          min={0.2}
+          max={3}
+          step={0.1}
+          display={seconds(anim.outDuration)}
+          onChange={(outDuration) => onChange({ outDuration })}
+        />
+      )}
+    </>
+  );
+}
+
+/**
+ * Панель свойств выделенного слоя. Пока ничего не выделено — пустое
+ * состояние с подсказкой; во время просмотра — сообщение, что правки
+ * на паузе.
  */
 export function Inspector({
-  selection,
+  selected,
+  playing,
   onFill,
+  onOpacity,
   onFontSize,
-  onFont,
+  onTextStyle,
+  onAnimation,
   onRemove,
   className,
 }: {
-  selection: EditorSelection | null;
-  onFill: (token: ColorToken) => void;
+  selected: Layer | null;
+  playing: boolean;
+  onFill: (color: Color) => void;
+  onOpacity: (value: number) => void;
   onFontSize: (size: number) => void;
-  onFont: (role: FontRole) => void;
+  onTextStyle: (style: TextStyle) => void;
+  onAnimation: (change: Partial<Animation>) => void;
   onRemove: () => void;
   className?: string;
 }) {
@@ -35,55 +207,87 @@ export function Inspector({
     <Panel labelledBy="editor-props" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-props" labelKey="editor.props" />
 
-      {selection === null ? (
+      {playing ? (
+        <p className="font-ui text-note xl:text-note-d text-body leading-[1.4]">
+          {t("editor.playing")}
+        </p>
+      ) : selected === null ? (
         <p className="font-ui text-note xl:text-note-d text-body leading-[1.4]">
           {t("editor.props.empty")}
         </p>
       ) : (
         <>
-          <GroupLabel id="editor-color" labelKey="editor.props.color" />
-          <Swatches labelledBy="editor-color" value={selection.fill} onChange={onFill} />
-
-          {selection.fontSize === null ? null : (
+          {selected.kind === "image" ? null : (
             <>
-              <label className="flex flex-col gap-[8px]">
-                <span className="font-ui caps text-badge xl:text-badge-d text-muted font-medium">
-                  {t("editor.props.fontSize")}
-                </span>
-                <span className="flex items-center gap-[12px]">
-                  <input
-                    type="range"
-                    min={LIMITS.fontSize.min}
-                    max={LIMITS.fontSize.max}
-                    value={selection.fontSize}
-                    onChange={(event) => onFontSize(Number(event.target.value))}
-                    className="min-h-tap accent-gold min-w-0 flex-1"
-                  />
-                  <output className="font-ui text-note xl:text-note-d text-ink w-[3ch] text-right tabular-nums">
-                    {Math.round(selection.fontSize)}
-                  </output>
-                </span>
-              </label>
+              <GroupLabel id="editor-color" labelKey="editor.props.color" />
+              <ColorPicker labelledBy="editor-color" value={selected.fill} onChange={onFill} />
+            </>
+          )}
 
+          {selected.kind !== "text" ? null : (
+            <>
               <GroupLabel id="editor-font" labelKey="editor.props.font" />
-              <div role="group" aria-labelledby="editor-font" className="flex flex-wrap gap-[8px]">
-                {FONT_ROLES.map((role) => {
-                  const active = selection.font === role;
-                  return (
-                    <button
-                      key={role}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() => onFont(role)}
-                      className="pill-tap"
-                    >
-                      <span className={pillVisual(active)}>{t(FONT_NAME[role])}</span>
-                    </button>
-                  );
-                })}
+              <FontList value={selected.font} onChange={(font) => onTextStyle({ font })} />
+
+              <Slider
+                labelKey="editor.props.fontSize"
+                value={selected.fontSize}
+                min={LIMITS.fontSize.min}
+                max={LIMITS.fontSize.max}
+                step={1}
+                display={String(Math.round(selected.fontSize))}
+                onChange={onFontSize}
+              />
+
+              <div className="flex flex-wrap gap-x-[24px] gap-y-[12px]">
+                <div className="flex flex-col gap-[8px]">
+                  <GroupLabel id="editor-style" labelKey="editor.props.style" />
+                  <div role="group" aria-labelledby="editor-style" className="flex gap-[4px]">
+                    <IconToggle
+                      icon="bold"
+                      labelKey="editor.bold"
+                      pressed={selected.bold}
+                      onClick={() => onTextStyle({ bold: !selected.bold })}
+                    />
+                    <IconToggle
+                      icon="italic"
+                      labelKey="editor.italic"
+                      pressed={selected.italic}
+                      onClick={() => onTextStyle({ italic: !selected.italic })}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-[8px]">
+                  <GroupLabel id="editor-align" labelKey="editor.props.align" />
+                  <div role="group" aria-labelledby="editor-align" className="flex gap-[4px]">
+                    {ALIGNS.map((align) => (
+                      <IconToggle
+                        key={align.value}
+                        icon={align.icon}
+                        labelKey={align.label}
+                        pressed={selected.align === align.value}
+                        onClick={() => onTextStyle({ align: align.value })}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </>
           )}
+
+          {/* Ползунок — прозрачность, а не непрозрачность: так понятнее,
+              «0%» значит «как есть». В слое хранится непрозрачность. */}
+          <Slider
+            labelKey="editor.props.opacity"
+            value={Math.round((1 - selected.opacity) * 100)}
+            min={0}
+            max={90}
+            step={5}
+            display={`${Math.round((1 - selected.opacity) * 100)}%`}
+            onChange={(value) => onOpacity(1 - value / 100)}
+          />
+
+          <AnimationFields layer={selected} onChange={onAnimation} />
 
           <ToolButton icon="trash" labelKey="editor.props.delete" onClick={onRemove} />
         </>

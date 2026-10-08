@@ -1,40 +1,59 @@
 "use client";
 
 import { Button } from "@/components/Button";
+import { Slider, ToolButton } from "@/components/editor/controls";
 import { Inspector } from "@/components/editor/Inspector";
 import { AddPanel, FilePanel } from "@/components/editor/Toolbar";
 import { useCardEditor } from "@/components/editor/useCardEditor";
+import { LIMITS } from "@/lib/editor/document";
 import { t } from "@/lib/i18n";
 
 /**
  * Редактор открытки по гайду design/postcard_editor_guide.pdf:
- * свободный холст 600 × 800, текст и фигуры, панель свойств,
- * PNG и шаблон в JSON.
+ * свободный холст 600 × 800, текст, фигуры и фото, панель свойств,
+ * анимация с просмотром, PNG и шаблон в JSON.
  *
  * Кто за что отвечает:
  * - lib/editor/document.ts — формат шаблона и его проверка;
+ * - lib/editor/animation.ts — кадр анимации по времени;
  * - lib/editor/fabric.ts — перевод формата в объекты Fabric и обратно;
- * - useCardEditor — жизнь холста, выделение, черновик, файлы;
- * - этот файл, Toolbar и Inspector — только разметка.
+ * - lib/editor/fonts.ts, palette.ts, image.ts, assets.ts — шрифты,
+ *   цвета, приём фото и их хранилище;
+ * - useCardEditor — жизнь холста, выделение, черновик, просмотр, файлы;
+ * - этот файл, Toolbar, Inspector и controls — только разметка.
  *
- * Раскладка. Мобильный — потоком, в порядке работы: добавить, холст,
- * свойства, файл. С 1280px — три колонки: слева «добавить» и «файл»
- * друг под другом, в центре холст, справа свойства. Боковые колонки
- * по 304px: ровно шесть цветов по 44px в строку плюс поля панели. В макетах из design/ такого экрана
- * нет, раскладка собрана из токенов и ждёт утверждения.
+ * Раскладка (утверждена 08.10.2026). Мобильный — потоком, в порядке
+ * работы: добавить, холст с просмотром, свойства, файл. С 1280px — три
+ * колонки: слева «добавить» и «файл» друг под другом, в центре холст,
+ * справа свойства. Боковые колонки по 304px: ровно шесть кружков цвета
+ * по 44px в строку плюс поля панели.
  */
 export function Editor() {
-  const { hostRef, frameRef, status, selection, background, saved, fileError, actions } =
-    useCardEditor();
+  const {
+    hostRef,
+    frameRef,
+    progressRef,
+    status,
+    selected,
+    background,
+    duration,
+    playing,
+    busy,
+    saved,
+    notice,
+    actions,
+  } = useCardEditor();
   const ready = status === "ready";
+  const editable = ready && !playing && !busy;
 
   return (
     <div className="page-shell pt-[16px] pb-[60px] xl:pt-[24px] xl:pb-[100px]">
       <div className="flex flex-col gap-[16px] xl:grid xl:grid-cols-[304px_minmax(0,600px)_304px] xl:grid-rows-[auto_1fr] xl:items-start xl:justify-center xl:gap-[24px]">
         <AddPanel
-          disabled={!ready}
+          disabled={!editable}
           background={background}
-          onAdd={actions.add}
+          onAdd={(kind) => void actions.add(kind)}
+          onAddImage={(file) => void actions.addImage(file)}
           onBackground={actions.setBackground}
           className="xl:col-start-1 xl:row-start-1"
         />
@@ -46,7 +65,7 @@ export function Editor() {
             role="group"
             aria-label={t("editor.canvas.label")}
             aria-describedby="editor-hint"
-            aria-busy={status === "loading" || undefined}
+            aria-busy={status === "loading" || busy || undefined}
             className="rounded-inner xl:rounded-inner-d bg-photo relative mx-auto aspect-[3/4] w-full max-w-[600px] touch-none overflow-hidden"
           >
             <div ref={hostRef} className="absolute inset-0" />
@@ -72,6 +91,40 @@ export function Editor() {
             ) : null}
           </div>
 
+          {/* Просмотр анимации: кнопка, полоса времени, длительность. */}
+          <div className="flex items-center gap-[12px]">
+            <ToolButton
+              icon={playing ? "stop" : "play"}
+              labelKey={playing ? "editor.stop" : "editor.play"}
+              disabled={!ready || busy}
+              onClick={playing ? actions.stop : actions.play}
+              className="shrink-0"
+            />
+            <div aria-hidden="true" className="bg-line h-[6px] min-w-0 flex-1 rounded-full">
+              <div ref={progressRef} className="bg-gold h-full w-0 rounded-full" />
+            </div>
+          </div>
+          <Slider
+            labelKey="editor.duration"
+            value={duration}
+            min={LIMITS.duration.min}
+            max={30}
+            step={1}
+            display={`${duration} ${t("editor.unit.seconds")}`}
+            onChange={actions.setDuration}
+          />
+
+          {notice === null ? null : (
+            <p role="alert" className="font-ui text-note xl:text-note-d text-ink leading-[1.4]">
+              {t(notice)}
+            </p>
+          )}
+          {busy ? (
+            <p aria-live="polite" className="font-ui text-note xl:text-note-d text-body">
+              {t("loading.upload")}
+            </p>
+          ) : null}
+
           <p id="editor-hint" className="font-ui text-note xl:text-note-d text-muted leading-[1.4]">
             {t("editor.canvas.hint")}
           </p>
@@ -81,19 +134,21 @@ export function Editor() {
         </div>
 
         <Inspector
-          selection={selection}
+          selected={selected}
+          playing={playing}
           onFill={actions.setFill}
+          onOpacity={actions.setOpacity}
           onFontSize={actions.setFontSize}
-          onFont={actions.setFont}
+          onTextStyle={(style) => void actions.setTextStyle(style)}
+          onAnimation={actions.setAnimation}
           onRemove={actions.remove}
           className="xl:col-start-3 xl:row-span-2 xl:row-start-1"
         />
 
         <FilePanel
-          disabled={!ready}
-          fileError={fileError}
+          disabled={!editable}
           onExportPng={actions.exportPng}
-          onExportJson={actions.exportJson}
+          onExportJson={() => void actions.exportJson()}
           onImport={(file) => void actions.importFile(file)}
           className="xl:col-start-1 xl:row-start-2"
         />

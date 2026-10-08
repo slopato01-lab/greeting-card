@@ -3,29 +3,42 @@
 import type { Canvas, FabricObject } from "fabric";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { frameAt } from "@/lib/editor/animation";
+import { getAsset, pruneAssets, putAsset } from "@/lib/editor/assets";
 import {
+  type Animation,
   CARD_HEIGHT,
   CARD_WIDTH,
-  type ColorToken,
+  clampDuration,
+  type Color,
+  DEFAULT_DURATION,
   defaultLayer,
   type EditorDoc,
   emptyDoc,
-  type FontRole,
-  LIMITS,
+  imageLayer,
+  type Layer,
   type LayerKind,
+  LIMITS,
   parseEditorJson,
 } from "@/lib/editor/document";
 import {
+  applyAnimation,
   applyFill,
-  applyFont,
+  applyTextStyle,
   canvasToDoc,
   createObject,
   type FabricModule,
   loadDocIntoCanvas,
   objectToLayer,
   readTheme,
+  resolveColor,
+  restoreObject,
+  showFrame,
+  type TextStyle,
   type Theme,
+  usedAssets,
 } from "@/lib/editor/fabric";
+import { blobToDataUrl, dataUrlToBlob, newAssetId, prepareImage } from "@/lib/editor/image";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
@@ -34,11 +47,18 @@ import { type TextKey, t } from "@/lib/i18n";
  * Fabric за пределы хука не выходит.
  *
  * Жизненный цикл холста — один эффект. Всё, что он подписал (события
- * Fabric, клавиатура, ResizeObserver, таймер черновика), снимается
- * одним AbortController, как требует CLAUDE.md.
+ * Fabric, клавиатура, ResizeObserver, таймер черновика, кадры просмотра),
+ * снимается одним AbortController, как требует CLAUDE.md.
  *
- * Черновик раз в три секунды пишется в localStorage, если что-то
- * поменялось. На сервер — когда появится сервер, тем же форматом.
+ * Где что хранится:
+ * - черновик (слои, тексты, анимация) — localStorage, раз в три секунды
+ *   и при уходе со страницы;
+ * - фото — IndexedDB, один раз при добавлении (lib/editor/assets.ts);
+ * - файл шаблона — всё вместе, фото вшиты как data URL.
+ *
+ * Просмотр анимации двигает сами объекты холста. Пока он идёт, правки
+ * выключены и черновик не пишется: иначе в него попал бы кадр
+ * анимации, а не настоящее положение слоёв.
  */
 
 const DRAFT_KEY = "otkrytochka.editor.draft";
@@ -53,15 +73,12 @@ const BLOB_TTL_MS = 10_000;
 
 export type EditorStatus = "loading" | "ready" | "error";
 
-/** Свойства выделенного слоя — то, что показывает панель свойств. */
-export type EditorSelection = {
-  kind: LayerKind;
-  fill: ColorToken;
-  fontSize: number | null;
-  font: FontRole | null;
-};
-
 type Live = { fabric: FabricModule; canvas: Canvas; theme: Theme };
+
+/** Фото, загруженное в эту вкладку: сама картинка и ссылка на неё. */
+type Asset = { blob: Blob; url: string };
+
+type Playback = { raf: number; items: { object: FabricObject; layer: Layer }[] };
 
 function readDraft(): EditorDoc | null {
   try {
@@ -83,39 +100,40 @@ function download(href: string, filename: string) {
   link.remove();
 }
 
+function prefersReducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export function useCardEditor() {
   const hostRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const live = useRef<Live | null>(null);
   const dirty = useRef(false);
+  const assets = useRef(new Map<string, Asset>());
+  const playback = useRef<Playback | null>(null);
 
   const [status, setStatus] = useState<EditorStatus>("loading");
   const [attempt, setAttempt] = useState(0);
-  const [selection, setSelection] = useState<EditorSelection | null>(null);
-  const [background, setBackgroundState] = useState<ColorToken>("paper");
-  const backgroundRef = useRef<ColorToken>("paper");
+  const [selected, setSelected] = useState<Layer | null>(null);
+  const [background, setBackgroundState] = useState<Color>("paper");
+  const backgroundRef = useRef<Color>("paper");
+  const [duration, setDurationState] = useState(DEFAULT_DURATION);
+  const durationRef = useRef(DEFAULT_DURATION);
+  const [playing, setPlaying] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [fileError, setFileError] = useState<TextKey | null>(null);
+  const [notice, setNotice] = useState<TextKey | null>(null);
 
-  /** Снимок выделения для панели свойств. */
+  // ── Общие помощники ───────────────────────────────────────
+
+  /** Снимок выделенного слоя для панели свойств. */
   const syncSelection = useCallback(() => {
     const current = live.current;
     const object = current?.canvas.getActiveObject();
-    if (current === null || object === undefined) {
-      setSelection(null);
-      return;
-    }
-    const layer = objectToLayer(current.fabric, object);
-    if (layer === null) {
-      setSelection(null);
-      return;
-    }
-    setSelection({
-      kind: layer.kind,
-      fill: layer.fill,
-      fontSize: layer.kind === "text" ? layer.fontSize : null,
-      font: layer.kind === "text" ? layer.font : null,
-    });
+    setSelected(
+      current === null || object === undefined ? null : objectToLayer(current.fabric, object),
+    );
   }, []);
 
   const markDirty = useCallback(() => {
@@ -123,26 +141,61 @@ export function useCardEditor() {
     setSaved(false);
   }, []);
 
-  const applyBackground = useCallback((token: ColorToken) => {
-    backgroundRef.current = token;
-    setBackgroundState(token);
+  const applyDocMeta = useCallback((doc: Pick<EditorDoc, "background" | "duration">) => {
+    backgroundRef.current = doc.background;
+    setBackgroundState(doc.background);
+    durationRef.current = doc.duration;
+    setDurationState(doc.duration);
+  }, []);
+
+  const assetUrl = useCallback((id: string) => assets.current.get(id)?.url ?? null, []);
+
+  const registerAsset = useCallback((id: string, blob: Blob) => {
+    const existing = assets.current.get(id);
+    if (existing !== undefined) URL.revokeObjectURL(existing.url);
+    assets.current.set(id, { blob, url: URL.createObjectURL(blob) });
   }, []);
 
   /** Пишет черновик, если с прошлой записи что-то поменялось. */
   const saveDraft = useCallback(() => {
     const current = live.current;
-    if (!dirty.current || current === null) return;
+    if (!dirty.current || current === null || playback.current !== null) return;
     try {
-      const draft = canvasToDoc(current.fabric, current.canvas, backgroundRef.current);
+      const draft = canvasToDoc(
+        current.fabric,
+        current.canvas,
+        backgroundRef.current,
+        durationRef.current,
+      );
       window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
       dirty.current = false;
       setSaved(true);
+      // Фото удалённых слоёв больше не нужны — освобождаем место.
+      void pruneAssets(usedAssets(current.canvas));
     } catch {
-      // Приватный режим Safari: сохранить некуда, но работу
-      // это не останавливает.
+      // Приватный режим Safari или переполненное хранилище: сохранить
+      // некуда, но работу это не останавливает.
       setSaved(false);
     }
   }, []);
+
+  /** Останавливает просмотр и возвращает слои на место. */
+  const stopPlayback = useCallback(() => {
+    const current = live.current;
+    const run = playback.current;
+    if (run === null) return;
+    cancelAnimationFrame(run.raf);
+    playback.current = null;
+    if (current !== null) {
+      for (const { object, layer } of run.items) restoreObject(current.fabric, object, layer);
+      current.canvas.skipTargetFind = false;
+      current.canvas.requestRenderAll();
+    }
+    if (progressRef.current !== null) progressRef.current.style.width = "0%";
+    setPlaying(false);
+  }, []);
+
+  // ── Жизнь холста ──────────────────────────────────────────
 
   useEffect(() => {
     const host = hostRef.current;
@@ -151,6 +204,7 @@ export function useCardEditor() {
 
     const controller = new AbortController();
     const { signal } = controller;
+    const owned = assets.current;
     let canvas: Canvas | null = null;
     // Свой контейнер на каждый запуск: dispose() асинхронный, и при
     // быстром перезапуске эффекта (StrictMode, «Попробовать снова»)
@@ -160,8 +214,6 @@ export function useCardEditor() {
 
     const start = async () => {
       const fabric = await import("fabric");
-      // Холст меряет текст в момент создания. Пока шрифт не скачан,
-      // рамки текста посчитаются по запасному и разъедутся.
       if ("fonts" in document) await document.fonts.ready;
       if (signal.aborted) return;
 
@@ -179,9 +231,18 @@ export function useCardEditor() {
       });
       live.current = { fabric, canvas, theme };
 
+      // Черновик и его фото из IndexedDB.
       const doc = readDraft() ?? emptyDoc();
-      loadDocIntoCanvas(fabric, canvas, doc, theme);
-      applyBackground(doc.background);
+      for (const layer of doc.layers) {
+        if (layer.kind !== "image" || owned.has(layer.asset)) continue;
+        const blob = await getAsset(layer.asset);
+        if (blob !== null) registerAsset(layer.asset, blob);
+      }
+      if (signal.aborted) return;
+      const missing = await loadDocIntoCanvas(fabric, canvas, doc, theme, assetUrl);
+      if (signal.aborted) return;
+      applyDocMeta(doc);
+      if (missing > 0) setNotice("editor.error.photoMissing");
 
       // ── Масштаб под ширину экрана ─────────────────────────
       // Внутри холст всегда 600 × 800, меняется только CSS-размер.
@@ -220,6 +281,30 @@ export function useCardEditor() {
       ];
       signal.addEventListener("abort", () => offs.forEach((off) => off()));
 
+      // ── Докачанные шрифты ─────────────────────────────────
+      // Подстраховка к loadFont: если файл шрифта пришёл уже после
+      // отрисовки (редкий алфавит в тексте, медленная сеть), Fabric
+      // держит в кэше ширины букв запасного шрифта. Сбрасываем кэш
+      // и перемеряем текст.
+      if ("fonts" in document) {
+        document.fonts.addEventListener(
+          "loadingdone",
+          () => {
+            const current = live.current;
+            if (current === null) return;
+            current.fabric.cache.clearFontCache();
+            for (const object of current.canvas.getObjects()) {
+              if (object instanceof current.fabric.IText) {
+                object.initDimensions();
+                object.setCoords();
+              }
+            }
+            current.canvas.requestRenderAll();
+          },
+          { signal },
+        );
+      }
+
       // ── Клавиатура ────────────────────────────────────────
       // Стрелки двигают выделенный слой, Delete и Backspace удаляют.
       // Пока текст редактируется, клавиши принадлежат тексту.
@@ -228,7 +313,7 @@ export function useCardEditor() {
         (event) => {
           const current = live.current;
           const object = current?.canvas.getActiveObject();
-          if (current === null || object === undefined) return;
+          if (current === null || object === undefined || playback.current !== null) return;
           if ("isEditing" in object && object.isEditing === true) return;
 
           const step = event.shiftKey ? NUDGE_STEP_BIG : NUDGE_STEP;
@@ -282,24 +367,38 @@ export function useCardEditor() {
     });
 
     return () => {
-      // Уход со страницы внутри сайта (next/link) — тоже уход:
-      // сначала черновик, потом холст.
+      // Сначала вернуть слои из кадра анимации на место, потом
+      // черновик, потом холст. Уход внутри сайта (next/link) — тоже уход.
+      stopPlayback();
       saveDraft();
       controller.abort();
       live.current = null;
       const disposing = canvas?.dispose() ?? Promise.resolve(true);
-      void disposing.finally(() => mount.remove());
+      void disposing.finally(() => {
+        mount.remove();
+        for (const { url } of owned.values()) URL.revokeObjectURL(url);
+        owned.clear();
+      });
     };
-  }, [attempt, applyBackground, markDirty, saveDraft, syncSelection]);
+  }, [
+    attempt,
+    applyDocMeta,
+    assetUrl,
+    markDirty,
+    registerAsset,
+    saveDraft,
+    stopPlayback,
+    syncSelection,
+  ]);
 
-  // ── Действия ──────────────────────────────────────────────
+  // ── Правки выделенного слоя ───────────────────────────────
 
   /** Выполняет правку над выделенным слоем и обновляет всё вокруг. */
   const editActive = useCallback(
     (change: (object: FabricObject, current: Live) => void) => {
       const current = live.current;
       const object = current?.canvas.getActiveObject();
-      if (current === null || object === undefined) return;
+      if (current === null || object === undefined || playback.current !== null) return;
       change(object, current);
       object.setCoords();
       current.canvas.requestRenderAll();
@@ -309,17 +408,14 @@ export function useCardEditor() {
     [markDirty, syncSelection],
   );
 
-  const add = useCallback(
-    (kind: LayerKind) => {
-      const current = live.current;
-      if (current === null) return;
+  /** Кладёт новый объект на холст лесенкой и выделяет его. */
+  const placeNew = useCallback(
+    (current: Live, object: FabricObject) => {
       // Новые слои ложатся лесенкой, а не ровно друг на друга:
       // иначе круг одного цвета с прямоугольником пропадает под ним.
-      const layer = defaultLayer(kind, t("editor.text.default"));
       const shift = (current.canvas.getObjects().length % CASCADE_STEPS) * CASCADE_OFFSET;
-      layer.x += shift;
-      layer.y += shift;
-      const object = createObject(current.fabric, layer, current.theme);
+      object.set({ left: object.left + shift, top: object.top + shift });
+      object.setCoords();
       current.canvas.add(object);
       current.canvas.setActiveObject(object);
       current.canvas.requestRenderAll();
@@ -331,8 +427,64 @@ export function useCardEditor() {
     [markDirty, syncSelection],
   );
 
+  const add = useCallback(
+    async (kind: Exclude<LayerKind, "image">) => {
+      const current = live.current;
+      if (current === null || playback.current !== null) return;
+      const layer = defaultLayer(kind, t("editor.text.default"));
+      const object = await createObject(current.fabric, layer, current.theme, assetUrl);
+      if (object !== null && live.current === current) placeNew(current, object);
+    },
+    [assetUrl, placeNew],
+  );
+
+  const addImage = useCallback(
+    async (file: File) => {
+      const current = live.current;
+      if (current === null || playback.current !== null) return;
+      setNotice(null);
+      if (usedAssets(current.canvas).size >= LIMITS.images) {
+        setNotice("editor.error.photoLimit");
+        return;
+      }
+      setBusy(true);
+      try {
+        const result = await prepareImage(file);
+        if (!result.ok) {
+          setNotice(result.error);
+          return;
+        }
+        const { blob, width, height } = result.image;
+        const id = newAssetId();
+        registerAsset(id, blob);
+        // Не вышло записать в IndexedDB — фото проживёт до перезагрузки.
+        if (!(await putAsset(id, blob))) setNotice("editor.error.photoStorage");
+        const object = await createObject(
+          current.fabric,
+          imageLayer(id, width, height),
+          current.theme,
+          assetUrl,
+        );
+        if (object === null) {
+          setNotice("editor.error.photoDecode");
+          return;
+        }
+        if (live.current === current) placeNew(current, object);
+      } finally {
+        setBusy(false);
+      }
+    },
+    [assetUrl, placeNew, registerAsset],
+  );
+
   const setFill = useCallback(
-    (token: ColorToken) => editActive((object, { theme }) => applyFill(object, token, theme)),
+    (color: Color) => editActive((object, { theme }) => applyFill(object, color, theme)),
+    [editActive],
+  );
+
+  const setOpacity = useCallback(
+    (value: number) =>
+      editActive((object) => object.set("opacity", Math.min(1, Math.max(0, value)))),
     [editActive],
   );
 
@@ -346,10 +498,25 @@ export function useCardEditor() {
     [editActive],
   );
 
-  const setFont = useCallback(
-    (role: FontRole) =>
-      editActive((object, { fabric, theme }) => {
-        if (object instanceof fabric.IText) applyFont(object, role, theme);
+  /** Шрифт, жирный, курсив, выравнивание. Ждёт файл шрифта. */
+  const setTextStyle = useCallback(
+    async (style: TextStyle) => {
+      const current = live.current;
+      const object = current?.canvas.getActiveObject();
+      if (current === null || object === undefined || playback.current !== null) return;
+      await applyTextStyle(current.fabric, object, style, current.theme);
+      current.canvas.requestRenderAll();
+      markDirty();
+      syncSelection();
+    },
+    [markDirty, syncSelection],
+  );
+
+  const setAnimation = useCallback(
+    (change: Partial<Animation>) =>
+      editActive((object, { fabric }) => {
+        const layer = objectToLayer(fabric, object);
+        if (layer !== null) applyAnimation(object, { ...layer.anim, ...change });
       }),
     [editActive],
   );
@@ -357,7 +524,7 @@ export function useCardEditor() {
   const remove = useCallback(() => {
     const current = live.current;
     const object = current?.canvas.getActiveObject();
-    if (current === null || object === undefined) return;
+    if (current === null || object === undefined || playback.current !== null) return;
     current.canvas.remove(object);
     current.canvas.discardActiveObject();
     current.canvas.requestRenderAll();
@@ -368,21 +535,84 @@ export function useCardEditor() {
     frameRef.current?.focus();
   }, [markDirty, syncSelection]);
 
+  // ── Открытка целиком ──────────────────────────────────────
+
   const setBackground = useCallback(
-    (token: ColorToken) => {
+    (color: Color) => {
       const current = live.current;
-      if (current === null) return;
-      current.canvas.backgroundColor = current.theme.colors[token];
+      if (current === null || playback.current !== null) return;
+      current.canvas.backgroundColor = resolveColor(color, current.theme);
       current.canvas.requestRenderAll();
-      applyBackground(token);
+      backgroundRef.current = color;
+      setBackgroundState(color);
       markDirty();
     },
-    [applyBackground, markDirty],
+    [markDirty],
   );
+
+  const setDuration = useCallback(
+    (seconds: number) => {
+      const value = clampDuration(seconds);
+      durationRef.current = value;
+      setDurationState(value);
+      markDirty();
+    },
+    [markDirty],
+  );
+
+  /**
+   * Просмотр анимации: кадр за кадром по requestAnimationFrame,
+   * положение каждого слоя считает frameAt. В конце или по «Стоп»
+   * слои возвращаются на место.
+   */
+  const play = useCallback(() => {
+    const current = live.current;
+    if (current === null || playback.current !== null) return;
+    const { fabric, canvas } = current;
+
+    const active = canvas.getActiveObject();
+    if (active instanceof fabric.IText && active.isEditing) active.exitEditing();
+    // Правки до просмотра — в черновик сейчас: во время просмотра он не пишется.
+    saveDraft();
+    canvas.discardActiveObject();
+    canvas.skipTargetFind = true;
+
+    const items = canvas.getObjects().flatMap((object) => {
+      const layer = objectToLayer(fabric, object);
+      return layer === null ? [] : [{ object, layer }];
+    });
+    const total = durationRef.current;
+    const reduced = prefersReducedMotion();
+    const started = performance.now();
+
+    const tick = (now: number) => {
+      const run = playback.current;
+      if (run === null) return;
+      const time = Math.min(total, (now - started) / 1000);
+      for (const { object, layer } of run.items) {
+        showFrame(fabric, object, layer, frameAt(layer, time, total, reduced));
+      }
+      canvas.renderAll();
+      if (progressRef.current !== null) {
+        progressRef.current.style.width = `${(time / total) * 100}%`;
+      }
+      if (time >= total) {
+        stopPlayback();
+        return;
+      }
+      run.raf = requestAnimationFrame(tick);
+    };
+
+    playback.current = { raf: requestAnimationFrame(tick), items };
+    setPlaying(true);
+    setSelected(null);
+  }, [saveDraft, stopPlayback]);
+
+  // ── Файлы ─────────────────────────────────────────────────
 
   const exportPng = useCallback(() => {
     const current = live.current;
-    if (current === null) return;
+    if (current === null || playback.current !== null) return;
     // Текст в режиме правки рисует курсор — выходим из него.
     const object = current.canvas.getActiveObject();
     if (object instanceof current.fabric.IText && object.isEditing) object.exitEditing();
@@ -394,44 +624,74 @@ export function useCardEditor() {
     download(url, "otkrytochka.png");
   }, []);
 
-  const exportJson = useCallback(() => {
+  /** Шаблон целиком: слои плюс фото, вшитые как data URL. */
+  const exportJson = useCallback(async () => {
     const current = live.current;
-    if (current === null) return;
-    const doc = canvasToDoc(current.fabric, current.canvas, backgroundRef.current);
-    const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    download(url, "otkrytochka-template.json");
-    // Ссылка нужна только на время скачивания. Отозвать сразу после
-    // клика нельзя: часть браузеров начинает скачивание асинхронно.
-    window.setTimeout(() => URL.revokeObjectURL(url), BLOB_TTL_MS);
+    if (current === null || playback.current !== null) return;
+    setBusy(true);
+    try {
+      const doc = canvasToDoc(
+        current.fabric,
+        current.canvas,
+        backgroundRef.current,
+        durationRef.current,
+      );
+      const embedded: Record<string, string> = {};
+      for (const id of usedAssets(current.canvas)) {
+        const asset = assets.current.get(id);
+        if (asset !== undefined) embedded[id] = await blobToDataUrl(asset.blob);
+      }
+      if (Object.keys(embedded).length > 0) doc.assets = embedded;
+      const blob = new Blob([JSON.stringify(doc)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      download(url, "otkrytochka-template.json");
+      // Ссылка нужна только на время скачивания. Отозвать сразу после
+      // клика нельзя: часть браузеров начинает скачивание асинхронно.
+      window.setTimeout(() => URL.revokeObjectURL(url), BLOB_TTL_MS);
+    } finally {
+      setBusy(false);
+    }
   }, []);
 
   const importFile = useCallback(
     async (file: File) => {
-      setFileError(null);
-      if (file.size > LIMITS.fileBytes) {
-        setFileError("editor.error.template");
-        return;
-      }
-      let text: string;
-      try {
-        text = await file.text();
-      } catch {
-        setFileError("editor.error.template");
-        return;
-      }
-      const doc = parseEditorJson(text);
       const current = live.current;
-      if (doc === null || current === null) {
-        setFileError("editor.error.template");
+      if (current === null || playback.current !== null) return;
+      setNotice(null);
+      if (file.size > LIMITS.fileBytes) {
+        setNotice("editor.error.template");
         return;
       }
-      loadDocIntoCanvas(current.fabric, current.canvas, doc, current.theme);
-      applyBackground(doc.background);
-      markDirty();
-      syncSelection();
+      setBusy(true);
+      try {
+        const doc = parseEditorJson(await file.text());
+        if (doc === null) {
+          setNotice("editor.error.template");
+          return;
+        }
+        for (const [id, dataUrl] of Object.entries(doc.assets ?? {})) {
+          const blob = dataUrlToBlob(dataUrl);
+          registerAsset(id, blob);
+          await putAsset(id, blob);
+        }
+        const missing = await loadDocIntoCanvas(
+          current.fabric,
+          current.canvas,
+          doc,
+          current.theme,
+          assetUrl,
+        );
+        applyDocMeta(doc);
+        if (missing > 0) setNotice("editor.error.photoMissing");
+        markDirty();
+        syncSelection();
+      } catch {
+        setNotice("editor.error.template");
+      } finally {
+        setBusy(false);
+      }
     },
-    [applyBackground, markDirty, syncSelection],
+    [applyDocMeta, assetUrl, markDirty, registerAsset, syncSelection],
   );
 
   const retry = useCallback(() => {
@@ -442,18 +702,28 @@ export function useCardEditor() {
   return {
     hostRef,
     frameRef,
+    progressRef,
     status,
-    selection,
+    selected,
     background,
+    duration,
+    playing,
+    busy,
     saved,
-    fileError,
+    notice,
     actions: {
       add,
+      addImage,
       setFill,
+      setOpacity,
       setFontSize,
-      setFont,
+      setTextStyle,
+      setAnimation,
       remove,
       setBackground,
+      setDuration,
+      play,
+      stop: stopPlayback,
       exportPng,
       exportJson,
       importFile,

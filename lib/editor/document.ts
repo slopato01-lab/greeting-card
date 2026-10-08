@@ -8,53 +8,175 @@
  * - **Проверка на входе.** Шаблон приходит из файла пользователя,
  *   а позже — с сервера. Сырой JSON Fabric умеет ссылаться на картинки
  *   по любому адресу и создавать любой класс по полю `type`. Здесь
- *   разрешены три вида слоёв и только известные поля, всё остальное
+ *   разрешены четыре вида слоёв и только известные поля, всё остальное
  *   отбрасывается.
- * - **Цвета — токены, а не hex.** Правило CLAUDE.md: ни одного цвета
- *   в явном виде. В шаблоне лежит имя токена, значение приходит
- *   из CSS при отрисовке. Поменяется палитра в DESIGN.md — старые
- *   шаблоны перекрасятся сами.
  * - **Обновление Fabric не ломает сохранённое.** Формат версионирован
  *   полем `version` и от версии Fabric не зависит.
+ *
+ * Версии:
+ * - **1** — цвета только токенами сайта, два шрифта, без фото и анимации.
+ * - **2** (08.10.2026) — свой цвет `#rrggbb`, двадцать шрифтов,
+ *   начертание и выравнивание, прозрачность, фото, анимация, длительность.
+ *   Версия 1 читается и переводится во вторую.
+ *
+ * Цвета. Имя токена (`gold`) по-прежнему допустимо: шаблоны версии 1
+ * ими написаны, и такие цвета перекрашиваются вместе с сайтом. Новые
+ * цвета — `#rrggbb` из палитры редактора: это данные пользователя,
+ * а не оформление сайта, см. docs/DESIGN.md, «Цвета содержимого открытки».
  *
  * Файл намеренно без импортов: его проверяет `pnpm test` голым Node,
  * без сборщика и без алиасов `@/`.
  */
 
 export const EDITOR_FORMAT = "otkrytochka.editor";
-export const EDITOR_VERSION = 1;
+export const EDITOR_VERSION = 2;
 
 /** Размер открытки в точках холста. Из гайда: 600 × 800. */
 export const CARD_WIDTH = 600;
 export const CARD_HEIGHT = 800;
 
-/**
- * Цвета, которые можно выбрать в редакторе. Имена — токены
- * `--color-*` из docs/DESIGN.md. Взяты те, что заметно различаются
- * между собой: surface/raised/line и ink/paper на открытке не отличить.
- */
+/** Токены `--color-*` из docs/DESIGN.md, которые понимает шаблон. */
 export const COLOR_TOKENS = ["paper", "body", "muted", "raised", "canvas", "gold"] as const;
 export type ColorToken = (typeof COLOR_TOKENS)[number];
+export type HexColor = `#${string}`;
+export type Color = ColorToken | HexColor;
 
-/** Шрифты — роли из DESIGN.md: заголовочный Unbounded и основной Inter. */
-export const FONT_ROLES = ["display", "ui"] as const;
-export type FontRole = (typeof FONT_ROLES)[number];
+/**
+ * Шрифты. Порядок — порядок в списке редактора. Начертания и группы —
+ * в lib/editor/fonts.ts, здесь только допустимые имена.
+ */
+export const FONT_IDS = [
+  "inter",
+  "montserrat",
+  "manrope",
+  "rubik",
+  "nunito",
+  "oswald",
+  "playfair",
+  "lora",
+  "ptserif",
+  "cormorant",
+  "robotoslab",
+  "unbounded",
+  "russo",
+  "comfortaa",
+  "lobster",
+  "pacifico",
+  "caveat",
+  "marck",
+  "badscript",
+  "amatic",
+] as const;
+export type FontId = (typeof FONT_IDS)[number];
 
-export const LAYER_KINDS = ["text", "rect", "circle"] as const;
+export const TEXT_ALIGNS = ["left", "center", "right"] as const;
+export type TextAlign = (typeof TEXT_ALIGNS)[number];
+
+export const LAYER_KINDS = ["text", "rect", "circle", "image"] as const;
 export type LayerKind = (typeof LAYER_KINDS)[number];
 
-/** Пределы. Защищают и от битого файла, и от зависшей вкладки. */
+// ── Анимация ────────────────────────────────────────────────
+
+/** Появление. `typewriter` — только для текста. */
+export const ANIM_IN = [
+  "none",
+  "fade",
+  "slide-left",
+  "slide-right",
+  "slide-top",
+  "slide-bottom",
+  "zoom",
+  "pop",
+  "rotate",
+  "typewriter",
+] as const;
+export type AnimIn = (typeof ANIM_IN)[number];
+
+/** Во время показа. `marquee` — только текст, `kenburns` — только фото. */
+export const ANIM_LOOP = [
+  "none",
+  "pulse",
+  "float",
+  "swing",
+  "shake",
+  "blink",
+  "marquee",
+  "kenburns",
+] as const;
+export type AnimLoop = (typeof ANIM_LOOP)[number];
+
+/** Исчезание. Направление — куда слой уходит. */
+export const ANIM_OUT = [
+  "none",
+  "fade",
+  "slide-left",
+  "slide-right",
+  "slide-top",
+  "slide-bottom",
+  "zoom",
+  "rotate",
+] as const;
+export type AnimOut = (typeof ANIM_OUT)[number];
+
+/** Какие варианты имеют смысл для какого слоя. */
+export function animInFor(kind: LayerKind): readonly AnimIn[] {
+  return kind === "text" ? ANIM_IN : ANIM_IN.filter((a) => a !== "typewriter");
+}
+
+export function animLoopFor(kind: LayerKind): readonly AnimLoop[] {
+  return ANIM_LOOP.filter(
+    (a) => (a !== "marquee" || kind === "text") && (a !== "kenburns" || kind === "image"),
+  );
+}
+
+/** Секунды. Плоско, а не вложенными объектами: так проще проверять. */
+export type Animation = {
+  in: AnimIn;
+  inDuration: number;
+  delay: number;
+  loop: AnimLoop;
+  loopPeriod: number;
+  out: AnimOut;
+  outDuration: number;
+};
+
+export const NO_ANIMATION: Animation = {
+  in: "none",
+  inDuration: 0.8,
+  delay: 0,
+  loop: "none",
+  loopPeriod: 2,
+  out: "none",
+  outDuration: 0.8,
+};
+
+// ── Пределы ─────────────────────────────────────────────────
+
+/** Защищают и от битого файла, и от зависшей вкладки. */
 export const LIMITS = {
   layers: 200,
+  images: 10,
   textLength: 500,
   fontSize: { min: 8, max: 200 },
   /** Слой может выходить за край открытки, но не улетать в бесконечность. */
   position: { min: -CARD_HEIGHT, max: CARD_HEIGHT * 2 },
-  scale: { min: 0.05, max: 20 },
+  scale: { min: 0.02, max: 20 },
   size: { min: 1, max: CARD_HEIGHT * 4 },
-  /** Размер файла шаблона при открытии. 200 слоёв — это около 40 КБ. */
-  fileBytes: 1024 * 1024,
+  opacity: { min: 0, max: 1 },
+  /** Длительность открытки целиком, секунды. */
+  duration: { min: 2, max: 60 },
+  delay: { min: 0, max: 60 },
+  animDuration: { min: 0.1, max: 10 },
+  loopPeriod: { min: 0.3, max: 20 },
+  /** Одно фото внутри файла шаблона, символов base64. Около 3 МБ. */
+  assetChars: 4_200_000,
+  /** Файл шаблона целиком. С десятью фото — до 30 МБ. */
+  fileBytes: 32 * 1024 * 1024,
 } as const;
+
+export const DEFAULT_DURATION = 6;
+
+// ── Типы слоёв ──────────────────────────────────────────────
 
 type LayerBase = {
   x: number;
@@ -62,78 +184,134 @@ type LayerBase = {
   angle: number;
   scaleX: number;
   scaleY: number;
-  fill: ColorToken;
+  opacity: number;
+  anim: Animation;
 };
 
 export type TextLayer = LayerBase & {
   kind: "text";
+  fill: Color;
   text: string;
   fontSize: number;
-  font: FontRole;
+  font: FontId;
+  bold: boolean;
+  italic: boolean;
+  align: TextAlign;
 };
 
-export type RectLayer = LayerBase & { kind: "rect"; width: number; height: number };
+export type RectLayer = LayerBase & { kind: "rect"; fill: Color; width: number; height: number };
 
-export type CircleLayer = LayerBase & { kind: "circle"; radius: number };
+export type CircleLayer = LayerBase & { kind: "circle"; fill: Color; radius: number };
 
-export type Layer = TextLayer | RectLayer | CircleLayer;
+/**
+ * Фото. Само изображение лежит не в слое, а в хранилище по `asset`:
+ * в черновике — в IndexedDB браузера, в файле шаблона — в `assets`.
+ * Ширина и высота — размер пересохранённой картинки в точках.
+ */
+export type ImageLayer = LayerBase & {
+  kind: "image";
+  asset: string;
+  width: number;
+  height: number;
+};
+
+export type Layer = TextLayer | RectLayer | CircleLayer | ImageLayer;
 
 export type EditorDoc = {
   format: typeof EDITOR_FORMAT;
   version: typeof EDITOR_VERSION;
-  background: ColorToken;
+  background: Color;
+  /** Длительность открытки, секунды: за это время отыгрывает вся анимация. */
+  duration: number;
   /** Порядок — снизу вверх, как на холсте. */
   layers: Layer[];
+  /**
+   * Фото внутри файла шаблона: id → data URL. Есть только в файле,
+   * который скачали кнопкой «Сохранить шаблон». В черновике пусто:
+   * там фото в IndexedDB.
+   */
+  assets?: Record<string, string>;
 };
 
 export function emptyDoc(): EditorDoc {
-  return { format: EDITOR_FORMAT, version: EDITOR_VERSION, background: "paper", layers: [] };
+  return {
+    format: EDITOR_FORMAT,
+    version: EDITOR_VERSION,
+    background: "paper",
+    duration: DEFAULT_DURATION,
+    layers: [],
+  };
 }
 
 /**
  * Слой по умолчанию — то, что добавляет кнопка панели инструментов.
  * Встаёт по центру открытки. Текст подписи приходит снаружи: он из
- * словаря, а этот файл про словарь не знает.
+ * словаря, а этот файл про словарь не знает. Фото добавляется
+ * отдельно — ему нужен размер картинки, см. imageLayer.
  */
-export function defaultLayer(kind: LayerKind, text: string): Layer {
-  const base = { angle: 0, scaleX: 1, scaleY: 1 };
+export function defaultLayer(kind: Exclude<LayerKind, "image">, text: string): Layer {
+  const base = {
+    x: CARD_WIDTH / 2,
+    y: CARD_HEIGHT / 2,
+    angle: 0,
+    scaleX: 1,
+    scaleY: 1,
+    opacity: 1,
+    anim: { ...NO_ANIMATION },
+  };
 
   switch (kind) {
     case "text":
       return {
         ...base,
         kind,
-        x: CARD_WIDTH / 2,
-        y: CARD_HEIGHT / 2,
         fill: "canvas",
         text,
         fontSize: 40,
-        font: "display",
+        font: "unbounded",
+        bold: false,
+        italic: false,
+        align: "center",
       };
     case "rect":
-      return {
-        ...base,
-        kind,
-        x: CARD_WIDTH / 2,
-        y: CARD_HEIGHT / 2,
-        fill: "gold",
-        width: 240,
-        height: 160,
-      };
+      return { ...base, kind, fill: "gold", width: 240, height: 160 };
     case "circle":
-      return { ...base, kind, x: CARD_WIDTH / 2, y: CARD_HEIGHT / 2, fill: "gold", radius: 80 };
+      return { ...base, kind, fill: "gold", radius: 80 };
   }
+}
+
+/** Фото вписывается в 400 × 400 по центру открытки. */
+export function imageLayer(asset: string, width: number, height: number): ImageLayer {
+  const fit = Math.min(1, 400 / width, 400 / height);
+  return {
+    kind: "image",
+    asset,
+    width,
+    height,
+    x: CARD_WIDTH / 2,
+    y: CARD_HEIGHT / 2,
+    angle: 0,
+    scaleX: fit,
+    scaleY: fit,
+    opacity: 1,
+    anim: { ...NO_ANIMATION },
+  };
 }
 
 // ── Проверка ────────────────────────────────────────────────
 
 type Obj = Record<string, unknown>;
+type Range = { readonly min: number; readonly max: number };
+
+const HEX = /^#[0-9a-f]{6}$/i;
+const ASSET_ID = /^[a-z0-9]{8,40}$/;
+const DATA_URL = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
 
 function isObj(value: unknown): value is Obj {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function num(value: unknown, min: number, max: number): number | null {
+function num(value: unknown, { min, max }: Range): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= min && value <= max
     ? value
     : null;
@@ -145,50 +323,128 @@ function oneOf<T extends string>(value: unknown, allowed: readonly T[]): T | nul
     : null;
 }
 
-function parseBase(raw: Obj): LayerBase | null {
-  const { position, scale } = LIMITS;
-  const x = num(raw.x, position.min, position.max);
-  const y = num(raw.y, position.min, position.max);
-  // Угол приводим к 0…360: Fabric при вращении отдаёт и отрицательные.
-  const angleRaw = num(raw.angle, -3600, 3600);
-  const scaleX = num(raw.scaleX, scale.min, scale.max);
-  const scaleY = num(raw.scaleY, scale.min, scale.max);
-  const fill = oneOf(raw.fill, COLOR_TOKENS);
-
-  if (x === null || y === null || angleRaw === null) return null;
-  if (scaleX === null || scaleY === null || fill === null) return null;
-
-  return { x, y, angle: ((angleRaw % 360) + 360) % 360, scaleX, scaleY, fill };
+function bool(value: unknown): boolean | null {
+  return typeof value === "boolean" ? value : null;
 }
 
-function parseLayer(raw: unknown): Layer | null {
-  if (!isObj(raw)) return null;
-  const base = parseBase(raw);
-  if (base === null) return null;
+export function isAssetId(value: unknown): value is string {
+  return typeof value === "string" && ASSET_ID.test(value);
+}
 
-  switch (oneOf(raw.kind, LAYER_KINDS)) {
+/** Цвет: имя токена или `#rrggbb`. Hex приводится к нижнему регистру. */
+export function parseColor(value: unknown): Color | null {
+  const token = oneOf(value, COLOR_TOKENS);
+  if (token !== null) return token;
+  return typeof value === "string" && HEX.test(value) ? (value.toLowerCase() as HexColor) : null;
+}
+
+function parseAnimation(raw: unknown): Animation | null {
+  if (!isObj(raw)) return null;
+  const anim = {
+    in: oneOf(raw.in, ANIM_IN),
+    inDuration: num(raw.inDuration, LIMITS.animDuration),
+    delay: num(raw.delay, LIMITS.delay),
+    loop: oneOf(raw.loop, ANIM_LOOP),
+    loopPeriod: num(raw.loopPeriod, LIMITS.loopPeriod),
+    out: oneOf(raw.out, ANIM_OUT),
+    outDuration: num(raw.outDuration, LIMITS.animDuration),
+  };
+  for (const value of Object.values(anim)) if (value === null) return null;
+  return anim as Animation;
+}
+
+/** Версия 1: шрифты были ролями сайта, а не именами. */
+const V1_FONTS = { display: "unbounded", ui: "inter" } as const;
+
+function parseLayer(raw: unknown, version: 1 | 2): Layer | null {
+  if (!isObj(raw)) return null;
+  const { position, scale } = LIMITS;
+
+  const x = num(raw.x, position);
+  const y = num(raw.y, position);
+  // Угол приводим к 0…360: Fabric при вращении отдаёт и отрицательные.
+  const angleRaw = num(raw.angle, { min: -3600, max: 3600 });
+  const scaleX = num(raw.scaleX, scale);
+  const scaleY = num(raw.scaleY, scale);
+  const opacity = version === 1 ? 1 : num(raw.opacity, LIMITS.opacity);
+  const anim = version === 1 ? { ...NO_ANIMATION } : parseAnimation(raw.anim);
+
+  if (x === null || y === null || angleRaw === null || scaleX === null || scaleY === null) {
+    return null;
+  }
+  if (opacity === null || anim === null) return null;
+
+  const base = { x, y, angle: ((angleRaw % 360) + 360) % 360, scaleX, scaleY, opacity, anim };
+  const kind = oneOf(raw.kind, LAYER_KINDS);
+
+  if (kind === "image") {
+    if (version === 1 || !isAssetId(raw.asset)) return null;
+    const width = num(raw.width, LIMITS.size);
+    const height = num(raw.height, LIMITS.size);
+    if (width === null || height === null) return null;
+    return { ...base, kind, asset: raw.asset, width, height };
+  }
+
+  const fill = version === 1 ? oneOf(raw.fill, COLOR_TOKENS) : parseColor(raw.fill);
+  if (fill === null) return null;
+
+  switch (kind) {
     case "text": {
       const { text } = raw;
-      const fontSize = num(raw.fontSize, LIMITS.fontSize.min, LIMITS.fontSize.max);
-      const font = oneOf(raw.font, FONT_ROLES);
-      if (typeof text !== "string" || text.length > LIMITS.textLength) return null;
-      if (fontSize === null || font === null) return null;
-      return { ...base, kind: "text", text, fontSize, font };
+      const fontSize = num(raw.fontSize, LIMITS.fontSize);
+      if (typeof text !== "string" || text.length > LIMITS.textLength || fontSize === null) {
+        return null;
+      }
+      if (version === 1) {
+        const role = oneOf(raw.font, ["display", "ui"] as const);
+        if (role === null) return null;
+        return {
+          ...base,
+          kind,
+          fill,
+          text,
+          fontSize,
+          font: V1_FONTS[role],
+          bold: false,
+          italic: false,
+          align: "center",
+        };
+      }
+      const font = oneOf(raw.font, FONT_IDS);
+      const bold = bool(raw.bold);
+      const italic = bool(raw.italic);
+      const align = oneOf(raw.align, TEXT_ALIGNS);
+      if (font === null || bold === null || italic === null || align === null) return null;
+      return { ...base, kind, fill, text, fontSize, font, bold, italic, align };
     }
     case "rect": {
-      const width = num(raw.width, LIMITS.size.min, LIMITS.size.max);
-      const height = num(raw.height, LIMITS.size.min, LIMITS.size.max);
+      const width = num(raw.width, LIMITS.size);
+      const height = num(raw.height, LIMITS.size);
       if (width === null || height === null) return null;
-      return { ...base, kind: "rect", width, height };
+      return { ...base, kind, fill, width, height };
     }
     case "circle": {
-      const radius = num(raw.radius, LIMITS.size.min, LIMITS.size.max);
+      const radius = num(raw.radius, LIMITS.size);
       if (radius === null) return null;
-      return { ...base, kind: "circle", radius };
+      return { ...base, kind, fill, radius };
     }
     case null:
       return null;
   }
+}
+
+function parseAssets(raw: unknown): Record<string, string> | null {
+  if (raw === undefined) return {};
+  if (!isObj(raw)) return null;
+  const entries = Object.entries(raw);
+  if (entries.length > LIMITS.images) return null;
+  const assets: Record<string, string> = {};
+  for (const [id, url] of entries) {
+    if (!isAssetId(id) || typeof url !== "string") return null;
+    if (url.length > LIMITS.assetChars || !DATA_URL.test(url)) return null;
+    assets[id] = url;
+  }
+  return assets;
 }
 
 /**
@@ -196,32 +452,65 @@ function parseLayer(raw: unknown): Layer | null {
  * позже — ответа сервера. Возвращает только то, что прошло проверку,
  * с новыми объектами без лишних полей. Битый документ — `null`
  * целиком: молча выкинутый слой хуже честной ошибки.
+ *
+ * Фото в `assets`, на которые не ссылается ни один слой, отбрасываются.
+ * Слой фото без картинки в `assets` проверку проходит: в черновике
+ * картинки лежат в IndexedDB, и найдёт их уже загрузчик.
  */
 export function parseEditorDoc(input: unknown): EditorDoc | null {
-  if (!isObj(input)) return null;
-  if (input.format !== EDITOR_FORMAT || input.version !== EDITOR_VERSION) return null;
+  if (!isObj(input) || input.format !== EDITOR_FORMAT) return null;
+  const version = input.version === 1 || input.version === 2 ? input.version : null;
+  if (version === null) return null;
 
-  const background = oneOf(input.background, COLOR_TOKENS);
-  if (background === null) return null;
+  const background =
+    version === 1 ? oneOf(input.background, COLOR_TOKENS) : parseColor(input.background);
+  const duration = version === 1 ? DEFAULT_DURATION : num(input.duration, LIMITS.duration);
+  if (background === null || duration === null) return null;
 
   const { layers } = input;
   if (!Array.isArray(layers) || layers.length > LIMITS.layers) return null;
 
   const parsed: Layer[] = [];
   for (const raw of layers) {
-    const layer = parseLayer(raw);
+    const layer = parseLayer(raw, version);
     if (layer === null) return null;
     parsed.push(layer);
   }
+  if (parsed.filter((l) => l.kind === "image").length > LIMITS.images) return null;
 
-  return { format: EDITOR_FORMAT, version: EDITOR_VERSION, background, layers: parsed };
+  const allAssets = parseAssets(input.assets);
+  if (allAssets === null) return null;
+  const used = new Set(parsed.flatMap((l) => (l.kind === "image" ? [l.asset] : [])));
+  const assets = Object.fromEntries(Object.entries(allAssets).filter(([id]) => used.has(id)));
+
+  const doc: EditorDoc = {
+    format: EDITOR_FORMAT,
+    version: EDITOR_VERSION,
+    background,
+    duration,
+    layers: parsed,
+  };
+  if (Object.keys(assets).length > 0) doc.assets = assets;
+  return doc;
 }
 
 // ── Приведение к пределам ───────────────────────────────────
 
-function clamp(value: number, { min, max }: { min: number; max: number }): number {
+function clamp(value: number, { min, max }: Range): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, value));
+}
+
+function clampAnimation(anim: Animation): Animation {
+  return {
+    in: anim.in,
+    inDuration: clamp(anim.inDuration, LIMITS.animDuration),
+    delay: clamp(anim.delay, LIMITS.delay),
+    loop: anim.loop,
+    loopPeriod: clamp(anim.loopPeriod, LIMITS.loopPeriod),
+    out: anim.out,
+    outDuration: clamp(anim.outDuration, LIMITS.animDuration),
+  };
 }
 
 /**
@@ -231,6 +520,8 @@ function clamp(value: number, { min, max }: { min: number; max: number }): numbe
  * растянуть в 30 раз. Без этого такой черновик сохранился бы, а при
  * следующем открытии не прошёл бы проверку — и пропал целиком.
  * Поэтому всё, что уходит с холста, проходит через эту функцию.
+ *
+ * Новое числовое поле слоя = правка и в parseLayer, и здесь.
  */
 export function clampLayer(layer: Layer): Layer {
   const base = {
@@ -239,7 +530,8 @@ export function clampLayer(layer: Layer): Layer {
     angle: Number.isFinite(layer.angle) ? ((layer.angle % 360) + 360) % 360 : 0,
     scaleX: clamp(layer.scaleX, LIMITS.scale),
     scaleY: clamp(layer.scaleY, LIMITS.scale),
-    fill: layer.fill,
+    opacity: clamp(layer.opacity, LIMITS.opacity),
+    anim: clampAnimation(layer.anim),
   };
 
   switch (layer.kind) {
@@ -247,20 +539,42 @@ export function clampLayer(layer: Layer): Layer {
       return {
         ...base,
         kind: "text",
+        fill: layer.fill,
         text: layer.text.slice(0, LIMITS.textLength),
         fontSize: clamp(layer.fontSize, LIMITS.fontSize),
         font: layer.font,
+        bold: layer.bold,
+        italic: layer.italic,
+        align: layer.align,
       };
     case "rect":
       return {
         ...base,
         kind: "rect",
+        fill: layer.fill,
         width: clamp(layer.width, LIMITS.size),
         height: clamp(layer.height, LIMITS.size),
       };
     case "circle":
-      return { ...base, kind: "circle", radius: clamp(layer.radius, LIMITS.size) };
+      return {
+        ...base,
+        kind: "circle",
+        fill: layer.fill,
+        radius: clamp(layer.radius, LIMITS.size),
+      };
+    case "image":
+      return {
+        ...base,
+        kind: "image",
+        asset: layer.asset,
+        width: clamp(layer.width, LIMITS.size),
+        height: clamp(layer.height, LIMITS.size),
+      };
   }
+}
+
+export function clampDuration(seconds: number): number {
+  return clamp(seconds, LIMITS.duration);
 }
 
 /** То же из строки: JSON.parse бросает, здесь — `null`. */

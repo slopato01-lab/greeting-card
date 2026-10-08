@@ -13,15 +13,21 @@ import {
   EDITOR_FORMAT,
   EDITOR_VERSION,
   emptyDoc,
+  imageLayer,
   LIMITS,
+  NO_ANIMATION,
+  parseColor,
   parseEditorDoc,
   parseEditorJson,
 } from "./document.ts";
 
+const anim = { ...NO_ANIMATION, in: "slide-left", out: "fade" };
+
 const valid = {
   format: EDITOR_FORMAT,
   version: EDITOR_VERSION,
-  background: "paper",
+  background: "#fdf6e3",
+  duration: 8,
   layers: [
     {
       kind: "rect",
@@ -30,6 +36,8 @@ const valid = {
       angle: 0,
       scaleX: 1,
       scaleY: 1,
+      opacity: 1,
+      anim,
       fill: "gold",
       width: 400,
       height: 500,
@@ -41,34 +49,132 @@ const valid = {
       angle: -90,
       scaleX: 1,
       scaleY: 1,
-      fill: "canvas",
+      opacity: 0.8,
+      anim,
+      fill: "#E53935",
       text: "С днём рождения!",
       fontSize: 40,
-      font: "display",
+      font: "caveat",
+      bold: true,
+      italic: false,
+      align: "center",
     },
-    { kind: "circle", x: 100, y: 100, angle: 0, scaleX: 2, scaleY: 2, fill: "muted", radius: 50 },
+    {
+      kind: "image",
+      x: 100,
+      y: 100,
+      angle: 0,
+      scaleX: 0.5,
+      scaleY: 0.5,
+      opacity: 1,
+      anim,
+      asset: "abcdef1234",
+      width: 800,
+      height: 600,
+    },
+  ],
+  assets: {
+    abcdef1234: "data:image/jpeg;base64,/9j/4AAQ",
+    unused0000: "data:image/png;base64,iVBO",
+  } as Record<string, string>,
+};
+
+const v1 = {
+  format: EDITOR_FORMAT,
+  version: 1,
+  background: "paper",
+  layers: [
+    {
+      kind: "text",
+      x: 300,
+      y: 200,
+      angle: 0,
+      scaleX: 1,
+      scaleY: 1,
+      fill: "canvas",
+      text: "Привет",
+      fontSize: 40,
+      font: "ui",
+    },
   ],
 };
+
+type Raw = Record<string, unknown>;
+const layerOf = (doc: { layers: unknown[] }, i: number) => doc.layers[i] as Raw;
 
 test("корректный шаблон проходит и сохраняет порядок слоёв", () => {
   const doc = parseEditorDoc(valid);
   assert.ok(doc);
   assert.deepEqual(
     doc.layers.map((l) => l.kind),
-    ["rect", "text", "circle"],
+    ["rect", "text", "image"],
   );
 });
 
+test("hex приводится к нижнему регистру, токены остаются токенами", () => {
+  const text = parseEditorDoc(valid)?.layers[1];
+  assert.equal(text?.kind === "text" && text.fill, "#e53935");
+  assert.equal(parseColor("gold"), "gold");
+  assert.equal(parseColor("#FFF"), null);
+  assert.equal(parseColor("red"), null);
+  assert.equal(parseColor("#12345g"), null);
+});
+
 test("отрицательный угол приводится к 0…360", () => {
-  const doc = parseEditorDoc(valid);
-  assert.equal(doc?.layers[1]?.angle, 270);
+  assert.equal(parseEditorDoc(valid)?.layers[1]?.angle, 270);
+});
+
+test("фото без ссылок из слоёв выкидываются из assets", () => {
+  assert.deepEqual(Object.keys(parseEditorDoc(valid)?.assets ?? {}), ["abcdef1234"]);
+});
+
+test("фото: только data URL картинок, без внешних адресов", () => {
+  for (const url of [
+    "https://example.com/a.jpg",
+    "data:text/html;base64,PHNjcmlwdD4=",
+    "data:image/svg+xml;base64,PHN2Zz4=",
+    "data:image/jpeg;base64,не base64",
+  ]) {
+    const bad = structuredClone(valid);
+    bad.assets.abcdef1234 = url;
+    assert.equal(parseEditorDoc(bad), null, url);
+  }
+});
+
+test("фото: неверный id и больше десяти фото не проходят", () => {
+  const badId = structuredClone(valid);
+  layerOf(badId, 2).asset = "../etc/passwd";
+  assert.equal(parseEditorDoc(badId), null);
+
+  const photo = valid.layers[2];
+  assert.ok(photo);
+  const many = { ...valid, layers: Array.from({ length: LIMITS.images + 1 }, () => photo) };
+  assert.equal(parseEditorDoc(many), null);
+});
+
+test("версия 1 читается и переводится во вторую", () => {
+  const doc = parseEditorDoc(v1);
+  assert.ok(doc);
+  assert.equal(doc.version, 2);
+  assert.equal(doc.duration, 6);
+  const text = doc.layers[0];
+  assert.ok(text?.kind === "text");
+  assert.equal(text.font, "inter");
+  assert.equal(text.bold, false);
+  assert.equal(text.opacity, 1);
+  assert.deepEqual(text.anim, NO_ANIMATION);
+});
+
+test("в версии 1 hex недопустим — его там не было", () => {
+  const hex = structuredClone(v1);
+  layerOf(hex, 0).fill = "#ffffff";
+  assert.equal(parseEditorDoc(hex), null);
 });
 
 test("лишние поля отбрасываются", () => {
-  const withExtra = structuredClone(valid) as typeof valid & { evil?: string };
+  const withExtra: Raw & typeof valid = structuredClone(valid);
   withExtra.evil = "x";
-  const firstLayer = withExtra.layers[0] as Record<string, unknown>;
-  firstLayer.src = "https://example.com/tracker.png";
+  layerOf(withExtra, 0).src = "https://example.com/tracker.png";
 
   const doc = parseEditorDoc(withExtra);
   assert.ok(doc);
@@ -84,44 +190,51 @@ test("сырой JSON Fabric не принимается", () => {
   assert.equal(parseEditorDoc(fabricJson), null);
 });
 
-test("цвет только из токенов", () => {
-  const bad = structuredClone(valid);
-  (bad.layers[0] as Record<string, unknown>).fill = "#ffcccc";
-  assert.equal(parseEditorDoc(bad), null);
-});
-
-test("неизвестный вид слоя роняет весь шаблон", () => {
-  const bad = structuredClone(valid);
-  (bad.layers[0] as Record<string, unknown>).kind = "image";
-  assert.equal(parseEditorDoc(bad), null);
+test("неизвестный вид слоя, шрифт или анимация роняют шаблон", () => {
+  const cases: [number, string, unknown][] = [
+    [0, "kind", "video"],
+    [1, "font", "comic-sans"],
+    [1, "align", "justify"],
+    [0, "anim", { ...anim, in: "explode" }],
+    [0, "anim", { ...anim, delay: -1 }],
+    [0, "anim", null],
+    [0, "opacity", 2],
+  ];
+  for (const [i, key, value] of cases) {
+    const bad = structuredClone(valid);
+    layerOf(bad, i)[key] = value;
+    assert.equal(parseEditorDoc(bad), null, `${key} = ${JSON.stringify(value)}`);
+  }
 });
 
 test("числа: NaN, бесконечность и строки не проходят", () => {
   for (const x of [Number.NaN, Number.POSITIVE_INFINITY, "300", null]) {
     const bad = structuredClone(valid);
-    (bad.layers[0] as Record<string, unknown>).x = x;
+    layerOf(bad, 0).x = x;
     assert.equal(parseEditorDoc(bad), null, `x = ${String(x)}`);
   }
 });
 
-test("пределы: длина текста, кегль, число слоёв", () => {
+test("пределы: длина текста, кегль, число слоёв, длительность", () => {
   const longText = structuredClone(valid);
-  (longText.layers[1] as Record<string, unknown>).text = "а".repeat(LIMITS.textLength + 1);
+  layerOf(longText, 1).text = "а".repeat(LIMITS.textLength + 1);
   assert.equal(parseEditorDoc(longText), null);
 
   const hugeFont = structuredClone(valid);
-  (hugeFont.layers[1] as Record<string, unknown>).fontSize = LIMITS.fontSize.max + 1;
+  layerOf(hugeFont, 1).fontSize = LIMITS.fontSize.max + 1;
   assert.equal(parseEditorDoc(hugeFont), null);
 
   const tooMany = {
     ...valid,
-    layers: Array.from({ length: LIMITS.layers + 1 }, () => valid.layers[2]),
+    layers: Array.from({ length: LIMITS.layers + 1 }, () => valid.layers[0]),
   };
   assert.equal(parseEditorDoc(tooMany), null);
+
+  assert.equal(parseEditorDoc({ ...valid, duration: LIMITS.duration.max + 1 }), null);
 });
 
 test("другая версия формата не принимается", () => {
-  assert.equal(parseEditorDoc({ ...valid, version: 2 }), null);
+  assert.equal(parseEditorDoc({ ...valid, version: 3 }), null);
 });
 
 test("parseEditorJson не бросает на мусоре", () => {
@@ -136,10 +249,17 @@ test("пустой документ и слои по умолчанию прох
     defaultLayer("text", "Текст"),
     defaultLayer("rect", ""),
     defaultLayer("circle", ""),
+    imageLayer("abcdef1234", 1600, 1200),
   );
   const parsed = parseEditorDoc(JSON.parse(JSON.stringify(doc)));
   assert.deepEqual(parsed, doc);
   assert.equal(parsed?.layers[0]?.x, CARD_WIDTH / 2);
+});
+
+test("фото вписывается в 400 × 400", () => {
+  const layer = imageLayer("abcdef1234", 1600, 800);
+  assert.equal(layer.width * layer.scaleX, 400);
+  assert.equal(imageLayer("abcdef1234", 200, 100).scaleX, 1);
 });
 
 test("clampLayer: всё, что ушло с холста, проходит проверку на входе", () => {
@@ -149,17 +269,21 @@ test("clampLayer: всё, что ушло с холста, проходит пр
       x: 99999,
       scaleX: 50,
       fontSize: 1,
+      opacity: 3,
     },
     { ...defaultLayer("rect", ""), y: -99999, angle: -725, width: 0, height: Number.NaN },
-    { ...defaultLayer("circle", ""), scaleY: 0, radius: Number.POSITIVE_INFINITY },
+    {
+      ...defaultLayer("circle", ""),
+      scaleY: 0,
+      radius: Number.POSITIVE_INFINITY,
+      anim: { ...NO_ANIMATION, delay: 999, inDuration: 0 },
+    },
   ];
   const doc = { ...emptyDoc(), layers: wild.map(clampLayer) };
   const parsed = parseEditorDoc(JSON.parse(JSON.stringify(doc)));
   assert.ok(parsed);
-  assert.equal(
-    parsed.layers[0]?.kind === "text" && parsed.layers[0].text.length,
-    LIMITS.textLength,
-  );
+  const text = parsed.layers[0];
+  assert.equal(text?.kind === "text" && text.text.length, LIMITS.textLength);
   assert.equal(parsed.layers[1]?.angle, 355);
 });
 

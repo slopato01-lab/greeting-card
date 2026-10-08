@@ -69,6 +69,8 @@ Figma и перестанут работать примерно через не�
 | Стрелки рядов на главной | `tabler:arrow-left`, `tabler:arrow-right` | `prev`, `next` |
 | Редактор: добавить текст, прямоугольник, круг | `tabler:typography`, `tabler:square`, `tabler:circle` | `text`, `rect`, `circle` |
 | Редактор: удалить, скачать PNG, сохранить и открыть шаблон | `tabler:trash`, `tabler:download`, `tabler:device-floppy`, `tabler:folder-open` | `trash`, `download`, `save`, `open` |
+| Редактор: фото, просмотр, стоп | `tabler:photo`, `tabler:player-play`, `tabler:player-stop` | `photo`, `play`, `stop` |
+| Редактор: жирный, курсив, выравнивание, свой цвет | `tabler:bold`, `tabler:italic`, `tabler:align-left`, `tabler:align-center`, `tabler:align-right`, `tabler:color-picker` | `bold`, `italic`, `alignLeft`, `alignCenter`, `alignRight`, `picker` |
 | Маркер списка | простой круг, рисуется CSS | — |
 
 **Три иконки заменены 02.08.2026.** В макете стояли
