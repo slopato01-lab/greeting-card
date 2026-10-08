@@ -314,4 +314,240 @@ svg(
     + "</g>",
 )
 
+
+# ── Серия по design/открытки/ (08.10.2026) ───────────────────
+# Геометрия окон плёнки и диска известна шаблонам
+# (lib/editor/templates/series.ts) — меняется здесь, меняется и там.
+
+# Лист в клетку под фото валентинки.
+cells = "".join(
+    f'<line x1="{x}" y1="6" x2="{x}" y2="254" stroke="#9fb1c4" stroke-width="1"/>'
+    for x in range(18, 300, 16)
+) + "".join(
+    f'<line x1="6" y1="{y}" x2="294" y2="{y}" stroke="#9fb1c4" stroke-width="1"/>'
+    for y in range(14, 260, 16)
+)
+svg(
+    "grid-paper",
+    300,
+    260,
+    '<rect x="6" y="6" width="288" height="248" fill="#fbfbf9" filter="url(#gp)"/>' + cells,
+    '<filter id="gp" x="-5%" y="-5%" width="110%" height="115%">'
+    '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity=".2"/></filter>',
+)
+
+# Скрепка.
+svg(
+    "paperclip",
+    80,
+    220,
+    '<path d="M28 150 L28 40 Q28 14 46 14 Q64 14 64 40 L64 176 Q64 206 40 206 Q16 206 16 176 L16 60" '
+    'fill="none" stroke="#8d9299" stroke-width="7" stroke-linecap="round"/>'
+    '<path d="M28 150 L28 40 Q28 14 46 14 Q64 14 64 40 L64 176 Q64 206 40 206 Q16 206 16 176 L16 60" '
+    'fill="none" stroke="#e6e9ed" stroke-width="2.5" stroke-linecap="round" transform="translate(-1.5 -1.5)"/>',
+)
+
+# Фотоплёнка: 220 × 600, четыре окна 144 × 108 (4:3), центры окон
+# по высоте 78 + 148·i, по ширине — середина. Окна серые: фото
+# кладутся поверх, слоем выше.
+holes = "".join(
+    f'<rect x="{x}" y="{y}" width="16" height="11" rx="2.5" fill="#f4f4f4"/>'
+    for y in range(10, 596, 22)
+    for x in (9, 195)
+)
+frames = "".join(
+    f'<rect x="38" y="{24 + i * 148}" width="144" height="108" fill="#3a3a3a"/>' for i in range(4)
+)
+marks = "".join(
+    f'<text x="{24 if i % 2 else 186}" y="{150 + i * 148}" font-family="monospace" font-size="9" '
+    f'fill="#f4f4f4" opacity=".7" transform="rotate(-90 {24 if i % 2 else 186} {150 + i * 148})">{9 - i}A</text>'
+    for i in range(4)
+)
+svg("film-strip", 220, 600, '<rect width="220" height="600" fill="#0d0d0d"/>' + holes + frames + marks)
+
+# Бокалы с бантиком — линейный рисунок, как на «save the date».
+svg(
+    "glasses-doodle",
+    220,
+    200,
+    '<g fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    '<path d="M30 60 Q60 52 92 60 Q88 96 61 102 Q34 96 30 60 Z"/>'
+    '<path d="M61 102 L64 160 M44 164 Q64 156 84 164"/>'
+    '<path d="M108 52 Q140 40 170 50 Q170 88 142 98 Q114 92 108 52 Z" transform="rotate(14 140 75)"/>'
+    '<path d="M136 100 L128 158 M108 160 Q128 152 148 162"/>'
+    '<path d="M150 36 Q170 14 182 30 Q172 44 150 36 Q160 52 176 62 M150 36 Q132 22 124 36 Q136 46 150 36 Q144 56 132 70"/>'
+    '<path d="M86 40 L94 28 M98 44 L110 34 M78 34 L80 20"/>'
+    "</g>",
+)
+
+# Сердце-отпечаток: вложенные контуры сердца с разрывами, как папиллярные линии.
+def heart_path(cx, cy, k):
+    return (
+        f"M{cx} {cy + 70 * k} "
+        f"C{cx - 40 * k} {cy + 40 * k} {cx - 100 * k} {cy + 5 * k} {cx - 100 * k} {cy - 40 * k} "
+        f"C{cx - 100 * k} {cy - 85 * k} {cx - 45 * k} {cy - 100 * k} {cx} {cy - 55 * k} "
+        f"C{cx + 45 * k} {cy - 100 * k} {cx + 100 * k} {cy - 85 * k} {cx + 100 * k} {cy - 40 * k} "
+        f"C{cx + 100 * k} {cy + 5 * k} {cx + 40 * k} {cy + 40 * k} {cx} {cy + 70 * k} Z"
+    )
+
+ridges = "".join(
+    f'<path d="{heart_path(150, 150, 1.36 - i * 0.085)}" fill="none" stroke="#c4161c" '
+    f'stroke-width="{rng.uniform(3.5, 5.5):.1f}" stroke-dasharray="{rng.randint(40, 120)} {rng.randint(4, 10)}" '
+    f'stroke-dashoffset="{rng.randint(0, 80)}" opacity="{rng.uniform(.7, .95):.2f}"/>'
+    for i in range(15)
+)
+svg("heart-print", 300, 270, f'<g transform="translate(0 -6)">{ridges}</g>')
+
+# Звёзды: красная с блёстками и рисованная контурная (тёмная и белая).
+def star_points(cx, cy, r1, r2, n=5):
+    pts = []
+    for k in range(n * 2):
+        r = r1 if k % 2 == 0 else r2
+        a = math.pi / 2 + k * math.pi / n
+        pts.append(f"{cx + r * math.cos(a):.1f},{cy - r * math.sin(a):.1f}")
+    return " ".join(pts)
+
+glints = "".join(
+    f'<circle cx="{rng.uniform(30, 170):.0f}" cy="{rng.uniform(30, 170):.0f}" r="{rng.uniform(1.5, 4):.1f}" fill="#ff8a8a" opacity=".7"/>'
+    for _ in range(60)
+)
+svg(
+    "star-red",
+    200,
+    200,
+    f'<g clip-path="url(#sr)"><polygon points="{star_points(100, 106, 96, 40)}" fill="#a3121f"/>{glints}</g>',
+    f'<clipPath id="sr"><polygon points="{star_points(100, 106, 96, 40)}"/></clipPath>',
+)
+for name, color in (("star-doodle", "#222222"), ("star-doodle-white", "#ffffff")):
+    svg(
+        name,
+        120,
+        120,
+        f'<path d="M60 8 Q66 52 112 60 Q66 68 60 112 Q54 68 8 60 Q54 52 60 8 Z" fill="none" '
+        f'stroke="{color}" stroke-width="5" stroke-linejoin="round"/>',
+    )
+
+# Пластинка.
+grooves = "".join(
+    f'<circle cx="150" cy="150" r="{r}" fill="none" stroke="#2c2c2c" stroke-width="1.2"/>'
+    for r in range(56, 146, 6)
+)
+svg(
+    "vinyl",
+    300,
+    300,
+    '<circle cx="150" cy="150" r="146" fill="#111"/>' + grooves +
+    '<circle cx="150" cy="150" r="50" fill="#b3172b"/><circle cx="150" cy="150" r="6" fill="#111"/>'
+    '<path d="M60 70 A120 120 0 0 1 120 34" stroke="#fff" stroke-opacity=".18" stroke-width="10" fill="none" stroke-linecap="round"/>',
+)
+
+# Зал кинотеатра: ряды красных кресел в перспективе, 600 × 800 — фон
+# всей открытки.
+rows = []
+for k, (y, w, h) in enumerate(
+    [(40, 58, 70), (120, 66, 80), (210, 76, 92), (315, 88, 106), (435, 102, 124), (575, 120, 146), (735, 140, 170)]
+):
+    off = (k % 2) * w / 2
+    x = -w + off
+    while x < 600 + w:
+        rows.append(
+            f'<rect x="{x + 4:.0f}" y="{y}" width="{w - 8}" height="{h}" rx="{w * 0.22:.0f}" fill="url(#seat)"/>'
+            f'<rect x="{x + 10:.0f}" y="{y + 6}" width="{w - 20}" height="{h * 0.3:.0f}" rx="{w * 0.18:.0f}" fill="#d0313f" opacity=".45"/>'
+        )
+        x += w
+svg(
+    "cinema-seats",
+    600,
+    800,
+    '<rect width="600" height="800" fill="#1a0b0c"/>' + "".join(rows) +
+    '<rect width="600" height="800" fill="url(#dim)"/>',
+    '<linearGradient id="seat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a51d2a"/><stop offset=".7" stop-color="#6e0f19"/><stop offset="1" stop-color="#3a070c"/></linearGradient>'
+    '<radialGradient id="dim" cx=".5" cy=".45" r=".75"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>',
+)
+
+# Розовый листок-записка с лентой.
+svg(
+    "sticky-note",
+    200,
+    240,
+    '<rect x="14" y="26" width="172" height="206" rx="3" fill="#f6c9d4" filter="url(#sn)"/>'
+    '<rect x="64" y="12" width="72" height="28" fill="#fbe9c9" opacity=".85" transform="rotate(-4 100 26)"/>',
+    '<filter id="sn" x="-10%" y="-10%" width="120%" height="125%">'
+    '<feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity=".2"/></filter>',
+)
+
+# Диск с кадрами, как у стереоскопа: 640 × 640, центр (320, 320),
+# двенадцать окон 92 × 92 на радиусе 228, первое — сверху, дальше
+# по часовой через 30°.
+slots = []
+for i in range(12):
+    a = -90 + i * 30
+    slots.append(
+        f'<rect x="274" y="46" width="92" height="92" rx="18" fill="#b9b1a3" transform="rotate({a + 90} 320 320)"/>'
+    )
+    na = math.radians(a + 15)
+    slots.append(
+        f'<text x="{320 + 160 * math.cos(na):.0f}" y="{326 + 160 * math.sin(na):.0f}" font-family="sans-serif" '
+        f'font-size="15" fill="#6b645a" text-anchor="middle">{i % 7 + 1}</text>'
+    )
+tabs = "".join(
+    f'<rect x="312" y="4" width="16" height="20" rx="3" fill="#c9c1b2" transform="rotate({a} 320 320)"/>'
+    for a in range(15, 360, 60)
+)
+svg(
+    "reel",
+    640,
+    640,
+    '<circle cx="320" cy="320" r="312" fill="#ebe6dc" filter="url(#rs)"/>' + tabs +
+    '<circle cx="320" cy="320" r="300" fill="none" stroke="#d8d1c4" stroke-width="2"/>' + "".join(slots) +
+    '<circle cx="320" cy="320" r="24" fill="#d8d1c4"/><circle cx="320" cy="320" r="13" fill="#8a8275"/>',
+    '<filter id="rs" x="-5%" y="-5%" width="110%" height="110%">'
+    '<feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity=".3"/></filter>',
+)
+
+# Звезда-клякса (вырубка) — тёмно-красная, под «DUMP».
+svg("burst", 240, 240, f'<polygon points="{star_points(120, 120, 118, 92, 16)}" fill="#9b1d1d"/>')
+
+# Золотая лента-росчерк и золотые блёстки для рождественской открытки.
+svg(
+    "gold-swirl",
+    600,
+    520,
+    '<g fill="none" stroke="url(#gs)" stroke-linecap="round">'
+    '<path d="M-20 300 C120 120 300 40 420 110 C520 170 430 260 340 220 C240 170 330 40 470 30 C560 24 620 80 640 120" stroke-width="9"/>'
+    '<path d="M-10 340 C160 200 260 160 360 180" stroke-width="4" opacity=".7"/>'
+    "</g>",
+    '<linearGradient id="gs" x1="0" x2="1"><stop offset="0" stop-color="#e9cf8e"/><stop offset=".5" stop-color="#c79a3d"/><stop offset="1" stop-color="#f1dca3"/></linearGradient>',
+)
+dust = []
+for _ in range(420):
+    r = abs(rng.gauss(0, 1)) * 120
+    a = rng.uniform(0, 2 * math.pi)
+    x = 200 + r * math.cos(a) * 1.4
+    y = 200 + r * math.sin(a)
+    if 0 < x < 400 and 0 < y < 400:
+        dust.append(
+            f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(0.8, 3.2):.1f}" fill="{rng.choice(["#d4a94a", "#e8c66d", "#b98a2e"])}" opacity="{rng.uniform(.5, 1):.2f}"/>'
+        )
+svg("glitter-gold", 400, 400, "".join(dust))
+
+# Рисованная двойная рамка свадебного приглашения: 600 × 800.
+def wobbly_rect(x0, y0, x1, y1, amp):
+    pts = []
+    for (ax, ay), (bx, by) in (((x0, y0), (x1, y0)), ((x1, y0), (x1, y1)), ((x1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
+        for t in range(0, 10):
+            u = t / 10
+            pts.append((ax + (bx - ax) * u + rng.uniform(-amp, amp), ay + (by - ay) * u + rng.uniform(-amp, amp)))
+    return "M" + " L".join(f"{x:.1f} {y:.1f}" for x, y in pts) + " Z"
+
+svg(
+    "frame-sketch",
+    600,
+    800,
+    f'<g fill="none" stroke="#b5432a" stroke-linejoin="round">'
+    f'<path d="{wobbly_rect(14, 14, 586, 786, 2.2)}" stroke-width="4"/>'
+    f'<path d="{wobbly_rect(30, 30, 570, 770, 2.2)}" stroke-width="3"/>'
+    "</g>",
+)
+
 print("Готово:", len(list(OUT.glob("*.svg"))), "стикеров")

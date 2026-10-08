@@ -39,6 +39,16 @@ export type StickerInfo = {
   ext?: "png" | "jpg";
 };
 
+/** Общее у примеров фото серии: заменяемые, обрезаются под окно, в каталоге не видны. */
+const SAMPLE = {
+  theme: "common",
+  label: "sticker.ny-photo",
+  placeholder: true,
+  fill: true,
+  hidden: true,
+  ext: "jpg",
+} as const satisfies Omit<StickerInfo, "id" | "width" | "height">;
+
 export const STICKERS: readonly StickerInfo[] = [
   {
     id: "photo-placeholder",
@@ -178,6 +188,86 @@ export const STICKERS: readonly StickerInfo[] = [
     width: 512,
     height: 512,
   },
+  // Серия по design/открытки/ (08.10.2026). Примеры фото трёх форм:
+  // квадрат, 4:3 и 4:3 в ч/б — своё обрезается под форму примера.
+  // Unsplash через picsum.photos, источники — CREDITS.md.
+  ...(
+    [
+      "sample-sq-1",
+      "sample-sq-2",
+      "sample-sq-3",
+      "sample-sq-4",
+      "sample-sq-5",
+      "sample-sq-6",
+      "sample-sq-7",
+      "sample-sq-8",
+      "sample-sq-9",
+      "sample-sq-10",
+      "sample-sq-11",
+      "sample-sq-12",
+    ] as const
+  ).map((id): StickerInfo => ({ ...SAMPLE, id, width: 400, height: 400 })),
+  ...(
+    [
+      "sample-wide-1",
+      "sample-wide-2",
+      "sample-wide-3",
+      "sample-wide-4",
+      "sample-wide-5",
+      "sample-wide-6",
+    ] as const
+  ).map((id): StickerInfo => ({ ...SAMPLE, id, width: 560, height: 420 })),
+  ...(["sample-bw-1", "sample-bw-2", "sample-bw-3", "sample-bw-4", "sample-bw-5"] as const).map(
+    (id): StickerInfo => ({ ...SAMPLE, id, width: 560, height: 420, mono: true }),
+  ),
+  { ...SAMPLE, id: "sample-bw-sq", width: 400, height: 400, mono: true },
+  { id: "grid-paper", theme: "common", label: "sticker.grid-paper", width: 300, height: 260 },
+  { id: "paperclip", theme: "common", label: "sticker.paperclip", width: 80, height: 220 },
+  { id: "film-strip", theme: "common", label: "sticker.film-strip", width: 220, height: 600 },
+  { id: "glasses-doodle", theme: "love", label: "sticker.glasses-doodle", width: 220, height: 200 },
+  { id: "heart-print", theme: "love", label: "sticker.heart-print", width: 300, height: 270 },
+  { id: "star-red", theme: "birthday", label: "sticker.star-red", width: 200, height: 200 },
+  { id: "star-doodle", theme: "common", label: "sticker.star-doodle", width: 120, height: 120 },
+  {
+    id: "star-doodle-white",
+    theme: "common",
+    label: "sticker.star-doodle-white",
+    width: 120,
+    height: 120,
+  },
+  { id: "vinyl", theme: "birthday", label: "sticker.vinyl", width: 300, height: 300 },
+  // Фон всей открытки «Кинопремьера» — в каталоге стикеров не нужен.
+  {
+    id: "cinema-seats",
+    theme: "birthday",
+    label: "sticker.cinema-seats",
+    width: 600,
+    height: 800,
+    hidden: true,
+  },
+  { id: "sticky-note", theme: "common", label: "sticker.sticky-note", width: 200, height: 240 },
+  { id: "reel", theme: "common", label: "sticker.reel", width: 640, height: 640 },
+  { id: "burst", theme: "common", label: "sticker.burst", width: 240, height: 240 },
+  { id: "gold-swirl", theme: "newyear", label: "sticker.gold-swirl", width: 600, height: 520 },
+  { id: "glitter-gold", theme: "newyear", label: "sticker.glitter-gold", width: 400, height: 400 },
+  { id: "frame-sketch", theme: "love", label: "sticker.frame-sketch", width: 600, height: 800 },
+  { id: "mirror-ball", theme: "birthday", label: "sticker.mirror-ball", width: 512, height: 512 },
+  { id: "cocktail", theme: "birthday", label: "sticker.cocktail", width: 512, height: 512 },
+  { id: "popcorn", theme: "birthday", label: "sticker.popcorn", width: 512, height: 512 },
+  { id: "cat", theme: "birthday", label: "sticker.cat", width: 512, height: 512 },
+  { id: "black-cat", theme: "birthday", label: "sticker.black-cat", width: 512, height: 512 },
+  { id: "cat-face", theme: "birthday", label: "sticker.cat-face", width: 512, height: 512 },
+  { id: "cupcake", theme: "birthday", label: "sticker.cupcake", width: 512, height: 512 },
+  {
+    id: "birthday-cake",
+    theme: "birthday",
+    label: "sticker.birthday-cake",
+    width: 512,
+    height: 512,
+  },
+  { id: "sunflower", theme: "march8", label: "sticker.sunflower", width: 512, height: 512 },
+  { id: "strawberry", theme: "love", label: "sticker.strawberry", width: 512, height: 512 },
+  { id: "cherries", theme: "love", label: "sticker.cherries", width: 512, height: 512 },
 ];
 
 const BY_ID = new Map(STICKERS.map((sticker) => [sticker.id, sticker]));

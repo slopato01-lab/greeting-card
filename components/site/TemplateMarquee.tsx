@@ -23,10 +23,14 @@ import { ANIMATED_TEMPLATES, type AnimatedTemplate } from "@/lib/catalog/templat
  * краем не грузятся вовсе: preload="none".
  */
 
-/** Порядок карточек в каждом ряду — сдвиг по кругу, разный у рядов. */
-const ROW_SHIFTS = [0, 3] as const;
-/** Сколько раз повторить порядок в половине ряда: 12 карточек по 360px шире 1920px. */
-const REPEAT = 2;
+/**
+ * Порядок карточек в каждом ряду — сдвиг по кругу, разный у рядов.
+ * С серией по design/открытки/ (08.10.2026) шаблонов 21, сдвиг на
+ * половину: соседние ряды показывают разные темы.
+ */
+const ROW_SHIFTS = [0, 10] as const;
+/** Сколько раз повторить порядок в половине ряда: 21 карточка по 360px и так шире 1920px. */
+const REPEAT = 1;
 
 function rotate<T>(items: readonly T[], by: number): T[] {
   return items.map((_, i) => items[(i + by) % items.length]).filter((x): x is T => x !== undefined);

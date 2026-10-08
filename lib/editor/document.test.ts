@@ -291,3 +291,10 @@ test("clampLayer не трогает слой, который уже в пред
   const layer = defaultLayer("text", "Текст");
   assert.deepEqual(clampLayer(layer), layer);
 });
+
+test("«Без анимации» сохраняется, а всё, кроме true, — нет", () => {
+  assert.equal(parseEditorDoc({ ...valid, still: true })?.still, true);
+  assert.equal(parseEditorDoc({ ...valid, still: "yes" })?.still, undefined);
+  assert.equal(parseEditorDoc(valid)?.still, undefined);
+  assert.equal("still" in (parseEditorDoc({ ...valid, still: false }) ?? {}), false);
+});

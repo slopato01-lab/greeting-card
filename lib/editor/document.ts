@@ -21,6 +21,7 @@
  *   Дополнена тем же днём, без смены номера: стикеры, чёрно-белое фото,
  *   межбуквенный интервал, анимации из design/пример анимации и дизайна.MP4.
  *   Новые поля необязательны — шаблоны 2 без них читаются как раньше.
+ *   Там же `still` — «Без анимации» (08.10.2026, тоже без смены номера).
  *
  * Цвета. Имя токена (`gold`) по-прежнему допустимо: шаблоны версии 1
  * ими написаны. С 08.10.2026 значения таких цветов заморожены
@@ -152,6 +153,59 @@ export const STICKER_IDS = [
   "kiss-mark",
   "ribbon",
   "clinking-glasses",
+  // Серия по design/открытки/ (08.10.2026): примеры фото трёх форм
+  // и предметы коллажей.
+  "sample-sq-1",
+  "sample-sq-2",
+  "sample-sq-3",
+  "sample-sq-4",
+  "sample-sq-5",
+  "sample-sq-6",
+  "sample-sq-7",
+  "sample-sq-8",
+  "sample-sq-9",
+  "sample-sq-10",
+  "sample-sq-11",
+  "sample-sq-12",
+  "sample-wide-1",
+  "sample-wide-2",
+  "sample-wide-3",
+  "sample-wide-4",
+  "sample-wide-5",
+  "sample-wide-6",
+  "sample-bw-1",
+  "sample-bw-2",
+  "sample-bw-3",
+  "sample-bw-4",
+  "sample-bw-5",
+  "sample-bw-sq",
+  "grid-paper",
+  "paperclip",
+  "film-strip",
+  "glasses-doodle",
+  "heart-print",
+  "star-red",
+  "star-doodle",
+  "star-doodle-white",
+  "vinyl",
+  "cinema-seats",
+  "sticky-note",
+  "reel",
+  "burst",
+  "gold-swirl",
+  "glitter-gold",
+  "frame-sketch",
+  "mirror-ball",
+  "cocktail",
+  "popcorn",
+  "cat",
+  "black-cat",
+  "cat-face",
+  "cupcake",
+  "birthday-cake",
+  "sunflower",
+  "strawberry",
+  "cherries",
 ] as const;
 export type StickerId = (typeof STICKER_IDS)[number];
 
@@ -346,6 +400,12 @@ export type EditorDoc = {
   duration: number;
   /** Порядок — снизу вверх, как на холсте. */
   layers: Layer[];
+  /**
+   * «Без анимации»: открытка показывается сразу целиком, анимация
+   * слоёв хранится, но не играет — её можно включить обратно.
+   * Поле есть только когда включено: старые шаблоны его не знают.
+   */
+  still?: true;
   /**
    * Фото внутри файла шаблона: id → data URL. Есть только в файле,
    * который скачали кнопкой «Сохранить шаблон». В черновике пусто:
@@ -645,6 +705,7 @@ export function parseEditorDoc(input: unknown): EditorDoc | null {
     duration,
     layers: parsed,
   };
+  if (input.still === true) doc.still = true;
   if (Object.keys(assets).length > 0) doc.assets = assets;
   return doc;
 }

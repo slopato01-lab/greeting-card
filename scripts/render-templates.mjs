@@ -19,6 +19,12 @@
  * Запускать после правки шаблона, его текстов или стикеров: видео
  * лежат в репозитории, сборка их не перерисовывает.
  * Без зависимостей: Chrome по протоколу DevTools, ffmpeg из системы.
+ *
+ * Аргументы (08.10.2026):
+ *   pnpm templates:render love party       — только эти шаблоны;
+ *   pnpm templates:render --preview <папка> — без видео: в папку ложатся
+ *     PNG трёх моментов каждого шаблона (середина появления, конец,
+ *     «Без анимации») — для сверки с макетом.
  */
 import { spawn, spawnSync } from "node:child_process";
 import {
@@ -43,6 +49,12 @@ const HOLD = 0.5;
 const MULTIPLIER = 0.8;
 const PORT = 9871;
 const DEBUG_PORT = 9334;
+const argv = process.argv.slice(2);
+const previewAt = argv.indexOf("--preview");
+const PREVIEW = previewAt === -1 ? null : resolve(argv[previewAt + 1] ?? "preview");
+const ONLY = new Set(
+  argv.filter((arg, i) => !arg.startsWith("--") && (previewAt === -1 || i !== previewAt + 1)),
+);
 const CHROME =
   process.env.CHROME ??
   join(process.env.HOME ?? "", ".cache/ms-playwright/chromium-1228/chrome-linux64/chrome");
@@ -143,7 +155,23 @@ try {
   const templates = await evaluate("window.__renderTemplates");
   if (!Array.isArray(templates)) throw new Error("Страница /render не отдала список шаблонов");
 
+  if (PREVIEW !== null) mkdirSync(PREVIEW, { recursive: true });
   for (const { id: name, duration } of templates) {
+    if (ONLY.size > 0 && !ONLY.has(name)) continue;
+    if (PREVIEW !== null) {
+      for (const [suffix, time] of [
+        ["a", duration * 0.25],
+        ["b", duration],
+      ]) {
+        const url = await evaluate(`window.__renderFrame(${JSON.stringify(name)}, ${time}, 1)`);
+        writeFileSync(
+          join(PREVIEW, `${name}-${suffix}.png`),
+          Buffer.from(url.split(",")[1], "base64"),
+        );
+      }
+      console.log(`${name.padEnd(14)} превью`);
+      continue;
+    }
     const dir = join(frames, name);
     mkdirSync(dir);
     const count = Math.round((duration + HOLD) * FPS);

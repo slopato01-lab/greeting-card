@@ -76,6 +76,7 @@ export function Editor() {
     selected,
     background,
     duration,
+    still,
     playing,
     busy,
     busyText,
@@ -250,7 +251,7 @@ export function Editor() {
           <ToolButton
             icon={playing ? "stop" : "play"}
             labelKey={playing ? "editor.stop" : "editor.play"}
-            disabled={!ready || busy}
+            disabled={!ready || busy || still}
             onClick={playing ? actions.stop : actions.play}
             className="shrink-0"
           />
@@ -259,7 +260,24 @@ export function Editor() {
           </div>
         </div>
 
-        <label className="flex items-center gap-[10px]">
+        {/* «Без анимации» (08.10.2026): открытка сразу целиком. Анимация
+            слоёв сохраняется — выключить обратно можно в любой момент. */}
+        <label className="min-h-tap flex shrink-0 cursor-pointer items-center gap-[10px] has-disabled:cursor-not-allowed has-disabled:opacity-50">
+          <input
+            type="checkbox"
+            checked={still}
+            disabled={!ready || busy}
+            onChange={(event) => actions.setStill(event.target.checked)}
+            aria-describedby="editor-still-hint"
+            className="accent-gold-deep size-[18px] shrink-0"
+          />
+          <span className="font-ui caps text-badge text-ink">{t("editor.still")}</span>
+          <span id="editor-still-hint" className="sr-only">
+            {t("editor.still.hint")}
+          </span>
+        </label>
+
+        <label className={`flex items-center gap-[10px] ${still ? "opacity-50" : ""}`}>
           <span className="font-ui caps text-badge text-muted shrink-0">
             {t("editor.duration")}
           </span>
@@ -269,6 +287,7 @@ export function Editor() {
             max={30}
             step={1}
             value={duration}
+            disabled={still}
             onChange={(event) => actions.setDuration(Number(event.target.value))}
             className="min-h-tap accent-gold-deep w-full min-w-0 xl:w-[140px]"
           />

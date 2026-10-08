@@ -23,7 +23,10 @@ export type CatalogFilter =
   | "catalog.filter.3"
   | "catalog.filter.4"
   | "catalog.filter.5"
-  | "catalog.filter.7";
+  | "catalog.filter.7"
+  | "catalog.filter.8"
+  | "catalog.filter.9"
+  | "catalog.filter.10";
 
 /**
  * Три механики MVP. Живут здесь, а не в конструкторе: какие игры
@@ -75,9 +78,13 @@ export const CATALOG_CUSTOM = "catalog.filter.6" satisfies TextKey;
 export const CATALOG_FILTERS = [
   "catalog.filter.2",
   "catalog.filter.3",
+  // Темы серии по design/открытки/ (08.10.2026): 14 февраля, подруге, свадьба.
+  "catalog.filter.8",
+  "catalog.filter.9",
+  "catalog.filter.10",
+  "catalog.filter.7",
   "catalog.filter.4",
   "catalog.filter.5",
-  "catalog.filter.7",
 ] as const satisfies ReadonlyArray<CatalogFilter>;
 
 export const TEMPLATES = [
@@ -254,4 +261,20 @@ export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
   animated("polaroid", "catalog.filter.3", "anim.polaroid.name", "anim.polaroid.lead"),
   animated("march8", "catalog.filter.5", "anim.march8.name", "anim.march8.lead"),
   animated("love", "catalog.filter.7", "anim.love.name", "anim.love.lead"),
+  // Серия по design/открытки/ (08.10.2026), lib/editor/series.ts.
+  animated("val-wishing", "catalog.filter.8", "anim.val-wishing.name", "anim.val-wishing.lead"),
+  animated("val-film", "catalog.filter.8", "anim.val-film.name", "anim.val-film.lead"),
+  animated("val-loveis", "catalog.filter.8", "anim.val-loveis.name", "anim.val-loveis.lead"),
+  animated("val-paper", "catalog.filter.8", "anim.val-paper.name", "anim.val-paper.lead"),
+  animated("val-strip", "catalog.filter.8", "anim.val-strip.name", "anim.val-strip.lead"),
+  animated("bd-disco", "catalog.filter.2", "anim.bd-disco.name", "anim.bd-disco.lead"),
+  animated("bd-cinema", "catalog.filter.2", "anim.bd-cinema.name", "anim.bd-cinema.lead"),
+  animated("bd-kittens", "catalog.filter.2", "anim.bd-kittens.name", "anim.bd-kittens.lead"),
+  animated("ny-party", "catalog.filter.3", "anim.ny-party.name", "anim.ny-party.lead"),
+  animated("ny-xmas", "catalog.filter.3", "anim.ny-xmas.name", "anim.ny-xmas.lead"),
+  animated("fr-memory", "catalog.filter.9", "anim.fr-memory.name", "anim.fr-memory.lead"),
+  animated("fr-polaroids", "catalog.filter.9", "anim.fr-polaroids.name", "anim.fr-polaroids.lead"),
+  animated("fr-disc", "catalog.filter.9", "anim.fr-disc.name", "anim.fr-disc.lead"),
+  animated("wd-married", "catalog.filter.10", "anim.wd-married.name", "anim.wd-married.lead"),
+  animated("wd-kids", "catalog.filter.10", "anim.wd-kids.name", "anim.wd-kids.lead"),
 ];

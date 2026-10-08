@@ -6,13 +6,13 @@ import {
   EDITOR_VERSION,
   type FontId,
   type Layer,
-  NO_ANIMATION,
   type StickerId,
   type StickerLayer,
   type TextLayer,
 } from "@/lib/editor/document";
-import { stickerInfo } from "@/lib/editor/stickers";
-import { type TextKey, t } from "@/lib/i18n";
+import { SERIES, SERIES_IDS } from "@/lib/editor/series";
+import { anim, sticker, text as kitText } from "@/lib/editor/template-kit";
+import type { TextKey } from "@/lib/i18n";
 
 /**
  * Готовые шаблоны редактора по образцу design/пример анимации и дизайна.MP4.
@@ -31,13 +31,20 @@ import { type TextKey, t } from "@/lib/i18n";
  * (docs/DESIGN.md, «Цвета и шрифты содержимого открытки»).
  */
 
-export const TEMPLATE_IDS = ["birthday", "party", "newyear", "polaroid", "march8", "love"] as const;
+export const TEMPLATE_IDS = [
+  "birthday",
+  "party",
+  "newyear",
+  "polaroid",
+  "march8",
+  "love",
+  ...SERIES_IDS,
+] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
 export type TemplateInfo = { id: TemplateId; label: TextKey; build: () => EditorDoc };
 
-const anim = (change: Partial<Animation>): Animation => ({ ...NO_ANIMATION, ...change });
-
+/** Текст по центру открытки — так стоят почти все надписи старых шаблонов. */
 function text(
   key: TextKey,
   y: number,
@@ -46,48 +53,7 @@ function text(
   fontSize: number,
   options: { bold?: boolean; spacing?: number; anim: Animation },
 ): TextLayer {
-  return {
-    kind: "text",
-    text: t(key),
-    x: 300,
-    y,
-    angle: 0,
-    scaleX: 1,
-    scaleY: 1,
-    opacity: 1,
-    fill,
-    font,
-    fontSize,
-    bold: options.bold ?? false,
-    italic: false,
-    align: "center",
-    spacing: options.spacing ?? 0,
-    anim: options.anim,
-  };
-}
-
-function sticker(
-  id: StickerId,
-  x: number,
-  y: number,
-  scale: number,
-  angle: number,
-  animation: Animation,
-): StickerLayer {
-  const { width, height } = stickerInfo(id);
-  return {
-    kind: "sticker",
-    sticker: id,
-    width,
-    height,
-    x,
-    y,
-    angle,
-    scaleX: scale,
-    scaleY: scale,
-    opacity: 1,
-    anim: animation,
-  };
+  return kitText(key, 300, y, fill, font, fontSize, options);
 }
 
 /** Общий каркас: заголовок, обращение, фото, пожелание, сердечко. */
@@ -614,4 +580,6 @@ export const TEMPLATES: readonly TemplateInfo[] = [
         ],
       }),
   },
+  // Серия по design/открытки/ (08.10.2026), lib/editor/series.ts.
+  ...SERIES_IDS.map((id): TemplateInfo => ({ id, label: `tpl.${id}.label`, build: SERIES[id] })),
 ];

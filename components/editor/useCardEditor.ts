@@ -150,6 +150,9 @@ export function useCardEditor() {
   const backgroundRef = useRef<Color>("paper");
   const [duration, setDurationState] = useState(DEFAULT_DURATION);
   const durationRef = useRef(DEFAULT_DURATION);
+  /** «Без анимации»: открытка видна сразу целиком, просмотр не нужен. */
+  const [still, setStillState] = useState(false);
+  const stillRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [busy, setBusy] = useState(false);
   /** Что именно сейчас занимает редактор — подпись под холстом. */
@@ -181,11 +184,13 @@ export function useCardEditor() {
     setSaved(false);
   }, []);
 
-  const applyDocMeta = useCallback((doc: Pick<EditorDoc, "background" | "duration">) => {
+  const applyDocMeta = useCallback((doc: Pick<EditorDoc, "background" | "duration" | "still">) => {
     backgroundRef.current = doc.background;
     setBackgroundState(doc.background);
     durationRef.current = doc.duration;
     setDurationState(doc.duration);
+    stillRef.current = doc.still === true;
+    setStillState(doc.still === true);
   }, []);
 
   const assetUrl = useCallback((id: string) => assets.current.get(id)?.url ?? null, []);
@@ -207,6 +212,7 @@ export function useCardEditor() {
         backgroundRef.current,
         durationRef.current,
       );
+      if (stillRef.current) draft.still = true;
       window.localStorage.setItem(draftKey.current, JSON.stringify(draft));
       dirty.current = false;
       setSaved(true);
@@ -839,13 +845,28 @@ export function useCardEditor() {
   );
 
   /**
+   * «Без анимации». Анимация слоёв не стирается: выключили и включили
+   * обратно — всё на месте. Идущий просмотр останавливается.
+   */
+  const setStill = useCallback(
+    (value: boolean) => {
+      stopPlayback();
+      stillRef.current = value;
+      setStillState(value);
+      markDirty();
+    },
+    [markDirty, stopPlayback],
+  );
+
+  /**
    * Просмотр анимации: кадр за кадром по requestAnimationFrame,
    * положение каждого слоя считает frameAt. В конце или по «Стоп»
    * слои возвращаются на место.
    */
   const play = useCallback(() => {
     const current = live.current;
-    if (current === null || playback.current !== null) return;
+    // Без анимации смотреть нечего: открытка и так целиком на холсте.
+    if (current === null || playback.current !== null || stillRef.current) return;
     const { fabric, canvas } = current;
 
     const active = canvas.getActiveObject();
@@ -969,6 +990,7 @@ export function useCardEditor() {
         backgroundRef.current,
         durationRef.current,
       );
+      if (stillRef.current) doc.still = true;
       const embedded: Record<string, string> = {};
       for (const id of usedAssets(current.canvas)) {
         const asset = assets.current.get(id);
@@ -1040,6 +1062,7 @@ export function useCardEditor() {
     selected,
     background,
     duration,
+    still,
     playing,
     busy,
     busyText,
@@ -1065,6 +1088,7 @@ export function useCardEditor() {
       remove,
       setBackground,
       setDuration,
+      setStill,
       play,
       stop: stopPlayback,
       exportPng,
