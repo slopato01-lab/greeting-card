@@ -4,11 +4,12 @@ import { type TextKey, t } from "@/lib/i18n";
 /**
  * Секция «Больше, чем просто открытка»: четыре карточки преимуществ.
  *
- * Заголовок слева, подводка справа, ниже четыре карточки. С 1280 —
- * сеткой в четыре колонки, все в ширину экрана без прокрутки
- * (просьба пользователя 08.10.2026). На мобильном — лента пальцем.
+ * Заголовок слева, подводка справа, ниже четыре белые карточки
+ * с лёгкой тенью. С 1280 — сетка 2 × 2, карточка горизонтальная:
+ * фото слева, текст справа (просьба пользователя 08.10.2026).
+ * На мобильном — лента пальцем, карточка вертикальная: фото сверху.
  *
- * Карточка — фото сверху, заголовок, абзац и три чек-строки с золотыми
+ * В карточке заголовок, абзац и три чек-строки с золотыми
  * галочками. Фото — праздничные снимки Unsplash из шаблона
  * «С днём рождения!», ужатые копии в public/assets/benefits. Декор,
  * поэтому alt пустой. Карточки тянутся на высоту ряда: тексты разной
@@ -48,14 +49,16 @@ export function Benefits() {
       <ul
         role="list"
         aria-labelledby="benefits-title"
-        className="carousel mt-[30px] items-stretch gap-[12px] xl:mx-0 xl:mt-[30px] xl:grid xl:grid-cols-4 xl:gap-5 xl:overflow-visible xl:px-0"
+        // Поля сверху и снизу ленты — место для тени: лента режет
+        // всё, что выходит за её край.
+        className="carousel mt-[18px] items-stretch gap-[12px] py-[12px] xl:mx-0 xl:mt-[30px] xl:grid xl:grid-cols-2 xl:gap-5 xl:overflow-visible xl:p-0"
       >
         {CARDS.map((card) => (
           <li
             key={card.title}
-            className="rounded-card xl:rounded-card-d bg-surface flex w-[280px] flex-col p-[8px] xl:w-auto xl:p-[10px]"
+            className="rounded-card xl:rounded-card-d bg-paper shadow-card flex w-[280px] flex-col p-[8px] xl:w-auto xl:flex-row xl:p-[10px]"
           >
-            <div className="bg-photo rounded-inner xl:rounded-inner-d relative h-[180px] shrink-0 overflow-hidden xl:h-[180px]">
+            <div className="bg-photo rounded-inner xl:rounded-inner-d relative h-[180px] shrink-0 overflow-hidden xl:h-auto xl:min-h-[260px] xl:w-[42%]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`/assets/benefits/${card.photo}.webp`}
@@ -65,7 +68,7 @@ export function Benefits() {
               />
             </div>
 
-            <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[16px] xl:px-[14px] xl:pt-[22px] xl:pb-[18px]">
+            <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[16px] xl:px-[28px] xl:pt-[26px] xl:pb-[24px]">
               <h3 className="font-display text-feat xl:text-feat-d font-medium tracking-tight">
                 {t(card.title)}
               </h3>

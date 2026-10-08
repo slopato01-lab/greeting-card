@@ -15,10 +15,12 @@ export default function Page() {
     <SitePage>
       {/* Промежуток между блоками — сверх их собственных полей
           (docs/DESIGN.md, «Раскладка главной»). Нижний — до подвала. */}
-      <div className="flex flex-col gap-[40px] pb-[40px] xl:gap-[100px] xl:pb-[100px]">
+      <div className="flex flex-col gap-[100px] pb-[100px] md:gap-[160px] md:pb-[160px] xl:gap-[250px] xl:pb-[250px]">
         <Hero />
-        <Catalog />
+        {/* «Какие поздравления…» перед каталогом — с 08.10.2026
+            (просьба пользователя). */}
         <Faq />
+        <Catalog />
         <Benefits />
         {/* Ряд из двух карточек: «что внутри» и золотые этапы. С 08.10.2026
           стоит перед CTA, а не сразу под героем (просьба пользователя). */}
