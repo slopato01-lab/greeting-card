@@ -298,3 +298,22 @@ test("«Без анимации» сохраняется, а всё, кроме 
   assert.equal(parseEditorDoc(valid)?.still, undefined);
   assert.equal("still" in (parseEditorDoc({ ...valid, still: false }) ?? {}), false);
 });
+
+test("музыка: библиотека и Яндекс проходят, чужой адрес и мусор — без музыки", () => {
+  const lib = parseEditorDoc({ ...valid, music: { kind: "library", id: "sunny-pop" } });
+  assert.deepEqual(lib?.music, { kind: "library", id: "sunny-pop" });
+
+  const ya = parseEditorDoc({ ...valid, music: { kind: "yandex", album: "4766", track: "57703" } });
+  assert.deepEqual(ya?.music, { kind: "yandex", album: "4766", track: "57703" });
+
+  for (const music of [
+    { kind: "yandex", album: "4766", track: "https://evil.example" },
+    { kind: "library", id: "../../etc" },
+    { kind: "url", src: "https://evil.example/a.mp3" },
+    "sunny-pop",
+  ]) {
+    const doc = parseEditorDoc({ ...valid, music });
+    assert.ok(doc, "открытка не должна падать из-за музыки");
+    assert.equal(doc.music, undefined);
+  }
+});

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/Button";
 import { ToolButton } from "@/components/editor/controls";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
+import { MusicPanel } from "@/components/editor/MusicPanel";
 import { type EditorTab, panelId, Rail, tabId } from "@/components/editor/Rail";
 import { TemplatesPanel } from "@/components/editor/Templates";
 import {
@@ -17,8 +18,9 @@ import {
 import { useCardEditor } from "@/components/editor/useCardEditor";
 import { type Layer, LIMITS } from "@/lib/editor/document";
 import { FONTS } from "@/lib/editor/fonts";
+import { videoSupported } from "@/lib/editor/record";
 import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
-import { t } from "@/lib/i18n";
+import { type TextKey, t } from "@/lib/i18n";
 
 /**
  * Редактор открытки. Раскладка по образцу Canva (08.10.2026, просьба
@@ -67,6 +69,12 @@ const PRESET_FAMILIES = Object.fromEntries(
  */
 const ADDING_TABS: readonly EditorTab[] = ["elements", "text", "photo"];
 
+/** Подписи идущего экспорта — при них на плашке есть «Остановить». */
+const EXPORT_TEXTS: readonly TextKey[] = ["editor.export.gif.busy", "editor.export.video.busy"];
+
+/** Поддержка записи видео не меняется, пока открыта страница. */
+const noSubscribe = () => () => undefined;
+
 export function Editor() {
   const {
     hostRef,
@@ -77,6 +85,7 @@ export function Editor() {
     background,
     duration,
     still,
+    music,
     playing,
     busy,
     busyText,
@@ -90,6 +99,10 @@ export function Editor() {
   const editable = ready && !playing && !busy;
 
   const [tab, setTab] = useState<EditorTab>("templates");
+  // Умеет ли браузер писать видео — известно только в браузере.
+  // Сервер и первый рендер считают, что нет: кнопка оживёт после
+  // гидратации, а не мигнёт включённой и выключится.
+  const canRecord = useSyncExternalStore(noSubscribe, videoSupported, () => false);
 
   // Выделили элемент на холсте — панель переходит на «Изменить»,
   // как контекстная панель Canva. Считается во время рендера, а не
@@ -164,11 +177,16 @@ export function Editor() {
             onAnimation={actions.setAnimation}
           />
         );
+      case "music":
+        return <MusicPanel music={music} disabled={!ready || busy} onMusic={actions.setMusic} />;
       case "file":
         return (
           <FilePanel
             disabled={!editable}
+            videoSupported={canRecord}
             onExportPng={actions.exportPng}
+            onExportGif={() => void actions.exportGif()}
+            onExportVideo={() => void actions.exportVideo()}
             onExportJson={() => void actions.exportJson()}
             onImport={(file) => void actions.importFile(file)}
           />
@@ -233,7 +251,7 @@ export function Editor() {
             на десктопе под открыткой нет места, а прыгающая раскладка
             сдвигала бы холст под пальцем. */}
         {notice !== null || busy ? (
-          <div className="pointer-events-none absolute inset-x-0 top-[8px] flex justify-center px-[16px] xl:top-[16px]">
+          <div className="pointer-events-none absolute inset-x-0 top-[8px] flex items-start justify-center px-[16px] xl:top-[16px]">
             <p
               role={notice !== null ? "alert" : undefined}
               aria-live="polite"
@@ -241,6 +259,17 @@ export function Editor() {
             >
               {t(notice ?? busyText)}
             </p>
+            {/* Запись GIF и видео можно прервать: видео пишется столько,
+                сколько длится открытка. */}
+            {busy && notice === null && EXPORT_TEXTS.includes(busyText) ? (
+              <button
+                type="button"
+                onClick={actions.cancelExport}
+                className="font-ui text-note bg-ink text-canvas min-h-tap hover:bg-body active:bg-muted pointer-events-auto ms-[8px] shrink-0 rounded-full px-[16px] font-medium transition-colors"
+              >
+                {t("editor.export.cancel")}
+              </button>
+            ) : null}
           </div>
         ) : null}
       </div>

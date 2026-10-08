@@ -46,6 +46,10 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `photo.svg` | `tabler:photo` | редактор: добавить фото |
 | `play.svg` | `tabler:player-play` | редактор: просмотр анимации |
 | `stop.svg` | `tabler:player-stop` | редактор: остановить просмотр |
+| `pause.svg` | `tabler:player-pause` | редактор: пауза трека |
+| `tabMusic.svg` | `tabler:music` | редактор: вкладка «Музыка» |
+| `gif.svg` | `tabler:gif` | редактор: сохранить GIF |
+| `video.svg` | `tabler:movie` | редактор: сохранить видео |
 | `bold.svg` | `tabler:bold` | редактор: жирный |
 | `italic.svg` | `tabler:italic` | редактор: курсив |
 | `alignLeft.svg` | `tabler:align-left` | редактор: по левому краю |

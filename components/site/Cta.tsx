@@ -68,24 +68,27 @@ export function Cta() {
   return (
     <section className="page-shell pt-[40px] pb-[10px] xl:pt-[60px] xl:pb-[20px]">
       <div className="rounded-panel xl:rounded-panel-d bg-gold relative flex min-h-[320px] items-center justify-center overflow-hidden px-[20px] py-[40px] xl:min-h-[440px] xl:px-[60px] xl:py-[70px]">
-        <div aria-hidden="true" className="absolute top-1/2 -left-[20px] hidden -translate-y-1/2 items-center xl:flex 2xl:left-[40px]">
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 -left-[20px] hidden -translate-y-1/2 items-center xl:flex 2xl:left-[40px]"
+        >
           {left.map((template, i) => (
             <Cover
               key={template.id}
               template={template}
-              className={`w-[100px] first:ms-0 -ms-[30px] 2xl:w-[150px] ${FAN[i] ?? ""}`}
+              className={`-ms-[30px] w-[100px] first:ms-0 2xl:w-[150px] ${FAN[i] ?? ""}`}
             />
           ))}
         </div>
 
-        <div className="flex relative max-w-[600px] 2xl:max-w-[880px] flex-col items-center text-center">
+        <div className="relative flex max-w-[600px] flex-col items-center text-center 2xl:max-w-[880px]">
           {/* На мобильном веер над текстом. */}
           <div aria-hidden="true" className="mb-[28px] flex items-center xl:hidden">
             {left.map((template, i) => (
               <Cover
                 key={template.id}
                 template={template}
-                className={`w-[84px] first:ms-0 -ms-[18px] ${FAN[i] ?? ""}`}
+                className={`-ms-[18px] w-[84px] first:ms-0 ${FAN[i] ?? ""}`}
               />
             ))}
           </div>
@@ -108,12 +111,15 @@ export function Cta() {
           />
         </div>
 
-        <div aria-hidden="true" className="absolute top-1/2 -right-[20px] hidden -translate-y-1/2 items-center xl:flex 2xl:right-[40px]">
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 -right-[20px] hidden -translate-y-1/2 items-center xl:flex 2xl:right-[40px]"
+        >
           {right.map((template, i) => (
             <Cover
               key={template.id}
               template={template}
-              className={`w-[100px] first:ms-0 -ms-[30px] 2xl:w-[150px] ${FAN_RIGHT[i] ?? ""}`}
+              className={`-ms-[30px] w-[100px] first:ms-0 2xl:w-[150px] ${FAN_RIGHT[i] ?? ""}`}
             />
           ))}
         </div>

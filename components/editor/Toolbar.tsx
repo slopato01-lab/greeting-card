@@ -210,13 +210,20 @@ export function BackgroundPanel({
 /** PNG, сохранить и открыть шаблон. Шаг 5 гайда. */
 export function FilePanel({
   disabled,
+  videoSupported,
   onExportPng,
+  onExportGif,
+  onExportVideo,
   onExportJson,
   onImport,
   className,
 }: {
   disabled: boolean;
+  /** Браузер умеет записывать видео (MediaRecorder над холстом). */
+  videoSupported: boolean;
   onExportPng: () => void;
+  onExportGif: () => void;
+  onExportVideo: () => void;
   onExportJson: () => void;
   onImport: (file: File) => void;
   className?: string;
@@ -225,6 +232,21 @@ export function FilePanel({
     <Panel labelledBy="editor-file" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-file" labelKey="editor.file" />
       <div className="flex flex-col gap-[8px]">
+        <ToolButton
+          icon="gif"
+          labelKey="editor.export.gif"
+          disabled={disabled}
+          onClick={onExportGif}
+        />
+        <ToolButton
+          icon="video"
+          labelKey="editor.export.video"
+          disabled={disabled || !videoSupported}
+          onClick={onExportVideo}
+        />
+        <p className="font-ui text-note text-muted leading-[1.4]">
+          {t(videoSupported ? "editor.export.hint" : "editor.export.video.unsupported")}
+        </p>
         <ToolButton
           icon="download"
           labelKey="editor.export.png"

@@ -23,6 +23,7 @@
   "dependencies": {
     "@mediapipe/tasks-vision": "0.10.35",
     "fabric": "6.9.1",
+    "gifenc": "1.0.3",
     "next": "16.4.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"

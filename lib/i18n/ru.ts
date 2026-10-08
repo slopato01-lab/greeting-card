@@ -1015,4 +1015,40 @@ export const ru = {
   "sticker.strawberry": "Клубника",
   "sticker.cherries": "Вишни",
   "sticker.sample-person": "Пример фото",
+  "editor.tab.music": "Музыка",
+  "editor.music": "Музыка открытки",
+  "editor.music.none": "Без музыки",
+  "editor.music.library": "Библиотека",
+  "editor.music.library.hint":
+    "Отрывки по 15 секунд. Свободная музыка: её можно отправлять друзьям и сохранять в видео.",
+  "editor.music.empty": "Треки скоро появятся",
+  "editor.music.mood.party": "Вечеринка",
+  "editor.music.mood.pop": "Поп",
+  "editor.music.mood.romance": "Романтика",
+  "editor.music.mood.calm": "Нежно",
+  "editor.music.mood.fun": "Весело",
+  "editor.music.mood.festive": "Праздник",
+  "editor.music.listen": "Послушать",
+  "editor.music.pause": "Пауза",
+  "editor.music.license": "Лицензия",
+  "editor.music.yandex": "Трек из Яндекс Музыки",
+  "editor.music.yandex.hint":
+    "В Яндекс Музыке нажмите «Поделиться» → «Скопировать ссылку» и вставьте сюда. Песня играет в плеере Яндекса и в GIF и видео не попадает.",
+  "editor.music.yandex.field": "Ссылка на трек",
+  "editor.music.yandex.add": "Добавить трек",
+  "editor.music.yandex.error": "Это не ссылка на трек Яндекс Музыки",
+  "editor.music.yandex.player": "Плеер Яндекс Музыки",
+  "editor.export.gif": "Сохранить GIF",
+  "editor.export.video": "Сохранить видео",
+  "editor.export.hint":
+    "GIF — без звука, видео — с песней из библиотеки. Пока на файлах водяной знак сайта.",
+  "editor.export.gif.busy": "Собираем GIF…",
+  "editor.export.video.busy":
+    "Записываем видео — это займёт столько же, сколько длится открытка. Не уходите со вкладки",
+  "editor.export.cancel": "Остановить",
+  "editor.export.failed": "Не получилось сохранить. Попробуйте ещё раз",
+  "editor.export.video.noYandex":
+    "Видео сохранено без звука: песня из Яндекс Музыки играет только в их плеере",
+  "editor.export.video.unsupported":
+    "Этот браузер не умеет записывать видео. Попробуйте Chrome или Safari",
 } as const;

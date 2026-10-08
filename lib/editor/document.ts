@@ -22,6 +22,7 @@
  *   межбуквенный интервал, анимации из design/пример анимации и дизайна.MP4.
  *   Новые поля необязательны — шаблоны 2 без них читаются как раньше.
  *   Там же `still` — «Без анимации» (08.10.2026, тоже без смены номера).
+ *   И `music` — песня открытки (08.10.2026, без смены номера).
  *
  * Цвета. Имя токена (`gold`) по-прежнему допустимо: шаблоны версии 1
  * ими написаны. С 08.10.2026 значения таких цветов заморожены
@@ -396,6 +397,19 @@ export type StickerLayer = LayerBase & {
 
 export type Layer = TextLayer | RectLayer | CircleLayer | ImageLayer | StickerLayer;
 
+/**
+ * Музыка открытки — ссылка на трек, а не сам звук.
+ *
+ * - `library` — 15-секундный отрывок из нашей библиотеки свободной
+ *   музыки, lib/editor/music.ts. Здесь проверяется только вид id:
+ *   трек, которого в библиотеке нет, просто не играет.
+ * - `yandex` — трек Яндекс Музыки, играет официальный плеер Яндекса
+ *   во фрейме. Только числовые id: файл шаблона не может подсунуть
+ *   во фрейм произвольный адрес.
+ */
+export type CardMusic =
+  { kind: "library"; id: string } | { kind: "yandex"; album: string; track: string };
+
 export type EditorDoc = {
   format: typeof EDITOR_FORMAT;
   version: typeof EDITOR_VERSION;
@@ -410,6 +424,8 @@ export type EditorDoc = {
    * Поле есть только когда включено: старые шаблоны его не знают.
    */
   still?: true;
+  /** Песня открытки. Нет поля — открытка без музыки. */
+  music?: CardMusic;
   /**
    * Фото внутри файла шаблона: id → data URL. Есть только в файле,
    * который скачали кнопкой «Сохранить шаблон». В черновике пусто:
@@ -510,6 +526,8 @@ type Range = { readonly min: number; readonly max: number };
 
 const HEX = /^#[0-9a-f]{6}$/i;
 const ASSET_ID = /^[a-z0-9]{8,40}$/;
+const MUSIC_ID = /^[a-z0-9-]{1,40}$/;
+const YANDEX_ID = /^[0-9]{1,12}$/;
 const DATA_URL = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
 
 function isObj(value: unknown): value is Obj {
@@ -676,6 +694,23 @@ function parseAssets(raw: unknown): Record<string, string> | null {
  * Слой фото без картинки в `assets` проверку проходит: в черновике
  * картинки лежат в IndexedDB, и найдёт их уже загрузчик.
  */
+export function parseMusic(raw: unknown): CardMusic | null {
+  if (!isObj(raw)) return null;
+  if (raw.kind === "library" && typeof raw.id === "string" && MUSIC_ID.test(raw.id)) {
+    return { kind: "library", id: raw.id };
+  }
+  if (
+    raw.kind === "yandex" &&
+    typeof raw.album === "string" &&
+    typeof raw.track === "string" &&
+    YANDEX_ID.test(raw.album) &&
+    YANDEX_ID.test(raw.track)
+  ) {
+    return { kind: "yandex", album: raw.album, track: raw.track };
+  }
+  return null;
+}
+
 export function parseEditorDoc(input: unknown): EditorDoc | null {
   if (!isObj(input) || input.format !== EDITOR_FORMAT) return null;
   const version = input.version === 1 || input.version === 2 ? input.version : null;
@@ -710,6 +745,9 @@ export function parseEditorDoc(input: unknown): EditorDoc | null {
     layers: parsed,
   };
   if (input.still === true) doc.still = true;
+  // Непонятная музыка не валит открытку: она просто будет без звука.
+  const music = parseMusic(input.music);
+  if (music !== null) doc.music = music;
   if (Object.keys(assets).length > 0) doc.assets = assets;
   return doc;
 }

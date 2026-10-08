@@ -24,6 +24,7 @@ export const EDITOR_TABS = [
   "background",
   "edit",
   "animation",
+  "music",
   "file",
 ] as const;
 export type EditorTab = (typeof EDITOR_TABS)[number];
@@ -36,6 +37,7 @@ const TAB_INFO: Record<EditorTab, { icon: IconName; label: TextKey }> = {
   background: { icon: "tabBackground", label: "editor.tab.background" },
   edit: { icon: "tabEdit", label: "editor.tab.edit" },
   animation: { icon: "tabAnimation", label: "editor.tab.animation" },
+  music: { icon: "tabMusic", label: "editor.tab.music" },
   file: { icon: "tabFile", label: "editor.tab.file" },
 };
 

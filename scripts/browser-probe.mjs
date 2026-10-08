@@ -18,6 +18,7 @@
  *
  * Без зависимостей: Chrome по протоколу DevTools, WebSocket из Node 22.
  * PROBE_WEBGL=1 включает программный WebGL — нужен для вырезки фона.
+ * PROBE_AUTOPLAY=1 разрешает звук без жеста — для записи видео с песней.
  * Браузер — $CHROME или Chromium из кеша playwright.
  */
 import { spawn } from "node:child_process";
@@ -48,6 +49,8 @@ const chrome = spawn(
       ? ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"]
       : ["--disable-gpu"]),
     "--no-sandbox",
+    // PROBE_AUTOPLAY=1 — звук без жеста: клики из сценария жестом не считаются.
+    ...(process.env.PROBE_AUTOPLAY === "1" ? ["--autoplay-policy=no-user-gesture-required"] : []),
     `--window-size=${width},1400`,
     `--remote-debugging-port=${PORT}`,
     `--user-data-dir=${profile}`,

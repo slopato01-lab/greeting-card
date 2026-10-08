@@ -8,6 +8,7 @@ import { getAsset, pruneAssets, putAsset } from "@/lib/editor/assets";
 import {
   type Animation,
   CARD_HEIGHT,
+  type CardMusic,
   CARD_WIDTH,
   clampDuration,
   type Color,
@@ -50,6 +51,8 @@ import {
   prepareImage,
 } from "@/lib/editor/image";
 import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
+import { musicAudioSrc, musicCredit } from "@/lib/editor/music";
+import { encodeGif, GIF_WIDTH, recordVideo, VIDEO_WIDTH } from "@/lib/editor/record";
 import { stickerInfo } from "@/lib/editor/stickers";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { type TextKey, t } from "@/lib/i18n";
@@ -93,7 +96,26 @@ type Live = { fabric: FabricModule; canvas: Canvas; theme: Theme };
 /** Фото, загруженное в эту вкладку: сама картинка и ссылка на неё. */
 type Asset = { blob: Blob; url: string };
 
-type Playback = { raf: number; items: { object: FabricObject; layer: Layer }[] };
+type Playback = {
+  raf: number;
+  items: { object: FabricObject; layer: Layer }[];
+  /** Песня открытки — играет вместе с просмотром. */
+  audio: HTMLAudioElement | null;
+};
+
+/**
+ * Водяной знак на GIF и видео. Пока аккаунтов нет, он у всех: без
+ * регистрации экспорт со знаком, без знака — после входа
+ * (решение пользователя 08.10.2026, docs/PRODUCT.md).
+ */
+const WATERMARK = true;
+
+/** Поля открытки, которые живут не на холсте, а в состоянии редактора. */
+function withMeta(doc: EditorDoc, still: boolean, music: CardMusic | null): EditorDoc {
+  if (still) doc.still = true;
+  if (music !== null) doc.music = music;
+  return doc;
+}
 
 /**
  * Ключ черновика. У каждого шаблона свой черновик: открыл из каталога
@@ -153,6 +175,11 @@ export function useCardEditor() {
   /** «Без анимации»: открытка видна сразу целиком, просмотр не нужен. */
   const [still, setStillState] = useState(false);
   const stillRef = useRef(false);
+  /** Песня открытки; null — без музыки. */
+  const [music, setMusicState] = useState<CardMusic | null>(null);
+  const musicRef = useRef<CardMusic | null>(null);
+  /** Идущий экспорт GIF или видео — его можно прервать. */
+  const exporting = useRef<AbortController | null>(null);
   const [playing, setPlaying] = useState(false);
   const [busy, setBusy] = useState(false);
   /** Что именно сейчас занимает редактор — подпись под холстом. */
@@ -184,14 +211,19 @@ export function useCardEditor() {
     setSaved(false);
   }, []);
 
-  const applyDocMeta = useCallback((doc: Pick<EditorDoc, "background" | "duration" | "still">) => {
-    backgroundRef.current = doc.background;
-    setBackgroundState(doc.background);
-    durationRef.current = doc.duration;
-    setDurationState(doc.duration);
-    stillRef.current = doc.still === true;
-    setStillState(doc.still === true);
-  }, []);
+  const applyDocMeta = useCallback(
+    (doc: Pick<EditorDoc, "background" | "duration" | "still" | "music">) => {
+      backgroundRef.current = doc.background;
+      setBackgroundState(doc.background);
+      durationRef.current = doc.duration;
+      setDurationState(doc.duration);
+      stillRef.current = doc.still === true;
+      setStillState(doc.still === true);
+      musicRef.current = doc.music ?? null;
+      setMusicState(doc.music ?? null);
+    },
+    [],
+  );
 
   const assetUrl = useCallback((id: string) => assets.current.get(id)?.url ?? null, []);
 
@@ -212,7 +244,7 @@ export function useCardEditor() {
         backgroundRef.current,
         durationRef.current,
       );
-      if (stillRef.current) draft.still = true;
+      withMeta(draft, stillRef.current, musicRef.current);
       window.localStorage.setItem(draftKey.current, JSON.stringify(draft));
       dirty.current = false;
       setSaved(true);
@@ -231,6 +263,7 @@ export function useCardEditor() {
     const run = playback.current;
     if (run === null) return;
     cancelAnimationFrame(run.raf);
+    run.audio?.pause();
     playback.current = null;
     if (current !== null) {
       for (const { object, layer } of run.items) restoreObject(current.fabric, object, layer);
@@ -858,6 +891,17 @@ export function useCardEditor() {
     [markDirty, stopPlayback],
   );
 
+  /** Песня открытки. Идущий просмотр останавливается: звук сменился. */
+  const setMusic = useCallback(
+    (value: CardMusic | null) => {
+      stopPlayback();
+      musicRef.current = value;
+      setMusicState(value);
+      markDirty();
+    },
+    [markDirty, stopPlayback],
+  );
+
   /**
    * Просмотр анимации: кадр за кадром по requestAnimationFrame,
    * положение каждого слоя считает frameAt. В конце или по «Стоп»
@@ -902,7 +946,13 @@ export function useCardEditor() {
       run.raf = requestAnimationFrame(tick);
     };
 
-    playback.current = { raf: requestAnimationFrame(tick), items };
+    // Песня — с начала отрывка. Не дали играть (нет жеста, тихий режим) —
+    // просмотр идёт без звука.
+    const src = musicAudioSrc(musicRef.current);
+    const audio = src === null ? null : new Audio(src);
+    audio?.play().catch(() => undefined);
+
+    playback.current = { raf: requestAnimationFrame(tick), items, audio };
     setPlaying(true);
     setSelected(null);
   }, [saveDraft, stopPlayback]);
@@ -990,7 +1040,7 @@ export function useCardEditor() {
         backgroundRef.current,
         durationRef.current,
       );
-      if (stillRef.current) doc.still = true;
+      withMeta(doc, stillRef.current, musicRef.current);
       const embedded: Record<string, string> = {};
       for (const id of usedAssets(current.canvas)) {
         const asset = assets.current.get(id);
@@ -1007,6 +1057,134 @@ export function useCardEditor() {
       setBusy(false);
     }
   }, []);
+
+  /**
+   * Готовит холст к записи и отдаёт рисовальщик кадра: слои ставятся
+   * в положение момента `time`, холст рисуется в нужном размере.
+   * Анимация в файле играет всегда: prefers-reduced-motion касается
+   * экрана этого человека, а не открытки, которую увидит другой.
+   * Вызвавший обязан вызвать `done` — слои вернутся на место.
+   */
+  const prepareRecording = useCallback(() => {
+    const current = live.current;
+    if (current === null) return null;
+    stopPlayback();
+    saveDraft();
+    const { fabric, canvas } = current;
+    const active = canvas.getActiveObject();
+    if (active instanceof fabric.IText && active.isEditing) active.exitEditing();
+    canvas.discardActiveObject();
+    canvas.skipTargetFind = true;
+    setSelected(null);
+
+    const items = canvas.getObjects().flatMap((object) => {
+      const layer = objectToLayer(fabric, object);
+      return layer === null ? [] : [{ object, layer }];
+    });
+    const total = durationRef.current;
+    const still = stillRef.current;
+
+    const draw = (time: number, ctx: CanvasRenderingContext2D) => {
+      if (!still) {
+        for (const { object, layer } of items) {
+          showFrame(fabric, object, layer, frameAt(layer, time, total, false));
+        }
+      }
+      const frame = canvas.toCanvasElement(ctx.canvas.width / CARD_WIDTH);
+      ctx.drawImage(frame, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    };
+    const done = () => {
+      for (const { object, layer } of items) restoreObject(fabric, object, layer);
+      canvas.skipTargetFind = false;
+      canvas.requestRenderAll();
+      if (progressRef.current !== null) progressRef.current.style.width = "0%";
+    };
+    return { draw, done, total, still };
+  }, [saveDraft, stopPlayback]);
+
+  const showProgress = useCallback((share: number) => {
+    if (progressRef.current !== null) {
+      progressRef.current.style.width = `${Math.round(share * 100)}%`;
+    }
+  }, []);
+
+  const saveBlob = useCallback((blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    download(url, filename);
+    window.setTimeout(() => URL.revokeObjectURL(url), BLOB_TTL_MS);
+  }, []);
+
+  /** GIF без звука — такой формат. */
+  const exportGif = useCallback(async () => {
+    if (exporting.current !== null || playback.current !== null) return;
+    const recording = prepareRecording();
+    if (recording === null) return;
+    const controller = new AbortController();
+    exporting.current = controller;
+    setNotice(null);
+    setBusyText("editor.export.gif.busy");
+    setBusy(true);
+    try {
+      const blob = await encodeGif({
+        width: GIF_WIDTH,
+        height: Math.round((GIF_WIDTH * CARD_HEIGHT) / CARD_WIDTH),
+        duration: recording.total,
+        still: recording.still,
+        draw: recording.draw,
+        watermark: WATERMARK ? t("brand.name") : null,
+        onProgress: showProgress,
+        signal: controller.signal,
+      });
+      saveBlob(blob, "otkrytochka.gif");
+    } catch {
+      if (!controller.signal.aborted) setNotice("editor.export.failed");
+    } finally {
+      recording.done();
+      exporting.current = null;
+      setBusy(false);
+    }
+  }, [prepareRecording, saveBlob, showProgress]);
+
+  /** Видео со звуком песни из библиотеки. Пишется в реальном времени. */
+  const exportVideo = useCallback(async () => {
+    if (exporting.current !== null || playback.current !== null) return;
+    const recording = prepareRecording();
+    if (recording === null) return;
+    const controller = new AbortController();
+    exporting.current = controller;
+    setNotice(null);
+    setBusyText("editor.export.video.busy");
+    setBusy(true);
+    const currentMusic = musicRef.current;
+    try {
+      const { blob, extension } = await recordVideo({
+        width: VIDEO_WIDTH,
+        height: Math.round((VIDEO_WIDTH * CARD_HEIGHT) / CARD_WIDTH),
+        duration: recording.total,
+        draw: recording.draw,
+        watermark: WATERMARK ? t("brand.name") : null,
+        audioSrc: musicAudioSrc(currentMusic),
+        credit: musicCredit(currentMusic),
+        onProgress: showProgress,
+        signal: controller.signal,
+      });
+      saveBlob(blob, `otkrytochka.${extension}`);
+      // Трек Яндекса играет только в их плеере — в файл он не попал.
+      if (currentMusic?.kind === "yandex") setNotice("editor.export.video.noYandex");
+    } catch {
+      if (!controller.signal.aborted) setNotice("editor.export.failed");
+    } finally {
+      recording.done();
+      exporting.current = null;
+      setBusy(false);
+    }
+  }, [prepareRecording, saveBlob, showProgress]);
+
+  /** Прервать идущий экспорт. */
+  const cancelExport = useCallback(() => exporting.current?.abort(), []);
+
+  // Ушли со страницы посреди записи — запись прерывается.
+  useEffect(() => () => exporting.current?.abort(), []);
 
   const importFile = useCallback(
     async (file: File) => {
@@ -1063,6 +1241,7 @@ export function useCardEditor() {
     background,
     duration,
     still,
+    music,
     playing,
     busy,
     busyText,
@@ -1089,10 +1268,14 @@ export function useCardEditor() {
       setBackground,
       setDuration,
       setStill,
+      setMusic,
       play,
       stop: stopPlayback,
       exportPng,
       exportJson,
+      exportGif,
+      exportVideo,
+      cancelExport,
       importFile,
       retry,
     },
