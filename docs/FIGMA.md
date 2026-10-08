@@ -73,7 +73,7 @@ Figma и перестанут работать примерно через не�
 | Редактор: жирный, курсив, выравнивание, свой цвет | `tabler:bold`, `tabler:italic`, `tabler:align-left`, `tabler:align-center`, `tabler:align-right`, `tabler:color-picker` | `bold`, `italic`, `alignLeft`, `alignCenter`, `alignRight`, `picker` |
 | Редактор: стикеры | `tabler:sticker` | `sticker` |
 | Редактор: убрать фон | `tabler:background` | `cutout` |
-| Редактор: вкладки рейки | `tabler:triangle-square-circle`, `tabler:palette`, `tabler:adjustments-horizontal`, `tabler:sparkles`, `tabler:file` | `tabElements`, `tabBackground`, `tabEdit`, `tabAnimation`, `tabFile` |
+| Редактор: вкладки рейки | `tabler:layout-grid`, `tabler:triangle-square-circle`, `tabler:palette`, `tabler:adjustments-horizontal`, `tabler:sparkles`, `tabler:file` | `tabTemplates`, `tabElements`, `tabBackground`, `tabEdit`, `tabAnimation`, `tabFile` |
 | Маркер списка | простой круг, рисуется CSS | — |
 
 **Три иконки заменены 02.08.2026.** В макете стояли

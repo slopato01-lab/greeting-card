@@ -41,6 +41,7 @@ import {
   usedAssets,
 } from "@/lib/editor/fabric";
 import { cutoutPerson } from "@/lib/editor/cutout";
+import { loadFont } from "@/lib/editor/fonts";
 import {
   blobToDataUrl,
   cropToAspect,
@@ -82,6 +83,8 @@ const NUDGE_STEP_BIG = 10;
 const CASCADE_OFFSET = 24;
 const CASCADE_STEPS = 6;
 const BLOB_TTL_MS = 10_000;
+/** Превью шаблона: 180 × 240, вчетверо меньше PNG-экспорта. */
+const PREVIEW_MULTIPLIER = 0.3;
 
 export type EditorStatus = "loading" | "ready" | "error";
 
@@ -157,6 +160,10 @@ export function useCardEditor() {
   const draftKey = useRef(DRAFT_KEY);
   /** Открыли шаблон — проиграть его, когда холст готов: без движения шаблон не понять. */
   const playOnReady = useRef(false);
+  /** Шаблон, открытый сейчас: подсвечен во вкладке «Шаблоны». */
+  const [currentTemplate, setCurrentTemplate] = useState<TemplateId | null>(null);
+  /** Превью шаблонов для вкладки «Шаблоны». */
+  const [previews, setPreviews] = useState<Partial<Record<TemplateId, string>>>({});
 
   // ── Общие помощники ───────────────────────────────────────
 
@@ -265,11 +272,12 @@ export function useCardEditor() {
       live.current = { fabric, canvas, theme };
 
       // Черновик и его фото из IndexedDB.
-      // Шаблон страницы — главный и не меняется: его выбирают в каталоге.
+      // Шаблон страницы — из каталога или из вкладки «Шаблоны».
       // Свой черновик этого шаблона, если он есть, иначе сам шаблон.
       const template = templateFromUrl();
       draftKey.current = draftKeyFor(template);
       playOnReady.current = template !== null;
+      setCurrentTemplate(template);
       const doc =
         readDraft(draftKey.current) ??
         TEMPLATES.find((item) => item.id === template)?.build() ??
@@ -401,6 +409,40 @@ export function useCardEditor() {
       );
 
       setStatus("ready");
+
+      // ── Превью шаблонов ───────────────────────────────────
+      // Рисуются тем же кодом, что и холст, на невидимом StaticCanvas:
+      // так превью всегда совпадает с тем, что ляжет на холст.
+      // Сначала все шрифты шаблонов разом, потом сброс кэша ширин:
+      // иначе первое превью меряет буквы запасным шрифтом — поймано
+      // в браузере.
+      const docs = TEMPLATES.map((item) => ({ item, doc: item.build() }));
+      await Promise.all(
+        docs.flatMap(({ doc }) =>
+          doc.layers.flatMap((layer) =>
+            layer.kind === "text"
+              ? [loadFont(theme.fonts[layer.font], layer.bold, layer.italic)]
+              : [],
+          ),
+        ),
+      );
+      if ("fonts" in document) await document.fonts.ready;
+      fabric.cache.clearFontCache();
+      if (signal.aborted) return;
+      const shots: Partial<Record<TemplateId, string>> = {};
+      for (const { item, doc } of docs) {
+        const preview = new fabric.StaticCanvas(document.createElement("canvas"), {
+          width: CARD_WIDTH,
+          height: CARD_HEIGHT,
+          renderOnAddRemove: false,
+        });
+        await loadDocIntoCanvas(fabric, preview, doc, theme, assetUrl);
+        preview.renderAll();
+        shots[item.id] = preview.toDataURL({ format: "png", multiplier: PREVIEW_MULTIPLIER });
+        await preview.dispose();
+        if (signal.aborted) return;
+      }
+      setPreviews(shots);
     };
 
     start().catch(() => {
@@ -844,6 +886,54 @@ export function useCardEditor() {
     setSelected(null);
   }, [saveDraft, stopPlayback]);
 
+  /**
+   * Переключение на другой шаблон из вкладки «Шаблоны». Без вопроса
+   * «Заменить?»: правки текущего сохраняются в его черновик, у выбранного
+   * открывается свой черновик или сам шаблон. Исходные шаблоны правками
+   * не трогаются. Адрес меняется вместе с шаблоном — обновление страницы
+   * оставит на нём.
+   */
+  const switchTemplate = useCallback(
+    async (id: TemplateId) => {
+      const current = live.current;
+      const template = TEMPLATES.find((item) => item.id === id);
+      if (current === null || template === undefined) return;
+      stopPlayback();
+      saveDraft();
+      setNotice(null);
+      setBusyText("loading.editor");
+      setBusy(true);
+      try {
+        draftKey.current = draftKeyFor(id);
+        const doc = readDraft(draftKey.current) ?? template.build();
+        for (const layer of doc.layers) {
+          if (layer.kind !== "image" || assets.current.has(layer.asset)) continue;
+          const blob = await getAsset(layer.asset);
+          if (blob !== null) registerAsset(layer.asset, blob);
+        }
+        const missing = await loadDocIntoCanvas(
+          current.fabric,
+          current.canvas,
+          doc,
+          current.theme,
+          assetUrl,
+        );
+        applyDocMeta(doc);
+        if (missing > 0) setNotice("editor.error.photoMissing");
+        dirty.current = false;
+        syncSelection();
+        setCurrentTemplate(id);
+        const url = new URL(window.location.href);
+        url.searchParams.set("template", id);
+        window.history.replaceState(null, "", url);
+      } finally {
+        setBusy(false);
+      }
+      if (live.current === current) play();
+    },
+    [applyDocMeta, assetUrl, play, registerAsset, saveDraft, stopPlayback, syncSelection],
+  );
+
   // Открытый шаблон проигрывается, как только холст готов.
   useEffect(() => {
     if (status !== "ready" || !playOnReady.current) return;
@@ -955,7 +1045,10 @@ export function useCardEditor() {
     busyText,
     saved,
     notice,
+    currentTemplate,
+    previews,
     actions: {
+      switchTemplate,
       add,
       addText,
       addImage,

@@ -16,11 +16,8 @@ import type { IconName } from "@/lib/icons/generated";
  * в рейке один таб-стоп, стрелки ходят между вкладками, Home/End —
  * к первой и последней.
  */
-/**
- * Вкладки «Шаблоны» нет (с 08.10.2026): главный шаблон выбирают
- * в каталоге, и в редакторе его не меняют — у каждого свой черновик.
- */
 export const EDITOR_TABS = [
+  "templates",
   "elements",
   "text",
   "photo",
@@ -32,6 +29,7 @@ export const EDITOR_TABS = [
 export type EditorTab = (typeof EDITOR_TABS)[number];
 
 const TAB_INFO: Record<EditorTab, { icon: IconName; label: TextKey }> = {
+  templates: { icon: "tabTemplates", label: "editor.tab.templates" },
   elements: { icon: "tabElements", label: "editor.tab.elements" },
   text: { icon: "text", label: "editor.tab.text" },
   photo: { icon: "photo", label: "editor.tab.photo" },

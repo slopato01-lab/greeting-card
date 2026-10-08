@@ -760,7 +760,9 @@ export const ru = {
   "editor.error.cutoutNoPerson": "Не нашли на фото человека — оставили его целиком",
 
   // ── Редактор как в Canva: вкладки и заготовки (08.10.2026) ──
+  "editor.templates": "Шаблоны",
   "editor.tabs": "Инструменты редактора",
+  "editor.tab.templates": "Шаблоны",
   "editor.tab.elements": "Элементы",
   "editor.tab.text": "Текст",
   "editor.tab.photo": "Фото",
