@@ -4,10 +4,10 @@ import { type TextKey, t } from "@/lib/i18n";
 /**
  * Секция «Три этапа»: как собирается открытка.
  *
- * Раскладка — блок с цифрами из макета главной (design/главная.jpg):
- * три полосы одна под другой, слева текст, справа крупная цифра.
- * В макете это счётчики «12+ / 80+ / 3K+», у нас на их месте номер
- * этапа — полос ровно три, и порядок здесь смысл.
+ * Раскладка — золотая карточка из макета главной
+ * (design/главная greetinh-cards.jpg), вторая в ряду под героем,
+ * справа от тёмной карточки «что внутри». В макете на ней аватарки
+ * в кружках; у нас в тех же тёмных кружках номера этапов.
  *
  * Разметка — нумерованный список. Крупные цифры скрыты от скринридера,
  * они дублируют нумерацию `ol`. Цифра берётся из позиции в списке,
@@ -28,33 +28,29 @@ const STEPS = [
 
 export function Steps() {
   return (
-    <section className="pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
+    <section className="on-light rounded-panel xl:rounded-panel-d bg-gold text-canvas p-[24px] xl:p-[40px]">
       {/* role="list" не лишний: preflight Tailwind снимает маркеры через
           list-style: none, а Safari вместе с маркерами теряет и семантику
           списка. Здесь она несёт смысл — цифры скрыты от скринридера,
           и порядок остаётся только в разметке. */}
-      <ol role="list" className="page-shell flex flex-col gap-[15px] xl:gap-5">
+      <ol role="list" className="flex flex-col gap-[24px] xl:gap-[28px]">
         {STEPS.map((step, index) => (
-          <li
-            key={step.title}
-            className="rounded-card xl:rounded-card-d flex min-h-[140px] items-center justify-between gap-[20px] bg-white px-[24px] py-[24px] xl:min-h-[170px] xl:gap-10 xl:px-[60px] xl:py-[34px]"
-          >
-            <div className="xl:max-w-[820px]">
-              <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
-                {t(step.title)}
-              </h2>
-              {/* text-card — размер, text-body — цвет, см. globals.css */}
-              <p className="font-ui text-card xl:text-card-d text-body mt-[10px] leading-[1.4] xl:mt-[14px]">
-                {t(step.body)}
-              </p>
-            </div>
-
+          <li key={step.title} className="flex items-start gap-[16px] xl:gap-[20px]">
             <span
               aria-hidden="true"
-              className="font-ui text-h1 xl:text-h1-d shrink-0 leading-none font-light tracking-tight"
+              className="bg-canvas text-gold font-display text-note xl:text-note-d size-tap flex shrink-0 items-center justify-center rounded-full font-medium"
             >
               {counterNumber(index)}
             </span>
+            <div>
+              <h2 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
+                {t(step.title)}
+              </h2>
+              {/* text-card — размер, text-canvas — цвет: тёмный текст на золоте */}
+              <p className="font-ui text-card xl:text-card-d mt-[8px] leading-[1.5]">
+                {t(step.body)}
+              </p>
+            </div>
           </li>
         ))}
       </ol>

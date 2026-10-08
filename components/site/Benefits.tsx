@@ -1,19 +1,16 @@
 import { Icon } from "@/components/Icon";
-import { SplitSlider } from "@/components/site/slider";
+import { Ribbon } from "@/components/site/slider";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
  * Секция «Больше, чем просто открытка»: четыре карточки преимуществ.
  *
- * Карточка — фото сверху, заголовок, абзац и три чек-строки. Фото
- * нет, на его месте плейсхолдер --color-photo со своим скруглением
- * внутри белой карточки — как картинки в карточках design/главная.jpg.
+ * Своего блока у преимуществ в макете design/главная greetinh-cards.jpg
+ * нет — повторён ряд товаров: заголовок слева, подводка справа, ниже
+ * лента тёмных карточек со счётчиком «1/4» и стрелками.
  *
- * Раскладка — второй блок макета главной (design/главная.jpg), тот же,
- * что у «Что спрятать внутри»: счётчик, подводка и заголовок слева,
- * лента со стрелками справа. Своего блока для преимуществ в макете
- * нет, шаблон повторён. Лента остаётся лентой и на десктопе.
- * Высота 470/530 из старого макета стала минимальной, а карточки
+ * Карточка — фото сверху, заголовок, абзац и три чек-строки с золотыми
+ * галочками. Фото нет, на его месте плейсхолдер --photo. Карточки
  * тянутся на высоту ленты: тексты разной длины, нижний край общий.
  *
  * Тексты карточек 1 и 3 в макете совпадают дословно — черновик,
@@ -34,46 +31,58 @@ const CHECKS = [
 
 export function Benefits() {
   return (
-    <section className="pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
-      <SplitSlider
-        titleId="benefits-title"
-        title="benefits.title"
-        lead="benefits.lead"
-        labels={CARDS.map((card) => card.title)}
-        trackClassName="items-stretch gap-[20px] xl:gap-5"
-      >
-        {CARDS.map((card) => (
-          <li
-            key={card.title}
-            className="rounded-card xl:rounded-card-d flex w-[300px] flex-col bg-white p-[8px] xl:w-[380px] xl:p-[10px]"
-          >
-            <div
-              aria-hidden="true"
-              className="bg-photo rounded-inner xl:rounded-inner-d h-[190px] shrink-0 xl:h-[210px]"
-            />
+    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
+      <div className="flex flex-col gap-[16px] xl:flex-row xl:items-end xl:justify-between xl:gap-[60px]">
+        <h2
+          id="benefits-title"
+          className="font-display text-h2 xl:text-h2-d max-w-[900px] font-medium tracking-tight"
+        >
+          {t("benefits.title")}
+        </h2>
+        <p className="font-ui text-sub xl:text-sub-d text-body max-w-[520px] leading-[1.5]">
+          {t("benefits.lead")}
+        </p>
+      </div>
 
-            <div className="flex flex-1 flex-col px-[14px] pt-[20px] pb-[22px] xl:px-[18px] xl:pt-[24px] xl:pb-[26px]">
-              <h3 className="font-display text-feat xl:text-feat-d font-semibold tracking-tight">
-                {t(card.title)}
-              </h3>
-              <p className="font-ui text-note xl:text-note-d text-body mt-[10px] leading-[1.4]">
-                {t(card.body)}
-              </p>
+      <div className="mt-[30px] xl:mt-[50px]">
+        <Ribbon
+          labelledBy="benefits-title"
+          count={CARDS.length}
+          trackClassName="items-stretch gap-[12px] xl:gap-5"
+        >
+          {CARDS.map((card) => (
+            <li
+              key={card.title}
+              className="rounded-card xl:rounded-card-d bg-surface flex w-[280px] flex-col p-[8px] xl:w-[calc((100%-40px)/3)] xl:p-[10px]"
+            >
+              <div
+                aria-hidden="true"
+                className="bg-photo rounded-inner xl:rounded-inner-d h-[180px] shrink-0 xl:h-[240px]"
+              />
 
-              {/* Чек-строки прижаты к низу карточки: в ряду на десктопе
-                  абзацы разной длины, а строки должны стоять в линию. */}
-              <ul role="list" className="mt-auto flex flex-col gap-[10px] pt-[30px]">
-                {CHECKS.map((key) => (
-                  <li key={key} className="flex items-center gap-[13px] xl:gap-4">
-                    <Icon name="tick" size={20} className="text-pink shrink-0 xl:size-[22px]" />
-                    <span className="font-ui text-note xl:text-note-d text-body">{t(key)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </li>
-        ))}
-      </SplitSlider>
+              <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[16px] xl:px-[16px] xl:pt-[24px] xl:pb-[20px]">
+                <h3 className="font-display text-feat xl:text-feat-d font-medium tracking-tight">
+                  {t(card.title)}
+                </h3>
+                <p className="font-ui text-note xl:text-note-d text-body mt-[10px] leading-[1.5]">
+                  {t(card.body)}
+                </p>
+
+                {/* Чек-строки прижаты к низу карточки: абзацы разной
+                    длины, а строки должны стоять в линию. */}
+                <ul role="list" className="mt-auto flex flex-col gap-[10px] pt-[24px]">
+                  {CHECKS.map((key) => (
+                    <li key={key} className="flex items-center gap-[12px]">
+                      <Icon name="tick" size={20} className="text-gold shrink-0" />
+                      <span className="font-ui text-note xl:text-note-d text-ink">{t(key)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </Ribbon>
+      </div>
     </section>
   );
 }

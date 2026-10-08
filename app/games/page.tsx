@@ -84,7 +84,7 @@ export default function GamesPage() {
           {GAMES.map((game) => (
             <li
               key={game.title}
-              className="rounded-card xl:rounded-card-d flex flex-col overflow-hidden bg-white"
+              className="rounded-card xl:rounded-card-d bg-surface flex flex-col overflow-hidden"
             >
               {/* Живого превью нет: игровых модулей ещё не существует.
                   Плейсхолдер тот же, что в карточках шаблонов. */}
@@ -111,7 +111,7 @@ export default function GamesPage() {
                   {game.suits.map((tag) => (
                     <li
                       key={tag}
-                      className="bg-canvas font-ui text-note text-body flex h-[33px] items-center rounded-full px-[16px]"
+                      className="bg-raised font-ui text-note text-body flex h-[33px] items-center rounded-full px-[16px]"
                     >
                       {t(tag)}
                     </li>
@@ -124,7 +124,7 @@ export default function GamesPage() {
 
         {/* Почему механики разные — это решение продукта, а не
             украшение страницы: см. docs/PRODUCT.md. */}
-        <div className="rounded-panel xl:rounded-panel-d mt-[40px] bg-white px-[24px] py-[28px] xl:mt-[60px] xl:px-[54px] xl:py-[40px]">
+        <div className="rounded-panel xl:rounded-panel-d bg-surface mt-[40px] px-[24px] py-[28px] xl:mt-[60px] xl:px-[54px] xl:py-[40px]">
           <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
             {t("games.note.title")}
           </h2>

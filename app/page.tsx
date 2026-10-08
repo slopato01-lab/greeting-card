@@ -7,16 +7,19 @@ import { Inside } from "@/components/site/Inside";
 import { SitePage } from "@/components/site/SitePage";
 import { Steps } from "@/components/site/Steps";
 
-// Порядок и раскладка секций — из макета design/главная.jpg,
-// названия и тексты наши. Разбор соответствия — docs/DESIGN.md,
-// раздел «Раскладка главной».
+// Порядок, раскладка и стиль секций — из макета
+// design/главная greetinh-cards.jpg, смысл и тексты наши. Разбор
+// соответствия — docs/DESIGN.md, раздел «Раскладка главной».
 export default function Page() {
   return (
-    <SitePage headerTone="hero">
+    <SitePage>
       <Hero />
-      <Inside />
+      {/* Ряд из двух карточек под героем: тёмная и золотая. */}
+      <div className="page-shell mt-[12px] grid gap-[12px] xl:mt-[20px] xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:gap-[20px]">
+        <Inside />
+        <Steps />
+      </div>
       <Catalog />
-      <Steps />
       <Faq />
       <Benefits />
       <Cta />

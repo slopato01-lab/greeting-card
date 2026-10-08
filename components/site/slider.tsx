@@ -3,24 +3,18 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Icon } from "@/components/Icon";
-import { counterNumber, counterVisual } from "@/components/site/counter";
 import { scrollBehavior } from "@/components/site/pill";
-import { type TextKey, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 
 /**
- * Счётчик «01 ——— 02 03 04» и пара стрелок из макета главной
- * (design/главная.jpg). Живут в трёх секциях: две ленты карточек
- * («Что спрятать внутри», «Больше, чем просто открытка») и вкладки
- * поводов в FAQ. Оформление общее, чтобы состояния не разъехались.
+ * Ленты карточек со счётчиком «1/8 ——— ← →» и стрелки из макета
+ * главной (design/главная greetinh-cards.jpg). Живут в каталоге,
+ * преимуществах и карточке «что внутри». Оформление общее, чтобы
+ * состояния не разъехались.
  *
  * Состояний в макете нет, они выведены от токенов, разбор —
  * docs/DESIGN.md, раздел «Раскладка главной».
  */
-
-/** Линия после активного номера — она и показывает, где ты. */
-export function CounterLine() {
-  return <span aria-hidden="true" className="bg-muted mx-[10px] h-px min-w-[30px] flex-1" />;
-}
 
 /**
  * Стрелки «назад» и «дальше».
@@ -42,11 +36,13 @@ export function SliderArrows({
   canNext: boolean;
   className?: string;
 }) {
-  // Крайнее положение: кружок гаснет до --line, иконка — до --photo.
-  // Наведение в нём ничего не меняет.
+  // Обе стрелки — круги с тонкой обводкой, как в макете; «дальше»
+  // обведена светлым, это следующий шаг. Крайнее положение: обводка
+  // --line, иконка --line. Наведение в нём ничего не меняет.
   const base =
-    "size-tap flex items-center justify-center rounded-full transition-colors " +
-    "aria-disabled:cursor-not-allowed aria-disabled:text-photo";
+    "size-tap text-ink flex items-center justify-center rounded-full border transition-colors " +
+    "hover:bg-raised active:bg-line aria-disabled:cursor-not-allowed aria-disabled:border-line " +
+    "aria-disabled:text-line aria-disabled:hover:bg-transparent";
 
   return (
     <div className={`flex items-center gap-[10px] ${className}`}>
@@ -57,7 +53,7 @@ export function SliderArrows({
         onClick={() => {
           if (canPrev) onPrev();
         }}
-        className={`${base} border-line text-ink hover:bg-canvas active:bg-line border bg-white aria-disabled:hover:bg-white`}
+        className={`${base} border-line`}
       >
         <Icon name="prev" size={20} />
       </button>
@@ -68,7 +64,7 @@ export function SliderArrows({
         onClick={() => {
           if (canNext) onNext();
         }}
-        className={`${base} bg-dark hover:bg-dark-2 active:bg-ink aria-disabled:bg-line aria-disabled:hover:bg-line text-white`}
+        className={`${base} border-ink`}
       >
         <Icon name="next" size={20} />
       </button>
@@ -91,7 +87,7 @@ export function SliderArrows({
  * предел прокрутки. Тогда активной считается та, которую выбрали
  * стрелкой или номером, а если листали пальцем — последняя.
  */
-function useSlider(count: number) {
+export function useSlider(count: number) {
   const trackRef = useRef<HTMLUListElement>(null);
   const requested = useRef<number | null>(null);
   const [active, setActive] = useState(0);
@@ -170,92 +166,78 @@ function nearest(track: HTMLElement, left: number): number {
 }
 
 /**
- * Секция «текст слева, лента справа» — второй блок макета главной.
- *
- * Мобильный: счётчик, заголовок, подводка, лента, стрелки — колонкой.
- * С 1280px текст уходит в левую колонку и прижимается заголовком
- * к низу, лента со стрелками — в правую.
- *
- * Лента на десктопе остаётся лентой, как в макете: две карточки
- * видны, остальные за краем. Влево она не вырывается — там текст,
- * вправо выходит до края полосы страницы.
+ * Счётчик под лентой: «1/8», линия, стрелки. Номер — позиция, а не
+ * текст интерфейса; скринридеру он не нужен, у него есть список
+ * и подписи стрелок.
  */
-export function SplitSlider({
-  titleId,
-  title,
-  lead,
-  labels,
-  action,
+export function Pager({
+  active,
+  count,
+  onPrev,
+  onNext,
+  className = "",
+}: {
+  active: number;
+  count: number;
+  onPrev: () => void;
+  onNext: () => void;
+  className?: string;
+}) {
+  return (
+    <div className={`flex items-center gap-[16px] ${className}`}>
+      <p aria-hidden="true" className="font-ui text-note xl:text-note-d shrink-0">
+        <span className="text-ink">{active + 1}</span>
+        <span className="text-muted">/{count}</span>
+      </p>
+      <span aria-hidden="true" className="bg-line h-px flex-1" />
+      <SliderArrows
+        onPrev={onPrev}
+        onNext={onNext}
+        canPrev={active > 0}
+        canNext={active < count - 1}
+      />
+    </div>
+  );
+}
+
+/**
+ * Лента карточек со счётчиком под ней. Карточки — элементы `<li>`.
+ *
+ * Лента вырывается к краям экрана на мобильном (класс .carousel),
+ * на десктопе — к правому краю полосы, первая карточка стоит по сетке.
+ */
+export function Ribbon({
+  labelledBy,
+  count,
   trackClassName,
   children,
 }: {
-  titleId: string;
-  title: TextKey;
-  lead?: TextKey;
-  /** Подписи карточек по порядку: ими счётчик называет номера. */
-  labels: ReadonlyArray<TextKey>;
-  action?: ReactNode;
+  labelledBy: string;
+  count: number;
   trackClassName: string;
-  /** Карточки — элементы `<li>`. */
   children: ReactNode;
 }) {
-  const { trackRef, go, active } = useSlider(labels.length);
+  const { trackRef, go, active } = useSlider(count);
 
   return (
-    <div className="page-shell xl:grid xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-10">
-      <div className="flex flex-col">
-        <ol role="list" className="flex items-center">
-          {labels.map((label, index) => (
-            <li key={label} className={`flex items-center ${index === active ? "flex-1" : ""}`}>
-              <button
-                type="button"
-                aria-current={index === active ? "true" : undefined}
-                onClick={() => go(index)}
-                className={counterVisual(index === active)}
-              >
-                {counterNumber(index)}
-                <span className="sr-only"> {t(label)}</span>
-              </button>
-              {index === active ? <CounterLine /> : null}
-            </li>
-          ))}
-        </ol>
+    <div>
+      <ul
+        ref={trackRef}
+        role="list"
+        tabIndex={0}
+        aria-labelledby={labelledBy}
+        className={`carousel relative ${trackClassName}`}
+      >
+        {children}
+      </ul>
 
-        {lead ? (
-          <p className="font-ui text-card xl:text-card-d text-body mt-[25px] leading-[1.4] xl:max-w-[520px]">
-            {t(lead)}
-          </p>
-        ) : null}
-
-        <h2
-          id={titleId}
-          className="font-display text-h2 xl:text-h2-d mt-[30px] font-semibold tracking-tight xl:mt-auto xl:pt-[60px]"
-        >
-          {t(title)}
-        </h2>
-
-        {action}
-      </div>
-
-      <div className="mt-[40px] min-w-0 xl:mt-0">
-        <ul
-          ref={trackRef}
-          role="list"
-          tabIndex={0}
-          aria-labelledby={titleId}
-          className={`carousel relative xl:ms-0 xl:[scroll-padding-inline-start:0] xl:ps-0 ${trackClassName}`}
-        >
-          {children}
-        </ul>
-
-        <SliderArrows
-          onPrev={() => go(active - 1)}
-          onNext={() => go(active + 1)}
-          canPrev={active > 0}
-          canNext={active < labels.length - 1}
-          className="mt-[20px] justify-end xl:mt-[25px]"
-        />
-      </div>
+      <Pager
+        active={active}
+        count={count}
+        onPrev={() => go(active - 1)}
+        onNext={() => go(active + 1)}
+        className="mt-[20px] xl:mt-[30px]"
+      />
     </div>
   );
 }

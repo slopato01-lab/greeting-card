@@ -69,7 +69,7 @@ function safeUrl(value: string): string | null {
   }
 }
 
-const CARD = "rounded-card xl:rounded-card-d overflow-hidden bg-white";
+const CARD = "rounded-card xl:rounded-card-d overflow-hidden bg-surface";
 
 /** Текст автора: переносы строк он ставил руками, и они значимые. */
 const AUTHOR_TEXT =
@@ -169,7 +169,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                   href={link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-ui text-card xl:text-card-d min-h-tap text-pink inline-flex items-center break-all underline"
+                  className="font-ui text-card xl:text-card-d min-h-tap text-gold inline-flex items-center break-all underline"
                 >
                   {link}
                 </a>

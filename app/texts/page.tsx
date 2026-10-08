@@ -521,7 +521,7 @@ export default function TextsPage() {
           </p>
           <ul className="mt-4 flex flex-col gap-4">
             {GAPS.map((gap) => (
-              <li key={gap.what} className="bg-pink-card rounded-card p-4">
+              <li key={gap.what} className="bg-gold-card rounded-card p-4">
                 <p className="text-card font-medium">{gap.what}</p>
                 <p className="font-ui text-body mt-1 text-[14px]">Сейчас: {gap.now}</p>
                 <p className="font-ui text-muted mt-1 text-[13px]">{gap.when}</p>

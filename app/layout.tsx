@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter, Montserrat_Alternates } from "next/font/google";
+import { Inter, Unbounded } from "next/font/google";
 
 import "./globals.css";
 
 // Оба шрифта с полной кириллицей и свободной лицензией — docs/DESIGN.md.
 // next/font скачивает их на сборке и раздаёт со своего домена:
 // в рантайме запросов на сторонние хосты нет.
-const montserratAlternates = Montserrat_Alternates({
+// Unbounded — заголовки, с 08.10.2026 вместо Montserrat Alternates:
+// широкий гротеск, как в макете design/главная greetinh-cards.jpg.
+const unbounded = Unbounded({
   subsets: ["cyrillic", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   display: "swap",
-  variable: "--font-ma",
+  variable: "--font-unb",
 });
 
 const inter = Inter({
@@ -29,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ru" className={`${montserratAlternates.variable} ${inter.variable}`}>
+    <html lang="ru" className={`${unbounded.variable} ${inter.variable}`}>
       <body>{children}</body>
     </html>
   );

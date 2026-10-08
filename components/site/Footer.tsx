@@ -1,13 +1,15 @@
 import Link from "next/link";
 
+import { Icon } from "@/components/Icon";
 import { SocialLinks } from "@/components/site/SocialLinks";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
  * Подвал. Наполнение своё — название, описание, навигация, способы
- * оплаты, соцсети. Вид — из макета главной (design/главная.jpg):
- * светлая полоса без заливки, внизу строка с соцсетями тёмными
- * кружками справа.
+ * оплаты, соцсети. Подвала в макете design/главная greetinh-cards.jpg
+ * нет — вид собран из его шапки: знак и название, навигация капсом,
+ * круглые кнопки с тонкой обводкой. Платёжные плашки белые: логотипы
+ * в спрайте нарисованы под светлый фон.
  *
  * Сверху: название с описанием слева, навигация строкой справа.
  * Под линией: способы оплаты слева, соцсети справа. На мобильном
@@ -64,7 +66,10 @@ export function Footer() {
         <div className="flex flex-col gap-[30px] xl:flex-row xl:items-start xl:justify-between xl:gap-10">
           {/* О проекте */}
           <div className="xl:max-w-[520px]">
-            <p className="font-display text-logo xl:text-logo-d font-medium">{t("brand.name")}</p>
+            <p className="font-display text-logo xl:text-logo-d flex items-center gap-[10px] font-medium">
+              <Icon name="planet" size={28} className="text-gold" />
+              {t("brand.name")}
+            </p>
             <p className="font-ui text-note xl:text-card-d text-body mt-[10px] leading-[1.4] xl:mt-[14px]">
               {t("footer.about")}
             </p>
@@ -84,7 +89,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="font-ui text-card xl:text-card-d min-h-tap min-w-tap text-body hover:text-ink active:text-ink inline-flex items-center transition-colors"
+                    className="font-ui caps text-nav-d min-h-tap min-w-tap text-body hover:text-ink active:text-ink inline-flex items-center transition-colors"
                   >
                     {t(item.key)}
                   </Link>
@@ -97,7 +102,9 @@ export function Footer() {
         <div className="border-line mt-[30px] flex flex-col gap-[25px] border-t pt-[25px] xl:mt-[40px] xl:flex-row xl:items-end xl:justify-between xl:pt-[30px]">
           {/* Способы оплаты */}
           <div>
-            <p className="font-ui text-note xl:text-note-d text-muted">{t("footer.pay.title")}</p>
+            <p className="font-ui caps text-badge xl:text-badge-d text-muted">
+              {t("footer.pay.title")}
+            </p>
 
             <ul
               role="list"
@@ -107,7 +114,7 @@ export function Footer() {
                 <li
                   key={index}
                   aria-hidden="true"
-                  className="pay-plate rounded-inner xl:rounded-inner-d border-line flex h-[44px] items-center justify-center border bg-white xl:h-[52px]"
+                  className="pay-plate rounded-inner xl:rounded-inner-d bg-paper flex h-[44px] items-center justify-center xl:h-[52px]"
                   style={
                     {
                       "--pay-w": `${crop.w}px`,

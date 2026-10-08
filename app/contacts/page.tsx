@@ -29,7 +29,7 @@ const DETAILS = [
 
 function Block({ title, children }: { title: TextKey; children: React.ReactNode }) {
   return (
-    <section className="rounded-card xl:rounded-card-d bg-white px-[24px] py-[28px] xl:px-[40px] xl:py-[34px]">
+    <section className="rounded-card xl:rounded-card-d bg-surface px-[24px] py-[28px] xl:px-[40px] xl:py-[34px]">
       <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">{t(title)}</h2>
       <div className="mt-[14px]">{children}</div>
     </section>

@@ -23,7 +23,7 @@ export type DocSection = {
  */
 export function DocNotice({ textKey }: { textKey: TextKey }) {
   return (
-    <div className="rounded-card xl:rounded-card-d bg-white px-[24px] py-[24px] xl:max-w-[900px] xl:px-[40px] xl:py-[30px]">
+    <div className="rounded-card xl:rounded-card-d bg-surface px-[24px] py-[24px] xl:max-w-[900px] xl:px-[40px] xl:py-[30px]">
       <p className="font-ui text-card xl:text-card-d leading-[1.4]">{t(textKey)}</p>
     </div>
   );
@@ -70,7 +70,7 @@ export function DocSections({ sections }: { sections: readonly DocSection[] }) {
                 className="font-ui text-card xl:text-card-d text-body flex gap-[10px] leading-[1.4]"
               >
                 {/* Маркер декоративный: роль списка уже несёт сам список. */}
-                <span aria-hidden="true" className="text-pink">
+                <span aria-hidden="true" className="text-gold">
                   —
                 </span>
                 {t(item)}

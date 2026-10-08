@@ -206,7 +206,7 @@ function Field({
 
 const INPUT =
   "font-ui text-card xl:text-card-d border-muted rounded-inner xl:rounded-inner-d " +
-  "min-h-tap w-full border bg-white px-[16px] py-[12px] xl:px-[20px] xl:py-[16px]";
+  "min-h-tap w-full border bg-surface px-[16px] py-[12px] xl:px-[20px] xl:py-[16px]";
 
 export function Constructor() {
   const [step, setStep] = useState(0);
@@ -410,7 +410,7 @@ export function Constructor() {
       </p>
       <div aria-hidden="true" className="bg-line mt-[10px] h-[6px] w-full rounded-full">
         <div
-          className="bg-pink h-full rounded-full transition-[width]"
+          className="bg-gold h-full rounded-full transition-[width]"
           style={{ width: `${((step + 1) / STEP_TITLES.length) * 100}%` }}
         />
       </div>
@@ -441,7 +441,7 @@ export function Constructor() {
                 onClick={() => update({ occasion: key })}
                 className="pill-tap"
               >
-                <span className={pillVisual("canvas", draft.occasion === key)}>{t(key)}</span>
+                <span className={pillVisual(draft.occasion === key)}>{t(key)}</span>
               </button>
             ))}
           </div>
@@ -457,8 +457,8 @@ export function Constructor() {
                   aria-pressed={draft.game === key}
                   onClick={() => update({ game: key })}
                   className={
-                    "rounded-card xl:rounded-card-d flex w-full flex-col border-2 bg-white p-[8px] text-left transition-colors " +
-                    (draft.game === key ? "border-pink" : "hover:border-line border-transparent")
+                    "rounded-card xl:rounded-card-d bg-surface flex w-full flex-col border-2 p-[8px] text-left transition-colors " +
+                    (draft.game === key ? "border-gold" : "hover:border-line border-transparent")
                   }
                 >
                   {/* Живого превью нет: игровых модулей ещё не существует. */}
@@ -481,7 +481,7 @@ export function Constructor() {
             <label
               onDrop={onDrop}
               onDragOver={(event) => event.preventDefault()}
-              className="border-muted rounded-card xl:rounded-card-d hover:bg-canvas flex min-h-[160px] cursor-pointer flex-col items-center justify-center border-2 border-dashed bg-white px-[20px] py-[30px] text-center transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-black"
+              className="border-muted rounded-card xl:rounded-card-d hover:bg-raised bg-surface flex min-h-[160px] cursor-pointer flex-col items-center justify-center border-2 border-dashed px-[20px] py-[30px] text-center transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-black"
             >
               <span className="font-ui text-card xl:text-card-d font-medium">
                 {t("create.photos.pick")}
@@ -499,7 +499,7 @@ export function Constructor() {
             </label>
 
             {photoError === null ? null : (
-              <p role="alert" className="font-ui text-card text-pink mt-[14px] leading-[1.4]">
+              <p role="alert" className="font-ui text-card text-gold mt-[14px] leading-[1.4]">
                 {t(photoError)}
               </p>
             )}
@@ -529,7 +529,7 @@ export function Constructor() {
                         type="button"
                         onClick={() => removePhoto(photo.id)}
                         aria-label={t("create.photos.remove")}
-                        className="bg-ink absolute top-[6px] right-[6px] flex size-[32px] items-center justify-center rounded-full text-white"
+                        className="bg-ink text-ink absolute top-[6px] right-[6px] flex size-[32px] items-center justify-center rounded-full"
                       >
                         <span aria-hidden="true">×</span>
                       </button>
@@ -580,7 +580,7 @@ export function Constructor() {
                     onClick={() => update({ surpriseKind: kind.id })}
                     className="pill-tap"
                   >
-                    <span className={pillVisual("canvas", draft.surpriseKind === kind.id)}>
+                    <span className={pillVisual(draft.surpriseKind === kind.id)}>
                       {t(kind.label)}
                     </span>
                   </button>
@@ -606,7 +606,7 @@ export function Constructor() {
               {t("create.done.lead")}
             </p>
 
-            <dl className="rounded-card xl:rounded-card-d mt-[24px] flex flex-col gap-[16px] bg-white px-[22px] py-[24px] xl:mt-[40px] xl:px-[40px] xl:py-[34px]">
+            <dl className="rounded-card xl:rounded-card-d bg-surface mt-[24px] flex flex-col gap-[16px] px-[22px] py-[24px] xl:mt-[40px] xl:px-[40px] xl:py-[34px]">
               {summary.map((row) => (
                 <div key={row.label} className="flex flex-col gap-[2px] xl:flex-row xl:gap-[20px]">
                   <dt className="font-ui text-note-d text-muted xl:w-[220px] xl:shrink-0">

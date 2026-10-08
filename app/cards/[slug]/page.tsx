@@ -86,7 +86,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
             className="rounded-card xl:rounded-card-d bg-photo min-h-[317px] xl:min-h-[520px]"
           />
 
-          <div className="rounded-card xl:rounded-card-d flex flex-col bg-white px-[24px] pt-[24px] pb-[28px] xl:px-[40px] xl:pt-[40px] xl:pb-[44px]">
+          <div className="rounded-card xl:rounded-card-d bg-surface flex flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[40px] xl:pt-[40px] xl:pb-[44px]">
             <dl className="flex flex-col gap-[14px]">
               <Fact label="tpl.occasion" value={template.filter} />
               <Fact label="tpl.game" value={template.game} />
@@ -104,7 +104,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
                 >
                   {/* Маркер декоративный: списку он смысла не добавляет,
                       его роль уже несёт сам список. */}
-                  <span aria-hidden="true" className="text-pink">
+                  <span aria-hidden="true" className="text-gold">
                     —
                   </span>
                   {t(item)}

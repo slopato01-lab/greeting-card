@@ -1,57 +1,66 @@
 import Link from "next/link";
 
-import type { PillSurface } from "@/components/site/pill";
+import { Icon } from "@/components/Icon";
 import type { CatalogTemplate } from "@/lib/catalog/templates";
 import { t } from "@/lib/i18n";
 
 /**
- * Карточка шаблона: картинка, название и «Выбрать».
+ * Карточка шаблона: картинка, метка повода, название, подводка
+ * и «Выбрать».
  *
- * Живёт в сетке каталога (TemplateGrid) и в ряду «Ещё шаблоны» на
- * странице шаблона. Разметка у них одна, расходится только ширина:
- * в сетке карточка тянется по колонке, в ряду стоит фиксированной,
- * иначе три карточки в карусели схлопнутся.
+ * Живёт в каталоге (TemplateGrid — сеткой на /cards и лентой на
+ * главной) и в ряду «Ещё шаблоны» на странице шаблона. Разметка
+ * одна, расходится только ширина.
  *
- * Ссылкой обёрнута вся карточка, а не подпись «Выбрать»: так зона
- * нажатия — вся картинка, а с клавиатуры карточка остаётся одним
- * таб-стопом. «Выбрать» внутри — подпись, как в макете.
+ * Вид — карточки товаров из design/главная greetinh-cards.jpg: тёмная
+ * карточка, круг со стрелкой в углу картинки, метки-пилюли над
+ * названием. Цены, рейтинга и «в избранное» у шаблонов нет — эти
+ * элементы макета не перенесены. Текст в макете лежит прямо на фото;
+ * у нас под картинкой, на --surface: на голом фото текст не лежит
+ * нигде (docs/DESIGN.md, «Работа с изображениями»).
  *
- * Карточка белая, без обводки: картинка со своим скруглением внутри,
- * под ней подпись — как карточки в design/главная.jpg. Наведение —
- * тень --shadow-card, нажатие притапливает карточку на пиксель. Обводка фокуса общая, из
- * globals.css. При prefers-reduced-motion переход отключается там же.
+ * Ссылкой обёрнута вся карточка: зона нажатия — вся карточка,
+ * а с клавиатуры она остаётся одним таб-стопом. Наведение
+ * проявляет обводку и заливает круг со стрелкой, нажатие
+ * притапливает карточку на пиксель.
  *
- * Картинок шаблонов в макете нет, там пустое белое поле; на их месте
- * плейсхолдер цветом --color-photo. Подставлять сюда случайные
- * картинки нельзя: их ещё не нарисовали.
+ * Картинок шаблонов ещё нет — на их месте плейсхолдер --photo.
  */
 export function TemplateCard({
   template,
-  surface = "canvas",
   className = "",
 }: {
   template: CatalogTemplate;
-  /** На чём лежит карточка: на белой панели она сама цвета основы. */
-  surface?: PillSurface;
   className?: string;
 }) {
   return (
     <li className={className}>
       <Link
         href={`/cards/${template.slug}`}
-        className={`rounded-card xl:rounded-card-d hover:shadow-card flex h-full flex-col p-[8px] ${surface === "white" ? "bg-canvas" : "bg-white"} transition-shadow active:translate-y-px xl:p-[10px]`}
+        className="group rounded-card xl:rounded-card-d bg-surface border-surface hover:border-line flex h-full flex-col border p-[8px] transition-colors active:translate-y-px xl:p-[10px]"
       >
-        {/* Картинки шаблона ещё нет — плейсхолдер держит пропорции
-            карточки из макета, 350×368 и 390×410. */}
         <div
           aria-hidden="true"
-          className="bg-photo rounded-inner xl:rounded-inner-d min-h-[317px] flex-1 xl:min-h-[355px]"
-        />
+          className="bg-photo rounded-inner xl:rounded-inner-d relative h-[260px] shrink-0 xl:h-[300px]"
+        >
+          <span className="border-ink text-ink group-hover:bg-paper group-hover:text-canvas absolute start-[12px] top-[12px] flex size-[40px] items-center justify-center rounded-full border transition-colors">
+            <Icon name="next" size={18} className="-rotate-45" />
+          </span>
+        </div>
 
-        <div className="flex min-h-[49px] items-center justify-between gap-4 px-[14px] py-[12px] xl:min-h-[55px] xl:px-[16px]">
-          <span className="font-ui text-tpl xl:text-tpl-d font-medium">{t(template.nameKey)}</span>
-          <span className="font-ui text-tpl-action xl:text-tpl-action-d text-muted">
+        <div className="flex flex-1 flex-col px-[10px] pt-[16px] pb-[10px] xl:px-[12px]">
+          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d bg-gold text-canvas self-start rounded-full px-[10px] py-[3px] font-medium">
+            {t(template.filter)}
+          </span>
+          <span className="font-display text-tpl xl:text-tpl-d mt-[12px] font-medium tracking-tight">
+            {t(template.nameKey)}
+          </span>
+          <span className="font-ui text-note xl:text-note-d text-body mt-[8px] leading-[1.5]">
+            {t(template.lead)}
+          </span>
+          <span className="font-ui caps text-tpl-action xl:text-tpl-action-d text-ink mt-auto inline-flex items-center gap-[6px] pt-[14px] font-medium">
             {t("catalog.choose")}
+            <Icon name="next" size={16} />
           </span>
         </div>
       </Link>

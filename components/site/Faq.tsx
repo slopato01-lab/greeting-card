@@ -2,32 +2,34 @@
 
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
+import Link from "next/link";
+
 import { Button } from "@/components/Button";
 import { GhostButton } from "@/components/GhostButton";
-import { CounterLine, SliderArrows } from "@/components/site/slider";
-import { counterNumber, counterVisual } from "@/components/site/counter";
+import { Icon } from "@/components/Icon";
+import { counterNumber } from "@/components/site/counter";
+import { Dots } from "@/components/site/Ornament";
+import { pillVisual } from "@/components/site/pill";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
  * Секция «Какие поздравления/открытки можно сделать».
  *
- * Раскладка — блок «панель со счётчиком + большая картинка» из макета
- * главной (design/главная.jpg). Слева белая панель: счётчик поводов
- * 01–04, название выбранного повода, заголовок секции и стрелки.
- * Справа на месте картинки — тёмная панель с белой карточкой ответа.
+ * Раскладка — блок «Uncover Our Most Coveted» из макета
+ * design/главная greetinh-cards.jpg: широкий заголовок с одним словом
+ * на золотой плашке и кружками за ним. Ниже слева карточка в тонкой
+ * рамке — крупный номер повода, его название и подводка; справа ряд
+ * пилюль-поводов, раскрытая карточка ответа и свёрнутые в узкие
+ * вертикальные карточки остальные поводы (с 1280px).
  *
- * Номер в счётчике переключает карточку — это вкладки, поэтому
- * role="tablist" и блуждающий tabindex, а не набор переключателей:
- * выбран всегда ровно один повод. Имя вкладки — номер плюс название
- * повода, скрытое визуально: одна цифра скринридеру ничего не скажет.
- * Видимое название выбранного повода стоит под счётчиком.
+ * Пилюли переключают карточку — это вкладки, поэтому role="tablist"
+ * и блуждающий tabindex: выбран всегда ровно один повод. Свёрнутые
+ * карточки — тот же выбор мышью, дополнительные кнопки к той же
+ * панели; с клавиатуры хватает вкладок.
  *
- * В макете нарисована одна карточка, «Друг за границей». Она встала
- * на повод 2, которому отвечает по смыслу; три остальные написаны,
- * см. docs/PRODUCT.md. Подсвечена в макете при этом первая пилюля —
- * расхождение разрешено в пользу подсветки, по умолчанию открыт повод 1.
- *
- * Стрелки листают поводы по одному, фокус при этом остаётся на стрелке.
+ * Выделенное слово заголовка берётся из ключа словаря по номеру
+ * слова — текст не меняется. Если слова с таким номером нет,
+ * заголовок выводится без плашки.
  */
 type Occasion = {
   pill: TextKey;
@@ -64,6 +66,25 @@ const OCCASIONS = [
 ] as const satisfies ReadonlyArray<Occasion>;
 
 const LAST = OCCASIONS.length - 1;
+
+/** Номер выделенного слова в faq.title: «открытки». */
+const ACCENT_WORD = 3;
+
+function AccentTitle({ text }: { text: string }) {
+  const words = text.split(" ");
+  const accent = words[ACCENT_WORD];
+  if (accent === undefined) return <>{text}</>;
+
+  return (
+    <>
+      {words.slice(0, ACCENT_WORD).join(" ")}{" "}
+      <span className="bg-gold text-canvas rounded-inner [box-decoration-break:clone] px-[0.2em]">
+        {accent}
+      </span>
+      <Dots className="ms-[0.15em] align-[-0.1em]" /> {words.slice(ACCENT_WORD + 1).join(" ")}
+    </>
+  );
+}
 
 export function Faq() {
   const [active, setActive] = useState(0);
@@ -104,103 +125,138 @@ export function Faq() {
   };
 
   return (
-    <section className="pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
-      <div className="page-shell grid gap-[15px] xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-5">
-        <div className="rounded-panel xl:rounded-panel-d flex flex-col bg-white px-[20px] pt-[20px] pb-[25px] xl:px-[50px] xl:pt-[45px] xl:pb-[50px]">
-          <div
-            role="tablist"
-            aria-labelledby="faq-title"
-            onKeyDown={onKeyDown}
-            className="flex items-center"
-          >
-            {OCCASIONS.map((occasion, index) => (
-              <div
-                key={occasion.pill}
-                className={`flex items-center ${index === active ? "flex-1" : ""}`}
-              >
-                <button
-                  ref={(element) => {
-                    tabs.current[index] = element;
-                  }}
-                  type="button"
-                  role="tab"
-                  id={tabId(index)}
-                  aria-selected={index === active}
-                  aria-controls={panelId}
-                  // Блуждающий tabindex: ряд вкладок — один таб-стоп,
-                  // внутри ходят стрелками.
-                  tabIndex={index === active ? 0 : -1}
-                  onClick={() => select(index)}
-                  className={counterVisual(index === active)}
-                >
-                  {counterNumber(index)}
-                  <span className="sr-only"> {t(occasion.pill)}</span>
-                </button>
-                {index === active ? <CounterLine /> : null}
-              </div>
-            ))}
+    <section className="page-shell pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
+      <h2
+        id="faq-title"
+        className="font-display text-h2 xl:text-h2-d max-w-[1300px] font-medium tracking-tight"
+      >
+        <AccentTitle text={t("faq.title")} />
+      </h2>
+
+      <div className="mt-[30px] grid gap-[20px] xl:mt-[50px] xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        {/* Карточка в рамке: номер и подводка выбранного повода. */}
+        <div className="border-line rounded-panel xl:rounded-panel-d flex flex-col border p-[24px] xl:p-[40px]">
+          <div className="flex items-start justify-between">
+            <Icon name="planet" className="text-gold size-[48px] xl:size-[72px]" />
+            <Link
+              href="/faq"
+              aria-label={t("page.faq.title")}
+              className="size-tap bg-paper text-canvas hover:bg-gold flex items-center justify-center rounded-full transition-colors"
+            >
+              <Icon name="next" size={20} className="-rotate-45" />
+            </Link>
           </div>
 
           <p
             aria-hidden="true"
-            className="font-ui text-note xl:text-note-d text-muted mt-[40px] xl:mt-auto xl:pt-[80px]"
+            className="font-display text-display xl:text-display-d mt-[30px] leading-none font-medium xl:mt-auto xl:pt-[80px]"
+          >
+            {counterNumber(active)}
+          </p>
+          <p
+            aria-hidden="true"
+            className="font-ui caps text-badge xl:text-badge-d text-gold mt-[16px]"
           >
             {t(current.pill)}
           </p>
-          <h2
-            id="faq-title"
-            className="font-display text-h2 xl:text-h2-d mt-[8px] font-semibold tracking-tight xl:mt-[12px]"
-          >
-            {t("faq.title")}
-          </h2>
 
-          <SliderArrows
-            onPrev={() => setActive(active - 1)}
-            onNext={() => setActive(active + 1)}
-            canPrev={active > 0}
-            canNext={active < LAST}
-            className="mt-[25px] xl:mt-[40px]"
-          />
+          <div aria-hidden="true" className="bg-line mt-[20px] h-px xl:mt-[28px]" />
+
+          <p className="font-ui text-card xl:text-card-d text-body mt-[20px] leading-[1.5] xl:mt-[28px]">
+            {t(current.lead)}
+          </p>
         </div>
 
-        {/* Карточка ответа: высота из старого макета (510 / 580) стала
-            минимальной — список пунктов на русском переносится, и у
-            четырёх поводов пункты разной длины. */}
-        <div className="bg-dark rounded-panel xl:rounded-panel-d flex p-[10px] xl:p-[40px]">
+        <div className="flex min-w-0 flex-col">
           <div
-            role="tabpanel"
-            id={panelId}
-            aria-labelledby={tabId(active)}
-            className="rounded-card xl:rounded-card-d flex-1 bg-white px-[15px] pt-[30px] pb-[30px] xl:min-h-[580px] xl:px-[50px] xl:pt-[50px] xl:pb-[50px]"
+            role="tablist"
+            aria-labelledby="faq-title"
+            onKeyDown={onKeyDown}
+            className="carousel gap-[8px]"
           >
-            <h3 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
-              {t(current.title)}
-            </h3>
+            {OCCASIONS.map((occasion, index) => (
+              <button
+                key={occasion.pill}
+                ref={(element) => {
+                  tabs.current[index] = element;
+                }}
+                type="button"
+                role="tab"
+                id={tabId(index)}
+                aria-selected={index === active}
+                aria-controls={panelId}
+                // Блуждающий tabindex: ряд вкладок — один таб-стоп,
+                // внутри ходят стрелками.
+                tabIndex={index === active ? 0 : -1}
+                onClick={() => select(index)}
+                className="pill-tap"
+              >
+                <span className={pillVisual(index === active)}>{t(occasion.pill)}</span>
+              </button>
+            ))}
+          </div>
 
-            <p className="font-ui text-card xl:text-card-d text-body mt-[30px] leading-[1.4] xl:mt-[40px]">
-              {t(current.lead)}
-            </p>
+          <div className="mt-[16px] flex flex-1 gap-[12px]">
+            {/* Карточка ответа: высота подстраивается под текст —
+                у четырёх поводов пункты разной длины. */}
+            <div
+              role="tabpanel"
+              id={panelId}
+              aria-labelledby={tabId(active)}
+              className="rounded-card xl:rounded-card-d bg-surface flex min-w-0 flex-1 flex-col p-[8px] xl:p-[10px]"
+            >
+              <div
+                aria-hidden="true"
+                className="bg-photo rounded-inner xl:rounded-inner-d h-[140px] xl:h-[180px]"
+              />
 
-            <ul role="list" className="mt-[30px] flex flex-col gap-[25px] xl:gap-[30px]">
-              {current.items.map((key) => (
-                <li key={key} className="flex items-start gap-[18px] xl:items-center xl:gap-5">
-                  {/* Точка списка — кружок фоном: своего рисунка у неё нет. */}
-                  <span
-                    aria-hidden="true"
-                    className="bg-pink mt-[7px] size-[6px] shrink-0 rounded-full xl:mt-0 xl:size-[8px]"
-                  />
-                  <span className="font-ui text-note xl:text-card-d leading-[1.4]">{t(key)}</span>
-                </li>
-              ))}
-            </ul>
+              <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[14px] xl:px-[20px] xl:pt-[28px] xl:pb-[20px]">
+                <h3 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
+                  {t(current.title)}
+                </h3>
 
-            {/* Две кнопки встают в ряд, только когда помещаются: на 1280
-                правая колонка уже двух десктопных кнопок. */}
-            <div className="mt-[40px] flex flex-col gap-[5px] xl:mt-[50px] 2xl:flex-row 2xl:gap-5">
-              <Button href="/create" labelKey="cta.create" className="xl:w-full 2xl:flex-1" />
-              {/* Каталог живёт на /cards. */}
-              <GhostButton href="/cards" labelKey="cta.templates" className="2xl:flex-1" />
+                <ul role="list" className="mt-[20px] flex flex-col gap-[14px] xl:gap-[16px]">
+                  {current.items.map((key) => (
+                    <li key={key} className="flex items-start gap-[14px]">
+                      {/* Точка списка — кружок фоном: своего рисунка у неё нет. */}
+                      <span
+                        aria-hidden="true"
+                        className="bg-gold mt-[8px] size-[6px] shrink-0 rounded-full"
+                      />
+                      <span className="font-ui text-card xl:text-card-d text-body leading-[1.5]">
+                        {t(key)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:pt-[28px] 2xl:flex-row">
+                  <Button href="/create" labelKey="cta.create" className="xl:w-full 2xl:w-auto" />
+                  {/* Каталог живёт на /cards. */}
+                  <GhostButton href="/cards" labelKey="cta.templates" className="2xl:w-auto" />
+                </div>
+              </div>
             </div>
+
+            {/* Свёрнутые поводы — узкие карточки с подписью снизу вверх. */}
+            {OCCASIONS.map((occasion, index) =>
+              index === active ? null : (
+                <button
+                  key={occasion.pill}
+                  type="button"
+                  tabIndex={-1}
+                  aria-controls={panelId}
+                  onClick={() => setActive(index)}
+                  className="rounded-card xl:rounded-card-d bg-surface hover:bg-raised active:bg-line hidden w-[72px] shrink-0 flex-col items-center justify-between py-[20px] transition-colors xl:flex"
+                >
+                  <Icon name="next" size={18} className="text-ink -rotate-90" />
+                  <span className="font-display text-note-d text-ink rotate-180 font-medium whitespace-nowrap [writing-mode:vertical-rl]">
+                    {t(occasion.pill)}
+                  </span>
+                  <Icon name="planet" size={24} className="text-gold" />
+                </button>
+              ),
+            )}
           </div>
         </div>
       </div>

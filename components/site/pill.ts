@@ -1,6 +1,6 @@
 /**
- * Оформление пилюли. Общее для фильтров каталога и выбора повода
- * и сюрприза в конструкторе.
+ * Оформление пилюли. Общее для фильтров каталога, поводов на главной
+ * и выбора повода и сюрприза в конструкторе.
  *
  * ARIA живёт в самих рядах, а не здесь.
  * Здесь только классы: иначе состояния разъедутся на первой же правке.
@@ -9,41 +9,27 @@
  * крайние точки. Разбор — docs/DESIGN.md, раздел «Состояния пилюль».
  */
 
-/** Поверхность под рядом пилюль: основа страницы или белая панель. */
-export type PillSurface = "canvas" | "white";
-
 /**
- * Видимая пилюля: 33px на мобильном, 44px на десктопе. До 44px на
- * мобильном её добирает невидимое поле кнопки-обёртки, класс
- * `.pill-tap` в globals.css.
+ * Видимая пилюля: 33px на мобильном, 40px на десктопе. До 44px её
+ * добирает невидимое поле кнопки-обёртки, класс `.pill-tap`
+ * в globals.css.
  *
- * Стиль с 08.10.2026 — из design/главная.jpg: без обводки, серая
- * заливка на белой панели. Выбранная — розовая, это один из трёх
- * оставленных точечных акцентов.
+ * Вид — из design/главная greetinh-cards.jpg: тонкая обводка, текст
+ * капсом. Выбранная — белая заливка, тёмный текст.
  */
 const BASE =
-  "rounded-full font-ui flex h-[33px] items-center justify-center " +
-  "font-medium whitespace-nowrap transition-colors select-none xl:h-[44px]";
+  "rounded-full font-ui caps text-pill xl:text-pill-d flex h-[33px] items-center justify-center " +
+  "px-[18px] font-medium whitespace-nowrap transition-colors select-none xl:h-[40px] xl:px-[22px]";
 
-const SIZE = "text-pill xl:text-pill-d px-[20px] xl:px-[26px]";
+const SELECTED = "bg-paper border-paper text-canvas border";
 
-// Розовый темнеет подмешиванием чёрного — одно действие выглядит
-// одинаково по всей странице.
-const SELECTED =
-  "bg-pink text-white " +
-  "hover:bg-[color-mix(in_oklab,var(--color-pink)_90%,var(--color-ink))] " +
-  "active:bg-[color-mix(in_oklab,var(--color-pink)_80%,var(--color-ink))]";
+// --body на основе даёт 10:1; наведение поднимает текст до --ink
+// и проявляет обводку до --muted.
+const UNSELECTED =
+  "border-line text-body border hover:border-muted hover:text-ink active:bg-raised active:text-ink";
 
-// Невыбранная пилюля отличается от фона под ней одной ступенью:
-// на основе она белая, на белой панели — цвета основы.
-// --body на любой из трёх светлых заливок даёт больше 7:1.
-const UNSELECTED: Record<PillSurface, string> = {
-  canvas: "bg-white text-body hover:text-ink active:bg-line active:text-ink",
-  white: "bg-canvas text-body hover:bg-line hover:text-ink active:bg-line active:text-ink",
-};
-
-export function pillVisual(surface: PillSurface, selected: boolean): string {
-  return `${BASE} ${SIZE} ${selected ? SELECTED : UNSELECTED[surface]}`;
+export function pillVisual(selected: boolean): string {
+  return `${BASE} ${selected ? SELECTED : UNSELECTED}`;
 }
 
 /**
