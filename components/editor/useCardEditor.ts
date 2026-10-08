@@ -128,6 +128,22 @@ export function useCardEditor() {
     setBackgroundState(token);
   }, []);
 
+  /** Пишет черновик, если с прошлой записи что-то поменялось. */
+  const saveDraft = useCallback(() => {
+    const current = live.current;
+    if (!dirty.current || current === null) return;
+    try {
+      const draft = canvasToDoc(current.fabric, current.canvas, backgroundRef.current);
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      dirty.current = false;
+      setSaved(true);
+    } catch {
+      // Приватный режим Safari: сохранить некуда, но работу
+      // это не останавливает.
+      setSaved(false);
+    }
+  }, []);
+
   useEffect(() => {
     const host = hostRef.current;
     const frame = frameRef.current;
@@ -192,6 +208,15 @@ export function useCardEditor() {
           syncSelection();
         }),
         canvas.on("text:changed", markDirty),
+        // Стёртый до пустоты текст — невидимый слой, за который
+        // не ухватиться. Убираем, как только из него вышли.
+        canvas.on("text:editing:exited", ({ target }) => {
+          if (target.text.trim() !== "") return;
+          target.canvas?.remove(target);
+          live.current?.canvas.requestRenderAll();
+          markDirty();
+          syncSelection();
+        }),
       ];
       signal.addEventListener("abort", () => offs.forEach((off) => off()));
 
@@ -234,19 +259,20 @@ export function useCardEditor() {
       );
 
       // ── Черновик ──────────────────────────────────────────
-      const timer = window.setInterval(() => {
-        const current = live.current;
-        if (!dirty.current || current === null) return;
-        try {
-          const draft = canvasToDoc(current.fabric, current.canvas, backgroundRef.current);
-          window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-          dirty.current = false;
-          setSaved(true);
-        } catch {
-          setSaved(false);
-        }
-      }, DRAFT_INTERVAL_MS);
+      // Раз в три секунды и ещё при уходе со страницы: иначе правки
+      // последних секунд пропадают, если сразу закрыть вкладку.
+      // pagehide и скрытие вкладки — единственные события, которые
+      // мобильные браузеры гарантированно присылают перед выгрузкой.
+      const timer = window.setInterval(saveDraft, DRAFT_INTERVAL_MS);
       signal.addEventListener("abort", () => window.clearInterval(timer));
+      window.addEventListener("pagehide", saveDraft, { signal });
+      document.addEventListener(
+        "visibilitychange",
+        () => {
+          if (document.visibilityState === "hidden") saveDraft();
+        },
+        { signal },
+      );
 
       setStatus("ready");
     };
@@ -256,12 +282,15 @@ export function useCardEditor() {
     });
 
     return () => {
+      // Уход со страницы внутри сайта (next/link) — тоже уход:
+      // сначала черновик, потом холст.
+      saveDraft();
       controller.abort();
       live.current = null;
       const disposing = canvas?.dispose() ?? Promise.resolve(true);
       void disposing.finally(() => mount.remove());
     };
-  }, [attempt, applyBackground, markDirty, syncSelection]);
+  }, [attempt, applyBackground, markDirty, saveDraft, syncSelection]);
 
   // ── Действия ──────────────────────────────────────────────
 
@@ -334,6 +363,9 @@ export function useCardEditor() {
     current.canvas.requestRenderAll();
     markDirty();
     syncSelection();
+    // Кнопка «Удалить» исчезает вместе с выделением, и фокус улетел бы
+    // в начало страницы. Возвращаем его на холст.
+    frameRef.current?.focus();
   }, [markDirty, syncSelection]);
 
   const setBackground = useCallback(

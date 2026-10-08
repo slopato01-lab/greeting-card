@@ -8,6 +8,7 @@ import { test } from "node:test";
 
 import {
   CARD_WIDTH,
+  clampLayer,
   defaultLayer,
   EDITOR_FORMAT,
   EDITOR_VERSION,
@@ -139,4 +140,30 @@ test("пустой документ и слои по умолчанию прох
   const parsed = parseEditorDoc(JSON.parse(JSON.stringify(doc)));
   assert.deepEqual(parsed, doc);
   assert.equal(parsed?.layers[0]?.x, CARD_WIDTH / 2);
+});
+
+test("clampLayer: всё, что ушло с холста, проходит проверку на входе", () => {
+  const wild = [
+    {
+      ...defaultLayer("text", "а".repeat(LIMITS.textLength + 100)),
+      x: 99999,
+      scaleX: 50,
+      fontSize: 1,
+    },
+    { ...defaultLayer("rect", ""), y: -99999, angle: -725, width: 0, height: Number.NaN },
+    { ...defaultLayer("circle", ""), scaleY: 0, radius: Number.POSITIVE_INFINITY },
+  ];
+  const doc = { ...emptyDoc(), layers: wild.map(clampLayer) };
+  const parsed = parseEditorDoc(JSON.parse(JSON.stringify(doc)));
+  assert.ok(parsed);
+  assert.equal(
+    parsed.layers[0]?.kind === "text" && parsed.layers[0].text.length,
+    LIMITS.textLength,
+  );
+  assert.equal(parsed.layers[1]?.angle, 355);
+});
+
+test("clampLayer не трогает слой, который уже в пределах", () => {
+  const layer = defaultLayer("text", "Текст");
+  assert.deepEqual(clampLayer(layer), layer);
 });

@@ -217,6 +217,52 @@ export function parseEditorDoc(input: unknown): EditorDoc | null {
   return { format: EDITOR_FORMAT, version: EDITOR_VERSION, background, layers: parsed };
 }
 
+// ── Приведение к пределам ───────────────────────────────────
+
+function clamp(value: number, { min, max }: { min: number; max: number }): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(max, Math.max(min, value));
+}
+
+/**
+ * Загоняет слой с холста в пределы LIMITS. Проверка на входе строгая
+ * и отвергает шаблон целиком, а холст пределов не знает: в тексте можно
+ * набрать 600 знаков, стрелками увести слой далеко за край, ручкой
+ * растянуть в 30 раз. Без этого такой черновик сохранился бы, а при
+ * следующем открытии не прошёл бы проверку — и пропал целиком.
+ * Поэтому всё, что уходит с холста, проходит через эту функцию.
+ */
+export function clampLayer(layer: Layer): Layer {
+  const base = {
+    x: clamp(layer.x, LIMITS.position),
+    y: clamp(layer.y, LIMITS.position),
+    angle: Number.isFinite(layer.angle) ? ((layer.angle % 360) + 360) % 360 : 0,
+    scaleX: clamp(layer.scaleX, LIMITS.scale),
+    scaleY: clamp(layer.scaleY, LIMITS.scale),
+    fill: layer.fill,
+  };
+
+  switch (layer.kind) {
+    case "text":
+      return {
+        ...base,
+        kind: "text",
+        text: layer.text.slice(0, LIMITS.textLength),
+        fontSize: clamp(layer.fontSize, LIMITS.fontSize),
+        font: layer.font,
+      };
+    case "rect":
+      return {
+        ...base,
+        kind: "rect",
+        width: clamp(layer.width, LIMITS.size),
+        height: clamp(layer.height, LIMITS.size),
+      };
+    case "circle":
+      return { ...base, kind: "circle", radius: clamp(layer.radius, LIMITS.size) };
+  }
+}
+
 /** То же из строки: JSON.parse бросает, здесь — `null`. */
 export function parseEditorJson(text: string): EditorDoc | null {
   try {

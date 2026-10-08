@@ -1,6 +1,7 @@
 import type { Canvas, Circle, FabricObject, IText, Rect } from "fabric";
 
 import {
+  clampLayer,
   type ColorToken,
   COLOR_TOKENS,
   type EditorDoc,
@@ -108,15 +109,23 @@ export function createObject(fabric: FabricModule, layer: Layer, theme: Theme): 
   return object;
 }
 
-/** Обратное превращение. Объекты, которых редактор не создавал, пропускаются. */
+/**
+ * Обратное превращение. Объекты, которых редактор не создавал,
+ * пропускаются. Результат всегда в пределах LIMITS — см. clampLayer.
+ */
 export function objectToLayer(fabric: FabricModule, object: FabricObject): Layer | null {
+  const layer = rawLayer(fabric, object);
+  return layer === null ? null : clampLayer(layer);
+}
+
+function rawLayer(fabric: FabricModule, object: FabricObject): Layer | null {
   const info = meta.get(object);
   if (info === undefined) return null;
 
   const base = {
     x: object.left,
     y: object.top,
-    angle: ((object.angle % 360) + 360) % 360,
+    angle: object.angle,
     scaleX: object.scaleX,
     scaleY: object.scaleY,
     fill: info.fill,
