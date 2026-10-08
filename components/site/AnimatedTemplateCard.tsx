@@ -16,13 +16,14 @@ import { t } from "@/lib/i18n";
  *   однотонном фоне, а не поверх изображения: у открытки сверху свой
  *   заголовок, и плашки поверх его закрывали; по docs/DESIGN.md
  *   («Работа с изображениями») текст на голом изображении не лежит;
- * - кнопка «Редактировать» — сплошная тёмная, а не белая обводка
- *   из макета: открытки светлые, белая обводка на них не видна;
+ * - вместо кнопки «Редактировать» — тёмный кружок со стрелкой в левом
+ *   нижнем углу (08.10.2026): белая обводка из макета на светлых
+ *   открытках не видна, а кнопка с подписью на каждой карточке пестрила;
  * - сердечка «в избранное», цены и рейтинга нет — у шаблонов их нет.
  *
  * Открытка под полосой — 3:4, её родная пропорция: видео без обрезки.
  * Ссылкой обёрнута вся карточка: один таб-стоп, зона нажатия — вся.
- * Наведение и фокус проявляют кнопку: она становится золотой.
+ * Наведение и фокус проявляют кружок: он становится золотым.
  *
  * `inert` — для копий карточек в бесконечной ленте (TemplateMarquee):
  * клавиатура и скринридер видят каждую карточку один раз.
@@ -63,8 +64,14 @@ export function AnimatedTemplateCard({
             poster={template.poster}
             className="absolute inset-0 size-full object-cover"
           />
-          <span className="font-ui caps text-tpl-action xl:text-btn bg-ink text-canvas border-ink group-hover:bg-gold group-hover:border-gold group-hover:text-ink group-focus-visible:bg-gold group-focus-visible:border-gold group-focus-visible:text-ink absolute start-[10px] bottom-[10px] inline-flex min-h-[36px] items-center gap-[8px] rounded-full border px-[14px] font-medium transition-colors xl:start-[14px] xl:bottom-[14px] xl:min-h-[44px] xl:px-[20px]">
-            {t("catalog.edit")}
+          {/* Кружок со стрелкой вместо кнопки «Редактировать» (просьба
+              пользователя 08.10.2026: кнопка на каждой карточке была
+              аляповатой). Подпись не нужна: имя ссылке дают метка
+              и заголовок карточки, нажимается вся карточка. */}
+          <span
+            aria-hidden="true"
+            className="bg-ink text-canvas group-hover:bg-gold group-hover:text-ink group-focus-visible:bg-gold group-focus-visible:text-ink absolute start-[10px] bottom-[10px] grid size-[36px] place-items-center rounded-full transition-colors xl:start-[14px] xl:bottom-[14px] xl:size-[44px]"
+          >
             <Icon name="next" size={16} className="-rotate-45" />
           </span>
         </span>

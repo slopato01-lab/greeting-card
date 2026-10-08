@@ -25,7 +25,7 @@ import { ANIMATED_TEMPLATES, type AnimatedTemplate } from "@/lib/catalog/templat
 
 /** Порядок карточек в каждом ряду — сдвиг по кругу, разный у рядов. */
 const ROW_SHIFTS = [0, 3] as const;
-/** Сколько раз повторить порядок в половине ряда: 12 карточек по 220px шире 1920px. */
+/** Сколько раз повторить порядок в половине ряда: 12 карточек по 360px шире 1920px. */
 const REPEAT = 2;
 
 function rotate<T>(items: readonly T[], by: number): T[] {
@@ -41,7 +41,7 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
         role="list"
         className={`marquee ${reverse ? "marquee-reverse" : ""} ${
           // Шахматный порядок: средний ряд сдвинут на полкарточки.
-          index === 1 ? "ms-[-100px] xl:ms-[-110px]" : ""
+          index === 1 ? "ms-[-170px] xl:ms-[-180px]" : ""
         }`}
       >
         {[...half, ...half].map((template, i) => (
@@ -49,7 +49,7 @@ function Row({ items, index }: { items: AnimatedTemplate[]; index: number }) {
             key={`${template.id}-${i}`}
             template={template}
             inert={i >= half.length}
-            className="w-[200px] shrink-0 xl:w-[220px]"
+            className="w-[340px] shrink-0 xl:w-[360px]"
           />
         ))}
       </ul>

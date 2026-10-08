@@ -13,17 +13,21 @@ import { Steps } from "@/components/site/Steps";
 export default function Page() {
   return (
     <SitePage>
-      <Hero />
-      <Catalog />
-      <Faq />
-      <Benefits />
-      {/* Ряд из двух карточек: «что внутри» и золотые этапы. С 08.10.2026
+      {/* Промежуток между блоками — сверх их собственных полей
+          (docs/DESIGN.md, «Раскладка главной»). Нижний — до подвала. */}
+      <div className="flex flex-col gap-[40px] pb-[40px] xl:gap-[100px] xl:pb-[100px]">
+        <Hero />
+        <Catalog />
+        <Faq />
+        <Benefits />
+        {/* Ряд из двух карточек: «что внутри» и золотые этапы. С 08.10.2026
           стоит перед CTA, а не сразу под героем (просьба пользователя). */}
-      <div className="page-shell grid gap-[12px] xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:gap-[20px]">
-        <Inside />
-        <Steps />
+        <div className="page-shell grid gap-[12px] xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:gap-[20px]">
+          <Inside />
+          <Steps />
+        </div>
+        <Cta />
       </div>
-      <Cta />
     </SitePage>
   );
 }
