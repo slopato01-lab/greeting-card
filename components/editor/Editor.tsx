@@ -216,8 +216,9 @@ export function Editor() {
           контейнерные единицы схлопнули бы открытку в ноль. На мобильном
           ширина = min(ширина полосы, (окно − шапка − полоса просмотра) × 3/4):
           открытка целиком в экране, а под ней остаётся место, за которое
-          палец листает страницу, — сам холст прокрутку не пропускает
-          (touch-none, им таскают слои). 72px = поле сверху + промежуток +
+          палец листает страницу. С 08.10.2026 и сама открытка листается
+          одним пальцем (touch-pan-y), слои двигают двумя — см.
+          lib/editor/gestures.ts. 72px = поле сверху + промежуток +
           ряд кнопки «Просмотр». */}
       <div className="relative order-1 flex min-h-0 items-center justify-center xl:[container-type:size] xl:order-none xl:col-start-3 xl:row-start-1 xl:p-[24px]">
         <div
@@ -225,9 +226,9 @@ export function Editor() {
           tabIndex={0}
           role="group"
           aria-label={t("editor.canvas.label")}
-          aria-describedby="editor-hint"
+          aria-describedby="editor-hint editor-touch-hint"
           aria-busy={status === "loading" || busy || undefined}
-          className="rounded-inner xl:rounded-inner-d bg-photo relative aspect-[3/4] w-[min(100%,calc((100svh-var(--spacing-header)-72px)*3/4))] max-w-[600px] touch-none overflow-hidden xl:w-[min(100cqw,75cqh)] xl:max-w-none"
+          className="rounded-inner xl:rounded-inner-d bg-photo relative aspect-[3/4] w-[min(100%,calc((100svh-var(--spacing-header)-72px)*3/4))] max-w-[600px] touch-pan-y overflow-hidden xl:w-[min(100cqw,75cqh)] xl:max-w-none"
         >
           <div ref={hostRef} className="absolute inset-0" />
 
@@ -335,8 +336,18 @@ export function Editor() {
         </p>
         {/* Подсказка по клавишам нужна скринридеру всегда, глазам — на
             мобильном: на десктопе ей нет места в полосе. */}
-        <p id="editor-hint" className="font-ui text-note text-muted leading-[1.4] xl:sr-only">
+        <p
+          id="editor-hint"
+          className="font-ui text-note text-muted leading-[1.4] xl:sr-only pointer-coarse:sr-only"
+        >
           {t("editor.canvas.hint")}
+        </p>
+        {/* На сенсорном экране вместо клавиш — жесты (08.10.2026). */}
+        <p
+          id="editor-touch-hint"
+          className="font-ui text-note text-muted hidden leading-[1.4] pointer-coarse:block"
+        >
+          {t("editor.canvas.touchHint")}
         </p>
       </div>
     </div>

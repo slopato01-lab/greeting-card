@@ -43,6 +43,7 @@ import {
 } from "@/lib/editor/fabric";
 import { cutoutPerson } from "@/lib/editor/cutout";
 import { loadFont } from "@/lib/editor/fonts";
+import { attachTouchGestures } from "@/lib/editor/gestures";
 import {
   blobToDataUrl,
   cropToAspect,
@@ -288,6 +289,10 @@ export function useCardEditor() {
         // для группы нет. Выключено, пока не понадобится.
         selection: false,
         preserveObjectStacking: true,
+        // Иначе Fabric ставит холсту touch-action: none, и палец
+        // на открытке не листает страницу. Касания всё равно идут
+        // через attachTouchGestures, Fabric их не видит.
+        allowTouchScrolling: true,
       });
       live.current = { fabric, canvas, theme };
 
@@ -327,6 +332,9 @@ export function useCardEditor() {
       observer.observe(frame);
       signal.addEventListener("abort", () => observer.disconnect());
       fit();
+
+      // ── Касания: один палец листает, два — двигают слой ─────
+      attachTouchGestures(fabric, canvas, frame, signal);
 
       // ── События Fabric ────────────────────────────────────
       const offs = [
