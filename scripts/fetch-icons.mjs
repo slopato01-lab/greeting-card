@@ -46,6 +46,8 @@ const ICONS = [
   { name: "burger", source: "tabler:menu-2", mono: true, where: "бургер-меню, мобильный" },
   { name: "path", source: "tabler:route", mono: true, where: "декор в карточке FAQ" },
   { name: "planet", source: "tabler:planet", mono: true, where: "декор в герое, десктоп" },
+  { name: "prev", source: "tabler:arrow-left", mono: true, where: "стрелки рядов на главной" },
+  { name: "next", source: "tabler:arrow-right", mono: true, where: "стрелки рядов на главной" },
 ];
 
 /** Убирает анимацию и приводит иконку к её конечному, видимому состоянию. */

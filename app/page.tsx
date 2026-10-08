@@ -7,15 +7,17 @@ import { Inside } from "@/components/site/Inside";
 import { SitePage } from "@/components/site/SitePage";
 import { Steps } from "@/components/site/Steps";
 
-// Порядок секций — из эталонов design/mobile.html и design/desktop.html.
+// Порядок и раскладка секций — из макета design/главная.jpg,
+// названия и тексты наши. Разбор соответствия — docs/DESIGN.md,
+// раздел «Раскладка главной».
 export default function Page() {
   return (
-    <SitePage>
+    <SitePage headerTone="hero">
       <Hero />
-      <Steps />
-      <Faq />
       <Inside />
       <Catalog />
+      <Steps />
+      <Faq />
       <Benefits />
       <Cta />
     </SitePage>

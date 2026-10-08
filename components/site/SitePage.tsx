@@ -11,18 +11,21 @@ import { Header } from "@/components/site/Header";
  * не часть сайта, а инструмент для вычитки.
  *
  * Подвал можно снять: в конструкторе он мешает. Шапка есть везде —
- * без неё со страницы нет выхода.
+ * без неё со страницы нет выхода. На главной она становится верхом
+ * тёмной карточки героя: headerTone="hero".
  */
 export function SitePage({
   children,
   withFooter = true,
+  headerTone = "light",
 }: {
   children: ReactNode;
   withFooter?: boolean;
+  headerTone?: "light" | "hero";
 }) {
   return (
     <>
-      <Header />
+      <Header tone={headerTone} />
       <main>{children}</main>
       {withFooter ? <Footer /> : null}
     </>

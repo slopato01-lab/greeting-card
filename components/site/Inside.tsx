@@ -1,13 +1,16 @@
+import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
+import { SplitSlider } from "@/components/site/slider";
 import { type IconName } from "@/lib/icons/generated";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
  * Секция «Что спрятать внутри»: четыре карточки с иконками.
  *
- * Розовая подложка во всю ширину. На мобильном карточки едут
- * горизонтальной каруселью — в макете ряд шире экрана и обрезан
- * рамкой фрейма. С 1280px это ряд из четырёх равных карточек.
+ * Раскладка — второй блок макета главной (design/главная.jpg):
+ * счётчик, заголовок и кнопка слева, лента карточек со стрелками
+ * справа. На мобильном всё колонкой, лента прокручивается пальцем.
+ * Сама раскладка живёт в SplitSlider, здесь только карточки.
  *
  * Иконки цветные и декоративные: смысл несёт заголовок карточки,
  * поэтому они скрыты от скринридера (Icon без labelKey).
@@ -59,35 +62,30 @@ const CARDS = [
 
 export function Inside() {
   return (
-    <section className="bg-pink-tint/10 pt-[50px] pb-[63px] xl:pt-[72px] xl:pb-[63px]">
-      <div className="page-shell">
-        <h2 id="inside-title" className="font-display text-h2 xl:text-h2-d font-medium">
-          {t("inside.title")}
-        </h2>
+    <section className="pt-[60px] pb-[60px] xl:pt-[100px] xl:pb-[100px]">
+      <SplitSlider
+        titleId="inside-title"
+        title="inside.title"
+        labels={CARDS.map((card) => card.title)}
+        action={<Button href="/create" labelKey="cta.create" className="mt-[25px] xl:w-[360px]" />}
+        trackClassName="gap-[15px] xl:gap-5"
+      >
+        {CARDS.map((card) => (
+          <li
+            key={card.title}
+            className="rounded-card xl:rounded-card-d border-ink bg-pink-card flex min-h-[340px] w-[300px] flex-col items-center justify-center border-2 px-[30px] py-[26px] text-center xl:min-h-[460px] xl:w-[380px] xl:px-[44px] xl:py-[34px]"
+          >
+            <Icon name={card.icon} className={card.size} />
 
-        <ul
-          role="list"
-          tabIndex={0}
-          aria-labelledby="inside-title"
-          className="carousel mt-[68px] gap-[15px] xl:mt-[70px] xl:grid xl:grid-cols-4 xl:gap-5 xl:overflow-visible"
-        >
-          {CARDS.map((card) => (
-            <li
-              key={card.title}
-              className="rounded-card border-ink bg-pink-card flex w-[340px] flex-col items-center justify-center border-2 px-[40px] py-[26px] text-center xl:w-auto xl:px-[54px] xl:py-[34px]"
-            >
-              <Icon name={card.icon} className={card.size} />
-
-              <h3 className="font-display text-inside xl:text-inside-d mt-[14px] font-medium xl:mt-[15px]">
-                {t(card.title)}
-              </h3>
-              <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15]">
-                {t(card.body)}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
+            <h3 className="font-display text-inside xl:text-inside-d mt-[14px] font-medium xl:mt-[15px]">
+              {t(card.title)}
+            </h3>
+            <p className="font-display text-card xl:text-card-d text-body mt-[10px] leading-[1.15]">
+              {t(card.body)}
+            </p>
+          </li>
+        ))}
+      </SplitSlider>
     </section>
   );
 }

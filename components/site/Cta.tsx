@@ -5,6 +5,8 @@ import { t } from "@/lib/i18n";
  * Тёмный блок призыва к действию перед подвалом.
  *
  * Блок не во всю ширину: он лежит в полосе страницы и скруглён.
+ * По макету главной (design/главная.jpg) он выше и стоит вплотную
+ * к светлому подвалу.
  * Кнопка на тёмном фоне получает белый фокус — класс on-dark
  * из globals.css.
  *
@@ -13,9 +15,9 @@ import { t } from "@/lib/i18n";
  */
 export function Cta() {
   return (
-    <section className="pt-[60px] pb-[66px] xl:pt-[110px] xl:pb-[170px]">
+    <section className="pt-[40px] pb-[10px] xl:pt-[60px] xl:pb-[20px]">
       <div className="page-shell">
-        <div className="on-dark rounded-card xl:rounded-cta-d bg-dark flex min-h-[310px] flex-col items-center justify-center px-[20px] py-[50px] text-center xl:min-h-[386px] xl:px-[100px] xl:py-[70px]">
+        <div className="on-dark rounded-card xl:rounded-cta-d bg-dark flex min-h-[310px] flex-col items-center justify-center px-[20px] py-[50px] text-center xl:min-h-[480px] xl:px-[100px] xl:py-[70px]">
           <h2 className="font-display text-h2 xl:text-h2-d font-medium text-white">
             {t("cta.title")}
           </h2>

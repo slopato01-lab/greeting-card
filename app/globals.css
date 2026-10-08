@@ -171,6 +171,11 @@
     outline-color: var(--color-white);
   }
 
+  /* Светлый островок внутри тёмного блока — вырез с соцсетями в герое. */
+  .on-light :focus-visible {
+    outline-color: var(--color-ink);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -265,6 +270,25 @@
     scroll-snap-align: start;
   }
 
+  /* Скруглённая панель внутри полосы страницы — блоки главной из
+     design/главная.jpg. Своё боковое поле она кладёт в --shell-pad,
+     и карусели внутри вырываются к краям панели, а не экрана:
+     .carousel берёт поле из той же переменной. */
+  .inset-panel {
+    --shell-pad: var(--spacing-gutter);
+    padding-inline: var(--shell-pad);
+  }
+
+  @media (min-width: 1280px) {
+    .inset-panel {
+      --shell-pad: clamp(
+        var(--spacing-gutter),
+        calc(var(--spacing-gutter) + (100vw - 1280px) * 5 / 32),
+        calc(var(--spacing-gutter) * 6)
+      );
+    }
+  }
+
   /* Зона нажатия пилюли. Сама пилюля 33px, палец требует 44 — разницу
      добирает невидимое поле кнопки-обёртки, а не рост самой пилюли:
      иначе ряд перестаёт совпадать с эталоном. На десктопе пилюля 50px
@@ -321,6 +345,21 @@
 
     .header-nav ul {
       gap: clamp(40px, calc(40px + (100vw - 1280px) * 7 / 64), 110px);
+    }
+  }
+
+  /* Та же навигация внутри тёмной карточки героя на главной.
+     Карточка отъедает свои поля, и макетные 264 / 110 не помещаются:
+     на 1280 ряд вылезал за карточку на 46px. Здесь отступы текут
+     от 16px на 1280 до 200 / 90 на 1920 — на 1920 справа от
+     навигации остаётся место под кнопку. */
+  @media (min-width: 1280px) {
+    .header-hero .header-nav {
+      margin-inline-start: clamp(16px, calc(16px + (100vw - 1280px) * 23 / 80), 200px);
+    }
+
+    .header-hero .header-nav ul {
+      gap: clamp(16px, calc(16px + (100vw - 1280px) * 37 / 320), 90px);
     }
   }
 

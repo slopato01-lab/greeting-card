@@ -34,3 +34,5 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `burger.svg` | `tabler:menu-2` | бургер-меню, мобильный |
 | `path.svg` | `tabler:route` | декор в карточке FAQ |
 | `planet.svg` | `tabler:planet` | декор в герое, десктоп |
+| `prev.svg` | `tabler:arrow-left` | стрелки рядов на главной |
+| `next.svg` | `tabler:arrow-right` | стрелки рядов на главной |
