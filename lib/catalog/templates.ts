@@ -1,5 +1,6 @@
 import type { CardTheme } from "@/lib/card/content";
 import type { TrackId } from "@/lib/card/music";
+import { TEMPLATES as EDITOR_TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import type { TextKey } from "@/lib/i18n";
 
 /**
@@ -18,7 +19,11 @@ import type { TextKey } from "@/lib/i18n";
 
 /** Фильтры, которые действительно отбирают карточки. */
 export type CatalogFilter =
-  "catalog.filter.2" | "catalog.filter.3" | "catalog.filter.4" | "catalog.filter.5";
+  | "catalog.filter.2"
+  | "catalog.filter.3"
+  | "catalog.filter.4"
+  | "catalog.filter.5"
+  | "catalog.filter.7";
 
 /**
  * Три механики MVP. Живут здесь, а не в конструкторе: какие игры
@@ -62,11 +67,17 @@ export type Template = {
 export const CATALOG_ALL = "catalog.filter.1" satisfies TextKey;
 export const CATALOG_CUSTOM = "catalog.filter.6" satisfies TextKey;
 
+/**
+ * «Любовь» (catalog.filter.7) — с 08.10.2026, под анимированный шаблон
+ * «Сердце и письмо». Номер 7, а не 6: шестой — «Собрать свой +»,
+ * и он стоит в ряду последним.
+ */
 export const CATALOG_FILTERS = [
   "catalog.filter.2",
   "catalog.filter.3",
   "catalog.filter.4",
   "catalog.filter.5",
+  "catalog.filter.7",
 ] as const satisfies ReadonlyArray<CatalogFilter>;
 
 export const TEMPLATES = [
@@ -194,3 +205,51 @@ export function relatedTemplates(current: CatalogTemplate, count = 3): CatalogTe
   const rest = others.filter((template) => template.filter !== current.filter);
   return [...sameOccasion, ...rest].slice(0, count);
 }
+
+/**
+ * Анимированные шаблоны редактора в каталоге (08.10.2026). Не игра,
+ * а открытка-коллаж по образцу design/пример анимации и дизайна.MP4:
+ * в карточке крутится её анимация, а «Выбрать» открывает её в
+ * редакторе (/editor?template=…), где правят имя, фото и тексты.
+ *
+ * Видео и обложку рисует scripts/render-templates.mjs тем же движком,
+ * что и редактор. Фон карточки под видео — фон самого шаблона:
+ * открытка 3:4 вписывается в картинку карточки целиком, поля по краям
+ * должны быть того же цвета, а не серой подложкой.
+ */
+export type AnimatedTemplate = {
+  id: TemplateId;
+  filter: CatalogFilter;
+  nameKey: TextKey;
+  lead: TextKey;
+  video: string;
+  poster: string;
+  /** Цвет фона шаблона — содержимое открытки, а не оформление сайта. */
+  background: string;
+};
+
+function animated(
+  id: TemplateId,
+  filter: CatalogFilter,
+  nameKey: TextKey,
+  lead: TextKey,
+): AnimatedTemplate {
+  const template = EDITOR_TEMPLATES.find((item) => item.id === id);
+  const background = template?.build().background ?? "#ffffff";
+  return {
+    id,
+    filter,
+    nameKey,
+    lead,
+    video: `/assets/templates/editor/${id}.mp4`,
+    poster: `/assets/templates/editor/${id}.webp`,
+    background: background.startsWith("#") ? background : "#ffffff",
+  };
+}
+
+export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
+  animated("birthday", "catalog.filter.2", "anim.birthday.name", "anim.birthday.lead"),
+  animated("newyear", "catalog.filter.3", "anim.newyear.name", "anim.newyear.lead"),
+  animated("march8", "catalog.filter.5", "anim.march8.name", "anim.march8.lead"),
+  animated("love", "catalog.filter.7", "anim.love.name", "anim.love.lead"),
+];

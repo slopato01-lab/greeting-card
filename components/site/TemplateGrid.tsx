@@ -5,8 +5,10 @@ import Link from "next/link";
 
 import { pillVisual } from "@/components/site/pill";
 import { Ribbon } from "@/components/site/slider";
+import { AnimatedTemplateCard } from "@/components/site/AnimatedTemplateCard";
 import { TemplateCard } from "@/components/site/TemplateCard";
 import {
+  ANIMATED_TEMPLATES,
   CATALOG_ALL,
   CATALOG_CUSTOM,
   CATALOG_FILTERS,
@@ -40,7 +42,40 @@ import { t } from "@/lib/i18n";
  *
  * Сама карточка — в components/site/TemplateCard.tsx: она общая
  * с рядом «Ещё шаблоны» на странице шаблона.
+ *
+ * С 08.10.2026 в сетке два вида карточек: шаблоны-игры (TemplateCard)
+ * и анимированные шаблоны редактора (AnimatedTemplateCard). Анимированные
+ * идут первыми в своём поводе: живая карточка — лучший вход в каталог.
  */
+type Entry =
+  | {
+      kind: "animated";
+      key: string;
+      filter: CatalogFilter;
+      item: (typeof ANIMATED_TEMPLATES)[number];
+    }
+  | { kind: "game"; key: string; filter: CatalogFilter; item: (typeof TEMPLATES)[number] };
+
+const ENTRIES: readonly Entry[] = [
+  ...ANIMATED_TEMPLATES.map((item): Entry => ({
+    kind: "animated",
+    key: `anim-${item.id}`,
+    filter: item.filter,
+    item,
+  })),
+  ...TEMPLATES.map((item): Entry => ({ kind: "game", key: item.slug, filter: item.filter, item })),
+];
+
+function Card({ entry, className }: { entry: Entry; className?: string }) {
+  return entry.kind === "animated" ? (
+    <AnimatedTemplateCard
+      template={entry.item}
+      {...(className === undefined ? {} : { className })}
+    />
+  ) : (
+    <TemplateCard template={entry.item} {...(className === undefined ? {} : { className })} />
+  );
+}
 export function TemplateGrid({
   labelledBy,
   layout = "grid",
@@ -58,7 +93,7 @@ export function TemplateGrid({
   // значило бы проверять его в каждом сравнении.
   const [filter, setFilter] = useState<CatalogFilter | null>(null);
 
-  const shown = filter === null ? TEMPLATES : TEMPLATES.filter((item) => item.filter === filter);
+  const shown = filter === null ? ENTRIES : ENTRIES.filter((entry) => entry.filter === filter);
 
   return (
     <>
@@ -102,10 +137,10 @@ export function TemplateGrid({
             count={shown.length}
             trackClassName="gap-[12px] xl:gap-5"
           >
-            {shown.map((template) => (
-              <TemplateCard
-                key={template.slug}
-                template={template}
+            {shown.map((entry) => (
+              <Card
+                key={entry.key}
+                entry={entry}
                 className="w-[280px] xl:w-[calc((100%-60px)/4)]"
               />
             ))}
@@ -116,8 +151,8 @@ export function TemplateGrid({
           role="list"
           className={`grid gap-[20px] xl:grid-cols-4 xl:gap-x-5 xl:gap-y-[30px] ${gridClassName}`}
         >
-          {shown.map((template) => (
-            <TemplateCard key={template.slug} template={template} />
+          {shown.map((entry) => (
+            <Card key={entry.key} entry={entry} />
           ))}
         </ul>
       )}

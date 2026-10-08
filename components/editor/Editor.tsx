@@ -43,6 +43,8 @@ export function Editor() {
     saved,
     notice,
     previews,
+    pendingTemplate,
+    setPendingTemplate,
     hasContent,
     actions,
   } = useCardEditor();
@@ -55,6 +57,8 @@ export function Editor() {
         <TemplatesPanel
           disabled={!editable}
           previews={previews}
+          pending={pendingTemplate}
+          onPending={setPendingTemplate}
           hasContent={hasContent}
           onApply={(id) => void actions.applyTemplate(id)}
           className="xl:col-start-1 xl:row-start-1"

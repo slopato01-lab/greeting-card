@@ -133,6 +133,10 @@ export function useCardEditor() {
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState<TextKey | null>(null);
   const [previews, setPreviews] = useState<Partial<Record<TemplateId, string>>>({});
+  /** Шаблон, который ждёт подтверждения замены, — из панели или по ссылке. */
+  const [pendingTemplate, setPendingTemplate] = useState<TemplateId | null>(null);
+  /** Шаблон из ?template= для пустого холста: применяется, когда холст готов. */
+  const requestedTemplate = useRef<TemplateId | null>(null);
 
   // ── Общие помощники ───────────────────────────────────────
 
@@ -367,6 +371,26 @@ export function useCardEditor() {
         },
         { signal },
       );
+
+      // ── Шаблон по ссылке из каталога: /editor?template=birthday ──
+      // Параметр снимается с адреса сразу: обновление страницы не должно
+      // снова затирать холст шаблоном. Пустой холст — шаблон ляжет
+      // и проиграется, когда редактор готов; непустой — сначала вопрос.
+      const params = new URLSearchParams(window.location.search);
+      const fromLink = TEMPLATES.find((item) => item.id === params.get("template"))?.id ?? null;
+      if (params.has("template")) {
+        params.delete("template");
+        const query = params.toString();
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + (query ? `?${query}` : ""),
+        );
+      }
+      if (fromLink !== null) {
+        if (canvas.getObjects().length === 0) requestedTemplate.current = fromLink;
+        else setPendingTemplate(fromLink);
+      }
 
       setStatus("ready");
 
@@ -769,6 +793,15 @@ export function useCardEditor() {
     [applyDocMeta, assetUrl, markDirty, play, syncSelection],
   );
 
+  // Шаблон по ссылке на пустой холст — как только редактор готов.
+  useEffect(() => {
+    if (status !== "ready") return;
+    const id = requestedTemplate.current;
+    if (id === null) return;
+    requestedTemplate.current = null;
+    void applyTemplate(id);
+  }, [status, applyTemplate]);
+
   // ── Файлы ─────────────────────────────────────────────────
 
   const exportPng = useCallback(() => {
@@ -873,6 +906,8 @@ export function useCardEditor() {
     saved,
     notice,
     previews,
+    pendingTemplate,
+    setPendingTemplate,
     hasContent: () => (live.current?.canvas.getObjects().length ?? 0) > 0,
     actions: {
       add,

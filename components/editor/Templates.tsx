@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import { GroupLabel, Panel } from "@/components/editor/controls";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { t } from "@/lib/i18n";
@@ -20,20 +18,23 @@ import { t } from "@/lib/i18n";
 export function TemplatesPanel({
   disabled,
   previews,
+  pending,
+  onPending,
   hasContent,
   onApply,
   className,
 }: {
   disabled: boolean;
   previews: Partial<Record<TemplateId, string>>;
+  /** Шаблон, который ждёт «Заменить?». Живёт в хуке: его ставит и ссылка из каталога. */
+  pending: TemplateId | null;
+  onPending: (id: TemplateId | null) => void;
   hasContent: () => boolean;
   onApply: (id: TemplateId) => void;
   className?: string;
 }) {
-  const [pending, setPending] = useState<TemplateId | null>(null);
-
   const pick = (id: TemplateId) => {
-    if (hasContent()) setPending(id);
+    if (hasContent()) onPending(id);
     else onApply(id);
   };
 
@@ -85,7 +86,7 @@ export function TemplatesPanel({
               type="button"
               onClick={() => {
                 onApply(pending);
-                setPending(null);
+                onPending(null);
               }}
               className="font-ui text-note bg-gold text-canvas min-h-tap rounded-full px-[18px] font-medium transition-colors hover:bg-[color-mix(in_oklab,var(--color-gold)_88%,var(--color-canvas))]"
             >
@@ -93,7 +94,7 @@ export function TemplatesPanel({
             </button>
             <button
               type="button"
-              onClick={() => setPending(null)}
+              onClick={() => onPending(null)}
               className="font-ui text-note text-ink border-line hover:bg-line min-h-tap rounded-full border px-[18px] font-medium transition-colors"
             >
               {t("editor.templates.cancel")}

@@ -17,6 +17,7 @@
     "test": "node --test \"lib/**/*.test.ts\"",
     "icons:fetch": "node scripts/fetch-icons.mjs",
     "stickers:fetch": "node scripts/fetch-stickers.mjs",
+    "templates:render": "node scripts/render-templates.mjs",
     "deploy": "next build && wrangler pages deploy out --project-name greeting-card --branch main"
   },
   "dependencies": {
