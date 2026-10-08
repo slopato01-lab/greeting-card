@@ -40,7 +40,6 @@ import {
   type Theme,
   usedAssets,
 } from "@/lib/editor/fabric";
-import { loadFont } from "@/lib/editor/fonts";
 import { cutoutPerson } from "@/lib/editor/cutout";
 import {
   blobToDataUrl,
@@ -83,8 +82,6 @@ const NUDGE_STEP_BIG = 10;
 const CASCADE_OFFSET = 24;
 const CASCADE_STEPS = 6;
 const BLOB_TTL_MS = 10_000;
-/** Превью шаблона: 180 × 240, вчетверо меньше PNG-экспорта. */
-const PREVIEW_MULTIPLIER = 0.3;
 
 export type EditorStatus = "loading" | "ready" | "error";
 
@@ -95,9 +92,24 @@ type Asset = { blob: Blob; url: string };
 
 type Playback = { raf: number; items: { object: FabricObject; layer: Layer }[] };
 
-function readDraft(): EditorDoc | null {
+/**
+ * Ключ черновика. У каждого шаблона свой черновик: открыл из каталога
+ * «Ёлку» — видишь свою «Ёлку», а не правки «Колпака». Свободный холст
+ * (/editor без шаблона) живёт под прежним ключом — старые черновики целы.
+ */
+function draftKeyFor(template: TemplateId | null): string {
+  return template === null ? DRAFT_KEY : `${DRAFT_KEY}.${template}`;
+}
+
+/** Шаблон страницы: /editor?template=… Чужое значение — свободный холст. */
+function templateFromUrl(): TemplateId | null {
+  const id = new URLSearchParams(window.location.search).get("template");
+  return TEMPLATES.find((item) => item.id === id)?.id ?? null;
+}
+
+function readDraft(key: string): EditorDoc | null {
   try {
-    const raw = window.localStorage.getItem(DRAFT_KEY);
+    const raw = window.localStorage.getItem(key);
     return raw === null ? null : parseEditorJson(raw);
   } catch {
     // Приватный режим Safari: хранилище бросает. Начинаем с чистого листа.
@@ -141,11 +153,10 @@ export function useCardEditor() {
   const [busyText, setBusyText] = useState<TextKey>("loading.upload");
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState<TextKey | null>(null);
-  const [previews, setPreviews] = useState<Partial<Record<TemplateId, string>>>({});
-  /** Шаблон, который ждёт подтверждения замены, — из панели или по ссылке. */
-  const [pendingTemplate, setPendingTemplate] = useState<TemplateId | null>(null);
-  /** Шаблон из ?template= для пустого холста: применяется, когда холст готов. */
-  const requestedTemplate = useRef<TemplateId | null>(null);
+  /** Куда пишется черновик — зависит от шаблона страницы. */
+  const draftKey = useRef(DRAFT_KEY);
+  /** Открыли шаблон — проиграть его, когда холст готов: без движения шаблон не понять. */
+  const playOnReady = useRef(false);
 
   // ── Общие помощники ───────────────────────────────────────
 
@@ -189,7 +200,7 @@ export function useCardEditor() {
         backgroundRef.current,
         durationRef.current,
       );
-      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      window.localStorage.setItem(draftKey.current, JSON.stringify(draft));
       dirty.current = false;
       setSaved(true);
       // Фото удалённых слоёв больше не нужны — освобождаем место.
@@ -254,7 +265,15 @@ export function useCardEditor() {
       live.current = { fabric, canvas, theme };
 
       // Черновик и его фото из IndexedDB.
-      const doc = readDraft() ?? emptyDoc();
+      // Шаблон страницы — главный и не меняется: его выбирают в каталоге.
+      // Свой черновик этого шаблона, если он есть, иначе сам шаблон.
+      const template = templateFromUrl();
+      draftKey.current = draftKeyFor(template);
+      playOnReady.current = template !== null;
+      const doc =
+        readDraft(draftKey.current) ??
+        TEMPLATES.find((item) => item.id === template)?.build() ??
+        emptyDoc();
       for (const layer of doc.layers) {
         if (layer.kind !== "image" || owned.has(layer.asset)) continue;
         const blob = await getAsset(layer.asset);
@@ -381,63 +400,7 @@ export function useCardEditor() {
         { signal },
       );
 
-      // ── Шаблон по ссылке из каталога: /editor?template=birthday ──
-      // Параметр снимается с адреса сразу: обновление страницы не должно
-      // снова затирать холст шаблоном. Пустой холст — шаблон ляжет
-      // и проиграется, когда редактор готов; непустой — сначала вопрос.
-      const params = new URLSearchParams(window.location.search);
-      const fromLink = TEMPLATES.find((item) => item.id === params.get("template"))?.id ?? null;
-      if (params.has("template")) {
-        params.delete("template");
-        const query = params.toString();
-        window.history.replaceState(
-          null,
-          "",
-          window.location.pathname + (query ? `?${query}` : ""),
-        );
-      }
-      if (fromLink !== null) {
-        if (canvas.getObjects().length === 0) requestedTemplate.current = fromLink;
-        else setPendingTemplate(fromLink);
-      }
-
       setStatus("ready");
-
-      // ── Превью шаблонов ───────────────────────────────────
-      // Рисуются тем же кодом, что и холст, на невидимом StaticCanvas:
-      // так превью всегда совпадает с тем, что ляжет на холст.
-      // Сначала все шрифты шаблонов разом, потом сброс кэша ширин:
-      // иначе первое превью меряет буквы запасным шрифтом, пока
-      // настоящий ещё не готов для холста, — поймано в браузере.
-      const docs = TEMPLATES.map((template) => ({ template, doc: template.build() }));
-      await Promise.all(
-        docs.flatMap(({ doc }) =>
-          doc.layers.flatMap((layer) =>
-            layer.kind === "text"
-              ? [loadFont(theme.fonts[layer.font], layer.bold, layer.italic)]
-              : [],
-          ),
-        ),
-      );
-      if ("fonts" in document) await document.fonts.ready;
-      fabric.cache.clearFontCache();
-      if (signal.aborted) return;
-
-      const shots: Partial<Record<TemplateId, string>> = {};
-      for (const { template, doc } of docs) {
-        const element = document.createElement("canvas");
-        const preview = new fabric.StaticCanvas(element, {
-          width: CARD_WIDTH,
-          height: CARD_HEIGHT,
-          renderOnAddRemove: false,
-        });
-        await loadDocIntoCanvas(fabric, preview, doc, theme, assetUrl);
-        preview.renderAll();
-        shots[template.id] = preview.toDataURL({ format: "png", multiplier: PREVIEW_MULTIPLIER });
-        await preview.dispose();
-        if (signal.aborted) return;
-      }
-      setPreviews(shots);
     };
 
     start().catch(() => {
@@ -881,36 +844,12 @@ export function useCardEditor() {
     setSelected(null);
   }, [saveDraft, stopPlayback]);
 
-  /** Шаблон на холст — и сразу просмотр: шаблон без движения не понять. */
-  const applyTemplate = useCallback(
-    async (id: TemplateId) => {
-      const current = live.current;
-      const template = TEMPLATES.find((item) => item.id === id);
-      if (current === null || template === undefined || playback.current !== null) return;
-      setNotice(null);
-      setBusy(true);
-      try {
-        const doc = template.build();
-        await loadDocIntoCanvas(current.fabric, current.canvas, doc, current.theme, assetUrl);
-        applyDocMeta(doc);
-        markDirty();
-        syncSelection();
-      } finally {
-        setBusy(false);
-      }
-      if (live.current === current) play();
-    },
-    [applyDocMeta, assetUrl, markDirty, play, syncSelection],
-  );
-
-  // Шаблон по ссылке на пустой холст — как только редактор готов.
+  // Открытый шаблон проигрывается, как только холст готов.
   useEffect(() => {
-    if (status !== "ready") return;
-    const id = requestedTemplate.current;
-    if (id === null) return;
-    requestedTemplate.current = null;
-    void applyTemplate(id);
-  }, [status, applyTemplate]);
+    if (status !== "ready" || !playOnReady.current) return;
+    playOnReady.current = false;
+    play();
+  }, [status, play]);
 
   // ── Файлы ─────────────────────────────────────────────────
 
@@ -1016,10 +955,6 @@ export function useCardEditor() {
     busyText,
     saved,
     notice,
-    previews,
-    pendingTemplate,
-    setPendingTemplate,
-    hasContent: () => (live.current?.canvas.getObjects().length ?? 0) > 0,
     actions: {
       add,
       addText,
@@ -1029,7 +964,6 @@ export function useCardEditor() {
       removeBackground,
       setMono,
       setSpacing,
-      applyTemplate,
       setFill,
       setOpacity,
       setFontSize,

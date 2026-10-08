@@ -6,7 +6,6 @@ import { Button } from "@/components/Button";
 import { ToolButton } from "@/components/editor/controls";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
 import { type EditorTab, panelId, Rail, tabId } from "@/components/editor/Rail";
-import { TemplatesPanel } from "@/components/editor/Templates";
 import {
   BackgroundPanel,
   ElementsPanel,
@@ -24,6 +23,10 @@ import { t } from "@/lib/i18n";
  * Редактор открытки. Раскладка по образцу Canva (08.10.2026, просьба
  * пользователя: «слева вертикальный блок со всеми инструментами, всё
  * на один экран десктопа»):
+ *
+ * Шаблон страницы (/editor?template=…) главный и в редакторе не меняется:
+ * его выбирают в каталоге. Вкладки «Шаблоны» и вопроса «Заменить
+ * открытку шаблоном?» больше нет — у каждого шаблона свой черновик.
  *
  *   ┌──────┬──────────────┬──────────────────────────────┐
  *   │рейка │ панель       │           открытка           │
@@ -76,16 +79,12 @@ export function Editor() {
     busyText,
     saved,
     notice,
-    previews,
-    pendingTemplate,
-    setPendingTemplate,
-    hasContent,
     actions,
   } = useCardEditor();
   const ready = status === "ready";
   const editable = ready && !playing && !busy;
 
-  const [tab, setTab] = useState<EditorTab>("templates");
+  const [tab, setTab] = useState<EditorTab>("elements");
 
   // Выделили элемент на холсте — панель переходит на «Изменить»,
   // как контекстная панель Canva. Считается во время рендера, а не
@@ -105,17 +104,6 @@ export function Editor() {
 
   const panel = (() => {
     switch (tab) {
-      case "templates":
-        return (
-          <TemplatesPanel
-            disabled={!editable}
-            previews={previews}
-            pending={pendingTemplate}
-            onPending={setPendingTemplate}
-            hasContent={hasContent}
-            onApply={(id) => void actions.applyTemplate(id)}
-          />
-        );
       case "elements":
         return (
           <ElementsPanel

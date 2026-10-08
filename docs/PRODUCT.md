@@ -1058,10 +1058,6 @@
 | `font.shantell` | Shantell Sans |
 | `font.ptmono` | PT Mono |
 | `editor.fontGroup.mono` | Моноширинные |
-| `editor.templates` | Шаблоны |
-| `editor.templates.replace` | Заменить текущую открытку шаблоном? Всё, что на холсте сейчас, пропадёт |
-| `editor.templates.confirm` | Заменить |
-| `editor.templates.cancel` | Отмена |
 | `tpl.birthday.label` | День рождения |
 | `tpl.birthday.title` | с ДнЁм ⏎ РоЖдЕнИя, |
 | `tpl.birthday.who` | СоЛнЫшКо! |
@@ -1122,7 +1118,6 @@
 | Ключ | Текст |
 |---|---|
 | `editor.tabs` | Инструменты редактора |
-| `editor.tab.templates` | Шаблоны |
 | `editor.tab.elements` | Элементы |
 | `editor.tab.text` | Текст |
 | `editor.tab.photo` | Фото |
@@ -1185,3 +1180,12 @@
 | `sticker.torn-paper` | Рваная бумага |
 | `sticker.snowflake-line` | Снежинка-контур |
 | `sticker.ny-photo` | Пример фото |
+
+## Редактор без смены шаблона (08.10.2026)
+
+Главный шаблон выбирают только в каталоге; в редакторе вкладки
+«Шаблоны» и вопроса «Заменить текущую открытку шаблоном?» нет. У каждого
+шаблона свой черновик, адрес `/editor?template=…` остаётся в строке:
+обновление страницы открывает тот же шаблон с правками. Ключи
+`editor.templates*` и `editor.tab.templates` удалены.
+

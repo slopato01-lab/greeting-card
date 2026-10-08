@@ -78,12 +78,6 @@ const ICONS = [
   { name: "sticker", source: "tabler:sticker", mono: true, where: "редактор: стикеры" },
   { name: "cutout", source: "tabler:background", mono: true, where: "редактор: убрать фон" },
   {
-    name: "tabTemplates",
-    source: "tabler:layout-grid",
-    mono: true,
-    where: "редактор: вкладка «Шаблоны»",
-  },
-  {
     name: "tabElements",
     source: "tabler:triangle-square-circle",
     mono: true,

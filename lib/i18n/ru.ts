@@ -717,11 +717,6 @@ export const ru = {
   "font.shantell": "Shantell Sans",
   "font.ptmono": "PT Mono",
   "editor.fontGroup.mono": "Моноширинные",
-  "editor.templates": "Шаблоны",
-  "editor.templates.replace":
-    "Заменить текущую открытку шаблоном? Всё, что на холсте сейчас, пропадёт",
-  "editor.templates.confirm": "Заменить",
-  "editor.templates.cancel": "Отмена",
   "tpl.birthday.label": "День рождения",
   "tpl.birthday.title": "с ДнЁм\nРоЖдЕнИя,",
   "tpl.birthday.who": "СоЛнЫшКо!",
@@ -766,7 +761,6 @@ export const ru = {
 
   // ── Редактор как в Canva: вкладки и заготовки (08.10.2026) ──
   "editor.tabs": "Инструменты редактора",
-  "editor.tab.templates": "Шаблоны",
   "editor.tab.elements": "Элементы",
   "editor.tab.text": "Текст",
   "editor.tab.photo": "Фото",
