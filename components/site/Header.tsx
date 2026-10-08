@@ -29,7 +29,7 @@ import { t, type TextKey } from "@/lib/i18n";
 const NAV: ReadonlyArray<{ href: string; key: TextKey }> = [
   { href: "/cards", key: "nav.cards" },
   { href: "/games", key: "nav.games" },
-  { href: "/faq", key: "nav.faq" },
+  { href: "/#faq", key: "nav.faq" },
   { href: "/how", key: "nav.how" },
 ];
 

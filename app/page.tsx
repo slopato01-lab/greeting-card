@@ -4,6 +4,7 @@ import { Cta } from "@/components/site/Cta";
 import { Faq } from "@/components/site/Faq";
 import { Hero } from "@/components/site/Hero";
 import { Inside } from "@/components/site/Inside";
+import { Questions } from "@/components/site/Questions";
 import { SitePage } from "@/components/site/SitePage";
 import { Steps } from "@/components/site/Steps";
 
@@ -29,6 +30,8 @@ export default function Page() {
           <Steps />
         </div>
         <Cta />
+        {/* Вопросы и ответы — после CTA, вместо страницы /faq (08.10.2026). */}
+        <Questions />
       </div>
     </SitePage>
   );

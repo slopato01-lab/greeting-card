@@ -139,7 +139,7 @@ export function Faq() {
           <div className="flex items-start justify-between">
             <Icon name="planet" className="text-gold-deep size-[48px] xl:size-[72px]" />
             <Link
-              href="/faq"
+              href="#faq"
               aria-label={t("page.faq.title")}
               className="size-tap bg-ink text-canvas hover:bg-gold hover:text-ink flex items-center justify-center rounded-full transition-colors"
             >
