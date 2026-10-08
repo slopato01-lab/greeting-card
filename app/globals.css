@@ -346,6 +346,61 @@
     }
   }
 
+  /* Бесконечные ряды шаблонов на главной (components/site/TemplateMarquee).
+     Ряд вырывается из полосы страницы на всю ширину экрана, как .carousel.
+     Лента — две одинаковые половины; едет ровно на половину своей ширины
+     и начинает сначала. Промежутки — полями карточек, а не gap: gap
+     между половинами сдвинул бы шов на полпромежутка, и лента дёргалась бы. */
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .marquee-row {
+    overflow: hidden;
+    margin-inline: calc(-1 * var(--shell-pad));
+  }
+
+  .marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 70s linear infinite;
+  }
+
+  .marquee > * {
+    margin-inline-end: 12px;
+  }
+
+  .marquee-reverse {
+    animation-direction: reverse;
+  }
+
+  /* По движущейся карточке трудно попасть: наведение и фокус — пауза. */
+  .marquee-row:hover .marquee,
+  .marquee-row:focus-within .marquee {
+    animation-play-state: paused;
+  }
+
+  @media (min-width: 1280px) {
+    .marquee > * {
+      margin-inline-end: 20px;
+    }
+  }
+
+  /* Общий сброс укоротил бы анимацию до мгновения — и лента застыла бы
+     сдвинутой на половину. Без движения ряд стоит и листается пальцем. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      animation: none;
+    }
+
+    .marquee-row {
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+  }
+
   /* Подпись капсом: плашка героя, метки, навигация, кнопки. */
   .caps {
     text-transform: uppercase;

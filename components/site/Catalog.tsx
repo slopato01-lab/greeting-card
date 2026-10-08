@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button";
 import { Sun } from "@/components/site/Ornament";
-import { TemplateGrid } from "@/components/site/TemplateGrid";
+import { TemplateMarquee } from "@/components/site/TemplateMarquee";
 import { t } from "@/lib/i18n";
 
 /**
@@ -11,7 +11,7 @@ import { t } from "@/lib/i18n";
  * design/главная greetinh-cards.jpg: заголовок разведён на две строки
  * по диагонали — первая слева, последнее слово справа внизу. Между
  * ними справа золотая кнопка, слева подводка и «солнце». Ниже черта,
- * пилюли фильтров и лента карточек со счётчиком.
+ * три бесконечных ряда карточек.
  *
  * Строки режутся из одного ключа словаря по последнему пробелу —
  * текст не меняется, меняется только раскладка. Для скринридера
@@ -21,7 +21,11 @@ import { t } from "@/lib/i18n";
  * На мобильном порядок другой: обе строки заголовка подряд, под ними
  * подводка и кнопка.
  *
- * Сама лента живёт в TemplateGrid — она же сеткой наполняет /cards.
+ * С 08.10.2026 вместо ленты с фильтрами — три ряда анимированных
+ * шаблонов, сами едущие в шахматном порядке (TemplateMarquee), а карточка
+ * — по третьей карточке этого блока макета (просьба пользователя).
+ * Фильтры остались на /cards, туда ведёт кнопка: в бегущих рядах
+ * отбор по одному поводу дал бы ряд из одной повторяющейся карточки.
  */
 function splitLast(text: string): readonly [string, string] {
   const at = text.lastIndexOf(" ");
@@ -68,12 +72,7 @@ export function Catalog() {
 
       <div aria-hidden="true" className="bg-line mt-[30px] h-px xl:mt-[40px]" />
 
-      <TemplateGrid
-        labelledBy="catalog-title"
-        layout="ribbon"
-        rowClassName="mt-[20px] xl:mt-[24px]"
-        gridClassName="mt-[20px] xl:mt-[28px]"
-      />
+      <TemplateMarquee className="mt-[24px] xl:mt-[32px]" />
     </section>
   );
 }

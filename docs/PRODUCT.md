@@ -1089,6 +1089,7 @@
 |---|---|
 | `catalog.filter.7` | Любовь |
 | `catalog.animated` | Анимация |
+| `catalog.edit` | Редактировать |
 | `anim.birthday.name` | Колпак и свеча |
 | `anim.birthday.lead` | Заголовок выпрыгивает по буквам, колпак и свеча влетают на фото. Поставьте свой снимок и имя. |
 | `anim.newyear.name` | Ёлочные шары |
