@@ -1,3 +1,5 @@
+import type { CardTheme } from "@/lib/card/content";
+import type { TrackId } from "@/lib/card/music";
 import type { TextKey } from "@/lib/i18n";
 
 /**
@@ -43,6 +45,12 @@ export type Template = {
   game: GameKey;
   lead: TextKey;
   items: readonly [TextKey, TextKey, TextKey];
+  /** Оформление открытки и обложка шаблона. У обычных шаблонов null. */
+  theme: CardTheme | null;
+  /** Картинка карточки в каталоге и на странице шаблона. */
+  cover: string | null;
+  /** Песня по умолчанию; в конструкторе её можно сменить. */
+  track: TrackId | null;
 };
 
 /**
@@ -63,12 +71,31 @@ export const CATALOG_FILTERS = [
 
 export const TEMPLATES = [
   {
+    // Шаблон со своим оформлением: фото праздника с Unsplash, песни
+    // с открытой лицензией, скретч-карта с промокодом под покрытием.
+    // Третий в фильтре «День рождения» — фильтры перестают быть
+    // ровно по два, пустых от этого не становится. Стоит первым:
+    // он открывает каталог и мини-карточку героя на главной.
+    slug: "s-dnyom-rozhdeniya",
+    nameKey: "catalog.card.9",
+    filter: "catalog.filter.2",
+    game: "games.card.3.title",
+    lead: "tpl.9.lead",
+    items: ["tpl.9.item.1", "tpl.9.item.2", "tpl.9.item.3"],
+    theme: "birthday",
+    cover: "/assets/templates/birthday/balloons.jpg",
+    track: "monk",
+  },
+  {
     slug: "dlya-vtoroy-polovinki",
     nameKey: "catalog.card.1",
     filter: "catalog.filter.2",
     game: "games.card.1.title",
     lead: "tpl.1.lead",
     items: ["tpl.1.item.1", "tpl.1.item.2", "tpl.1.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
   {
     slug: "dlya-druga",
@@ -77,6 +104,9 @@ export const TEMPLATES = [
     game: "games.card.2.title",
     lead: "tpl.2.lead",
     items: ["tpl.2.item.1", "tpl.2.item.2", "tpl.2.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
   {
     slug: "dlya-mamy",
@@ -85,6 +115,9 @@ export const TEMPLATES = [
     game: "games.card.1.title",
     lead: "tpl.3.lead",
     items: ["tpl.3.item.1", "tpl.3.item.2", "tpl.3.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
   {
     slug: "dlya-babushki",
@@ -93,6 +126,9 @@ export const TEMPLATES = [
     game: "games.card.1.title",
     lead: "tpl.4.lead",
     items: ["tpl.4.item.1", "tpl.4.item.2", "tpl.4.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
   {
     slug: "dlya-kolleg",
@@ -101,6 +137,9 @@ export const TEMPLATES = [
     game: "games.card.2.title",
     lead: "tpl.5.lead",
     items: ["tpl.5.item.1", "tpl.5.item.2", "tpl.5.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
   {
     slug: "pervyy-novyy-god",
@@ -109,6 +148,9 @@ export const TEMPLATES = [
     game: "games.card.1.title",
     lead: "tpl.6.lead",
     items: ["tpl.6.item.1", "tpl.6.item.2", "tpl.6.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
   {
     slug: "zhdyom-malysha",
@@ -117,6 +159,9 @@ export const TEMPLATES = [
     game: "games.card.3.title",
     lead: "tpl.7.lead",
     items: ["tpl.7.item.1", "tpl.7.item.2", "tpl.7.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
   {
     slug: "pereezzhaem",
@@ -125,6 +170,9 @@ export const TEMPLATES = [
     game: "games.card.3.title",
     lead: "tpl.8.lead",
     items: ["tpl.8.item.1", "tpl.8.item.2", "tpl.8.item.3"],
+    theme: null,
+    cover: null,
+    track: null,
   },
 ] as const satisfies ReadonlyArray<Template>;
 

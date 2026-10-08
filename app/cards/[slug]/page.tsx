@@ -83,8 +83,17 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
           {/* Превью шаблона. Пропорции те же, что у карточки каталога. */}
           <div
             aria-hidden="true"
-            className="rounded-card xl:rounded-card-d bg-photo min-h-[317px] xl:min-h-[520px]"
-          />
+            className="rounded-card xl:rounded-card-d bg-photo relative min-h-[317px] overflow-hidden xl:min-h-[520px]"
+          >
+            {template.cover === null ? null : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={template.cover}
+                alt=""
+                className="absolute inset-0 size-full object-cover"
+              />
+            )}
+          </div>
 
           <div className="rounded-card xl:rounded-card-d bg-surface flex flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[40px] xl:pt-[40px] xl:pb-[44px]">
             <dl className="flex flex-col gap-[14px]">

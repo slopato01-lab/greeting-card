@@ -13,8 +13,8 @@ import { t } from "@/lib/i18n";
  * крупный H1 и две кнопки — золотая и белая. Справа колонка из двух
  * мини-карточек: белая и золотая.
  *
- * Белая мини-карточка — первый шаблон каталога, золотая — «Собрать
- * свой». В макете там товары с ценами; цен и рейтингов у нас нет,
+ * Белая мини-карточка — первый шаблон каталога (с 08.10.2026 это
+ * «С днём рождения!» со своей обложкой), золотая — «Собрать свой». В макете там товары с ценами; цен и рейтингов у нас нет,
  * поэтому на карточках только то, что есть в каталоге.
  *
  * Фото из макета у нас нет — карточка залита --surface, на месте
@@ -73,8 +73,17 @@ export function Hero() {
             >
               <span
                 aria-hidden="true"
-                className="bg-photo rounded-inner block h-[90px] xl:h-[120px]"
-              />
+                className="bg-photo rounded-inner relative block h-[90px] overflow-hidden xl:h-[120px]"
+              >
+                {FEATURED.cover === null ? null : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={FEATURED.cover}
+                    alt=""
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                )}
+              </span>
               <span className="flex flex-1 flex-col justify-between gap-[10px] px-[6px] pt-[12px] pb-[4px] xl:flex-row xl:items-end">
                 <span className="font-display caps text-badge xl:text-badge-d leading-[1.25] font-medium">
                   {t(FEATURED.nameKey)}

@@ -24,7 +24,8 @@ import { t } from "@/lib/i18n";
  * проявляет обводку и заливает круг со стрелкой, нажатие
  * притапливает карточку на пиксель.
  *
- * Картинок шаблонов ещё нет — на их месте плейсхолдер --photo.
+ * Картинка есть только у шаблонов со своим оформлением (`cover`),
+ * у остальных на её месте плейсхолдер --photo.
  */
 export function TemplateCard({
   template,
@@ -41,8 +42,20 @@ export function TemplateCard({
       >
         <div
           aria-hidden="true"
-          className="bg-photo rounded-inner xl:rounded-inner-d relative h-[260px] shrink-0 xl:h-[300px]"
+          className="bg-photo rounded-inner xl:rounded-inner-d relative h-[260px] shrink-0 overflow-hidden xl:h-[300px]"
         >
+          {/* Обложка есть только у шаблонов со своим оформлением.
+              Обычный img: оптимизатор Next в статическом экспорте
+              недоступен, файл уже ужат до 1600px. */}
+          {template.cover === null ? null : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={template.cover}
+              alt=""
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover"
+            />
+          )}
           <span className="border-ink text-ink group-hover:bg-paper group-hover:text-canvas absolute start-[12px] top-[12px] flex size-[40px] items-center justify-center rounded-full border transition-colors">
             <Icon name="next" size={18} className="-rotate-45" />
           </span>

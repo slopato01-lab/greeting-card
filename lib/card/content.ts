@@ -1,3 +1,4 @@
+import type { TrackId } from "@/lib/card/music";
 import type { GameKey } from "@/lib/catalog/templates";
 import type { TextKey } from "@/lib/i18n";
 
@@ -37,7 +38,25 @@ export type CardPhoto = {
   url: string;
 };
 
+/**
+ * Оформление открытки. `null` — обычная открытка в стиле сайта.
+ * `birthday` — шаблон «С днём рождения!»: фото праздника на обложке
+ * и в покрытии скретч-карты, золото, музыка.
+ */
+export const CARD_THEMES = ["birthday"] as const;
+
+export type CardTheme = (typeof CARD_THEMES)[number];
+
 export type CardContent = {
+  theme: CardTheme | null;
+  /**
+   * Зерно для всего, что в открытке раскладывается «случайно»: узор
+   * на покрытии скретч-карты и прочее. Открытка обязана выглядеть
+   * одинаково при каждом открытии, поэтому Math.random нельзя.
+   * У настоящей открытки это её slug, в превью — slug шаблона.
+   */
+  seed: string;
+  track: TrackId | null;
   game: GameKey | null;
   greeting: string;
   sign: string;

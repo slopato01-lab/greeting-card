@@ -15,11 +15,14 @@ import { CardView } from "@/components/card/CardView";
 import { GhostButton } from "@/components/GhostButton";
 import { pillVisual } from "@/components/site/pill";
 import {
+  CARD_THEMES,
   SURPRISE_KINDS,
   type CardContent,
   type CardPhoto,
+  type CardTheme,
   type SurpriseKind,
 } from "@/lib/card/content";
+import { TRACKS, type TrackId, trackById } from "@/lib/card/music";
 import {
   CATALOG_FILTERS,
   GAMES,
@@ -82,10 +85,19 @@ const TEMPLATE_PARAM = "t";
  * плюс повод. Файлов здесь нет намеренно, повода нет в открытке —
  * он выбирает тему и игру, а получателю не показывается.
  */
-type Draft = Omit<CardContent, "photos"> & { occasion: CatalogFilter | null };
+type Draft = Omit<CardContent, "photos" | "seed"> & { occasion: CatalogFilter | null };
+
+/**
+ * Зерно превью. У открытки ещё нет своего адреса — он появится после
+ * оплаты, и тогда зерном станет он. До тех пор превью раскладывается
+ * одинаково при каждом показе, этого достаточно.
+ */
+const PREVIEW_SEED = "preview";
 
 const EMPTY: Draft = {
   occasion: null,
+  theme: null,
+  track: null,
   game: null,
   greeting: "",
   sign: "",
@@ -112,6 +124,9 @@ const STEP_HINTS: ReadonlyArray<TextKey | null> = [
 ];
 
 const LAST_STEP = STEP_TITLES.length - 1;
+
+/** Шаг «Ваши слова» — на нём же выбирается музыка. */
+const WORDS_STEP = 3;
 
 /**
  * Сырой черновик из хранилища. В приватном режиме Safari часть хранилищ
@@ -172,9 +187,13 @@ function parseDraft(raw: string | null): Draft {
     const kind = value.surpriseKind;
     const game = value.game;
     const occasion = value.occasion;
+    const theme = value.theme;
+    const track = value.track;
 
     return {
       occasion: CATALOG_FILTERS.some((f) => f === occasion) ? (occasion as CatalogFilter) : null,
+      theme: CARD_THEMES.some((name) => name === theme) ? (theme as CardTheme) : null,
+      track: typeof track === "string" ? (trackById(track)?.id ?? null) : null,
       game: GAMES.some((g) => g === game) ? (game as GameKey) : null,
       greeting: typeof value.greeting === "string" ? value.greeting : "",
       sign: typeof value.sign === "string" ? value.sign : "",
@@ -218,7 +237,8 @@ export function Constructor() {
   const storedRaw = useSyncExternalStore(subscribe, getStoredRaw, getServerRaw);
   const stored = useMemo(() => parseDraft(storedRaw), [storedRaw]);
 
-  // Переход со страницы шаблона: /create?t=<slug> ставит повод и игру.
+  // Переход со страницы шаблона: /create?t=<slug> ставит повод, игру
+  // и оформление.
   // Выбор из ссылки выигрывает у черновика — человек только что нажал
   // «Создать открытку» на конкретном шаблоне, это свежее намерение.
   // Тексты, фотографии и сюрприз параметр не трогает: их не выбирали.
@@ -232,7 +252,14 @@ export function Constructor() {
     () =>
       fromTemplate === undefined
         ? stored
-        : { ...stored, occasion: fromTemplate.filter, game: fromTemplate.game },
+        : {
+            ...stored,
+            occasion: fromTemplate.filter,
+            game: fromTemplate.game,
+            theme: fromTemplate.theme,
+            // Песню, которую человек уже выбрал сам, шаблон не перебивает.
+            track: stored.track ?? fromTemplate.track,
+          },
     [stored, fromTemplate],
   );
 
@@ -245,6 +272,7 @@ export function Constructor() {
   const [photoError, setPhotoError] = useState<TextKey | null>(null);
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState(false);
+  const [listening, setListening] = useState<TrackId | null>(null);
 
   const nextId = useRef(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -280,6 +308,38 @@ export function Constructor() {
       urls.clear();
     };
   }, []);
+
+  // Прослушивание песни в конструкторе. Один плеер на весь шаг:
+  // включили другую — прошлая замолкает. Звучит только на шаге «Слова»
+  // и не в превью: ушли — эффект снимает звук, слушатель окончания
+  // снимается вместе с ним по AbortSignal. Переходы ещё и сбрасывают
+  // выбор, чтобы песня не заиграла сама при возврате на шаг.
+  const playing = step === WORDS_STEP && !preview ? listening : null;
+
+  useEffect(() => {
+    if (playing === null) return;
+    const track = trackById(playing);
+    if (track === undefined) return;
+
+    const controller = new AbortController();
+    const audio = new Audio(track.src);
+    audio.addEventListener("ended", () => setListening(null), { signal: controller.signal });
+    // play() отклоняется, если браузер не дал играть: тогда просто
+    // возвращаем кнопку в исходное состояние.
+    audio.play().catch(() => setListening(null));
+
+    return () => {
+      controller.abort();
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    };
+  }, [playing]);
+
+  const goToStep = (next: (value: number) => number) => {
+    setListening(null);
+    setStep(next);
+  };
 
   // После перехода фокус уходит на заголовок нового шага: иначе с
   // клавиатуры он остаётся на кнопке «Дальше», которая уже уехала.
@@ -372,6 +432,13 @@ export function Constructor() {
       value: draft.greeting.trim() === "" ? t("create.summary.empty") : draft.greeting,
     },
     {
+      label: "create.music.label",
+      value: (() => {
+        const track = trackById(draft.track);
+        return track === undefined ? t("create.music.none") : `${track.artist} — ${track.title}`;
+      })(),
+    },
+    {
       label: "create.summary.surprise",
       value: draft.surpriseValue.trim() === "" ? t("create.summary.empty") : draft.surpriseValue,
     },
@@ -388,6 +455,9 @@ export function Constructor() {
       <div className="page-shell pt-[30px] pb-[70px] xl:pt-[50px] xl:pb-[120px]">
         <CardView
           card={{
+            theme: draft.theme,
+            seed: PREVIEW_SEED,
+            track: draft.track,
             game: draft.game,
             greeting: draft.greeting,
             sign: draft.sign,
@@ -542,7 +612,7 @@ export function Constructor() {
         ) : null}
 
         {/* ── 4. Слова ─────────────────────────────────────── */}
-        {step === 3 ? (
+        {step === WORDS_STEP ? (
           <div className="flex flex-col gap-[24px] xl:max-w-[800px]">
             <Field label="create.words.greeting">
               <textarea
@@ -561,6 +631,60 @@ export function Constructor() {
                 className={INPUT}
               />
             </Field>
+
+            {/* Музыка — третья настройка шага: больше трёх на шаг нельзя,
+                docs/PRODUCT.md. Песни с открытой лицензией, автор
+                и лицензия подписаны у каждой — этого требует CC BY. */}
+            <fieldset>
+              <legend className="font-ui text-card xl:text-card-d font-medium">
+                {t("create.music.label")}
+              </legend>
+              <ul role="list" className="mt-[12px] flex flex-col gap-[8px]">
+                {TRACKS.map((track) => {
+                  const chosen = draft.track === track.id;
+                  const isPlaying = playing === track.id;
+                  return (
+                    <li
+                      key={track.id}
+                      className={`rounded-inner xl:rounded-inner-d bg-surface flex items-center gap-[12px] border p-[8px] transition-colors ${chosen ? "border-gold" : "border-transparent"}`}
+                    >
+                      <button
+                        type="button"
+                        aria-label={`${t(isPlaying ? "create.music.stop" : "create.music.listen")}: ${track.title}`}
+                        aria-pressed={isPlaying}
+                        onClick={() => setListening(isPlaying ? null : track.id)}
+                        className="size-tap border-line text-ink hover:bg-raised active:bg-line flex shrink-0 items-center justify-center rounded-full border transition-colors"
+                      >
+                        <span aria-hidden="true" className="font-ui text-note">
+                          {isPlaying ? "■" : "▶"}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={chosen}
+                        onClick={() => update({ track: track.id })}
+                        className="min-h-tap flex min-w-0 flex-1 flex-col items-start justify-center text-left"
+                      >
+                        <span className="font-ui text-card xl:text-card-d text-ink font-medium">
+                          {track.title}
+                        </span>
+                        <span className="font-ui text-note text-muted">
+                          {track.artist} · {track.license.name}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              <button
+                type="button"
+                aria-pressed={draft.track === null}
+                onClick={() => update({ track: null })}
+                className="pill-tap mt-[8px]"
+              >
+                <span className={pillVisual(draft.track === null)}>{t("create.music.none")}</span>
+              </button>
+            </fieldset>
           </div>
         ) : null}
 
@@ -623,7 +747,10 @@ export function Constructor() {
                   что получилось, и вернуться править. */}
               <Button
                 labelKey="cta.preview"
-                onClick={() => setPreview(true)}
+                onClick={() => {
+                  setListening(null);
+                  setPreview(true);
+                }}
                 className="xl:w-[450px]"
               />
               <Button labelKey="cta.pay" disabled className="xl:w-[450px]" />
@@ -639,13 +766,13 @@ export function Constructor() {
           <Button
             labelKey="cta.next"
             disabled={!canGoNext}
-            onClick={() => setStep((value) => Math.min(value + 1, LAST_STEP))}
+            onClick={() => goToStep((value) => Math.min(value + 1, LAST_STEP))}
             className="xl:w-[360px]"
           />
           <GhostButton
             labelKey="cta.back"
             disabled={step === 0}
-            onClick={() => setStep((value) => Math.max(value - 1, 0))}
+            onClick={() => goToStep((value) => Math.max(value - 1, 0))}
             className="xl:w-[360px]"
           />
         </div>
@@ -655,7 +782,7 @@ export function Constructor() {
         <div className="mt-[24px]">
           <GhostButton
             labelKey="cta.back"
-            onClick={() => setStep((value) => Math.max(value - 1, 0))}
+            onClick={() => goToStep((value) => Math.max(value - 1, 0))}
             className="xl:w-[360px]"
           />
         </div>
