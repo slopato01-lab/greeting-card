@@ -23,7 +23,7 @@ export function HowNav({ current }: { current: HowSection }) {
     <nav aria-label={t("how.nav")} className="absolute inset-x-0 top-0 z-10">
       <ul
         role="list"
-        className="flex [scrollbar-width:none] gap-[6px] overflow-x-auto px-[12px] pt-[12px] xl:px-[16px] xl:pt-[16px]"
+        className="flex flex-wrap gap-x-[6px] px-[12px] pt-[6px] xl:px-[16px] xl:pt-[10px]"
       >
         {HOW_SECTIONS.map((section) => {
           const active = section.id === current;

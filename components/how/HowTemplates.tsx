@@ -30,9 +30,9 @@ export function HowTemplates() {
     <section
       id="templates"
       aria-labelledby="how-templates-title"
-      className="rounded-panel xl:rounded-panel-d bg-surface flex flex-col gap-[20px] px-[10px] py-[24px] xl:gap-[28px] xl:p-[36px]"
+      className="flex flex-col gap-[20px] pt-[40px] xl:gap-[28px] xl:pt-[80px]"
     >
-      <div className="grid gap-[12px] px-[8px] xl:grid-cols-2 xl:gap-[60px] xl:px-0">
+      <div className="grid gap-[12px] xl:grid-cols-2 xl:gap-[60px]">
         <h2
           id="how-templates-title"
           className="font-display text-h2 xl:text-h1-d font-medium tracking-tight"
@@ -47,7 +47,7 @@ export function HowTemplates() {
       <div
         role="group"
         aria-label={t("how.templates.filters")}
-        className="carousel gap-[6px] px-[8px] xl:mx-0 xl:flex-wrap xl:px-0"
+        className="carousel gap-[6px] xl:mx-0 xl:flex-wrap xl:px-0"
       >
         {FILTERS.map((key) => (
           <button
@@ -65,7 +65,7 @@ export function HowTemplates() {
       <ul
         role="list"
         aria-live="polite"
-        className="carousel gap-[10px] px-[8px] xl:mx-0 xl:grid xl:grid-cols-5 xl:gap-[16px] xl:overflow-visible xl:px-0"
+        className="carousel gap-[10px] xl:mx-0 xl:grid xl:grid-cols-5 xl:gap-[16px] xl:overflow-visible xl:px-0"
       >
         {shown.map((template) => (
           <AnimatedTemplateCard
@@ -76,7 +76,7 @@ export function HowTemplates() {
         ))}
       </ul>
 
-      <div className="px-[8px] xl:px-0">
+      <div>
         <Button href="/cards" labelKey="cta.templates" tone="dark" className="xl:w-auto" />
       </div>
     </section>

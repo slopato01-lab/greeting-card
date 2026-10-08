@@ -64,6 +64,7 @@ const ICONS = [
     mono: true,
     where: "редактор: остановить просмотр",
   },
+  { name: "user", source: "tabler:user-circle", mono: true, where: "шапка: личный кабинет" },
   { name: "pause", source: "tabler:player-pause", mono: true, where: "редактор: пауза трека" },
   { name: "tabMusic", source: "tabler:music", mono: true, where: "редактор: вкладка «Музыка»" },
   { name: "gif", source: "tabler:gif", mono: true, where: "редактор: сохранить GIF" },

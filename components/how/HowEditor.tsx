@@ -51,9 +51,9 @@ export function HowEditor() {
     <section
       id="editor"
       aria-labelledby="how-editor-title"
-      className="rounded-panel xl:rounded-panel-d bg-surface flex flex-col gap-[24px] p-[10px] xl:gap-[32px] xl:p-[16px]"
+      className="flex flex-col gap-[24px] pt-[40px] xl:gap-[32px] xl:pt-[80px]"
     >
-      <div className="flex flex-col gap-[16px] px-[8px] pt-[14px] xl:px-[20px] xl:pt-[24px]">
+      <div className="flex flex-col gap-[16px]">
         <h2
           id="how-editor-title"
           className="font-display text-h2 xl:text-h1-d max-w-[1100px] font-medium tracking-tight"
@@ -92,7 +92,7 @@ export function HowEditor() {
           {STATS.map((stat) => (
             <li
               key={stat.caption}
-              className="bg-paper rounded-card xl:rounded-card-d flex flex-col justify-between gap-[16px] p-[16px] xl:p-[28px]"
+              className="bg-surface rounded-card xl:rounded-card-d flex flex-col justify-between gap-[16px] p-[16px] xl:p-[28px]"
             >
               <p className="flex items-baseline gap-[6px]">
                 <span className="font-display text-h1 xl:text-h1-d font-medium tracking-tight">

@@ -34,7 +34,7 @@ export function HowPlans() {
     <section
       id="plans"
       aria-labelledby="how-plans-title"
-      className="rounded-panel xl:rounded-panel-d bg-surface grid gap-[10px] p-[10px] xl:grid-cols-[minmax(0,4fr)_minmax(0,9fr)] xl:gap-[16px] xl:p-[16px]"
+      className="grid gap-[20px] pt-[40px] xl:grid-cols-[minmax(0,4fr)_minmax(0,9fr)] xl:gap-[40px] xl:pt-[80px]"
     >
       <Photo src="/assets/benefits/confetti.webp" className="min-h-[300px] xl:min-h-[560px]">
         <HowNav current="plans" />
@@ -52,10 +52,10 @@ export function HowPlans() {
         </Link>
       </Photo>
 
-      <div className="bg-paper rounded-card xl:rounded-card-d flex flex-col gap-[20px] p-[14px] xl:gap-[32px] xl:p-[32px]">
+      <div className="flex flex-col gap-[20px] xl:gap-[32px] xl:pt-[8px]">
         <h2
           id="how-plans-title"
-          className="font-display text-h2 xl:text-h1-d px-[4px] pt-[8px] font-medium tracking-tight xl:px-0 xl:pt-0"
+          className="font-display text-h2 xl:text-h1-d font-medium tracking-tight"
         >
           {t("how.plans.title")}
         </h2>

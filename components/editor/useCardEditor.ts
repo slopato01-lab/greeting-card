@@ -53,6 +53,7 @@ import {
 import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
 import { musicAudioSrc, musicCredit } from "@/lib/editor/music";
 import { encodeGif, GIF_WIDTH, recordVideo, VIDEO_WIDTH } from "@/lib/editor/record";
+import { DRAFT_KEY, draftKeyFor, readDraft } from "@/lib/editor/drafts";
 import { stickerInfo } from "@/lib/editor/stickers";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { type TextKey, t } from "@/lib/i18n";
@@ -77,7 +78,6 @@ import { type TextKey, t } from "@/lib/i18n";
  * анимации, а не настоящее положение слоёв.
  */
 
-const DRAFT_KEY = "otkrytochka.editor.draft";
 const DRAFT_INTERVAL_MS = 3000;
 /** PNG вдвое крупнее холста: 1200 × 1600, хватает для печати открытки A6. */
 const PNG_MULTIPLIER = 2;
@@ -117,29 +117,10 @@ function withMeta(doc: EditorDoc, still: boolean, music: CardMusic | null): Edit
   return doc;
 }
 
-/**
- * Ключ черновика. У каждого шаблона свой черновик: открыл из каталога
- * «Ёлку» — видишь свою «Ёлку», а не правки «Колпака». Свободный холст
- * (/editor без шаблона) живёт под прежним ключом — старые черновики целы.
- */
-function draftKeyFor(template: TemplateId | null): string {
-  return template === null ? DRAFT_KEY : `${DRAFT_KEY}.${template}`;
-}
-
 /** Шаблон страницы: /editor?template=… Чужое значение — свободный холст. */
 function templateFromUrl(): TemplateId | null {
   const id = new URLSearchParams(window.location.search).get("template");
   return TEMPLATES.find((item) => item.id === id)?.id ?? null;
-}
-
-function readDraft(key: string): EditorDoc | null {
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw === null ? null : parseEditorJson(raw);
-  } catch {
-    // Приватный режим Safari: хранилище бросает. Начинаем с чистого листа.
-    return null;
-  }
 }
 
 function download(href: string, filename: string) {

@@ -11,7 +11,9 @@ import { t, type TextKey } from "@/lib/i18n";
 /**
  * Шапка сайта. Вид — из design/главная greetinh-cards.jpg: знак
  * и название слева, навигация капсом по центру (текущий раздел
- * подчёркнут), справа белая пилюля. Одна на все страницы.
+ * подчёркнут), справа пилюля. С 08.10.2026 справа «Профиль» —
+ * личный кабинет /account, а не «Создать открытку» (просьба
+ * пользователя). Одна на все страницы.
  *
  * Шапка прилипает к верху экрана на всех страницах и ширинах
  * (решение 08.10.2026). Фон сплошной --canvas: контент под ней не
@@ -149,8 +151,26 @@ export function Header() {
             в базовых классах уже есть inline-flex, и он перебивает
             hidden — порядок в строке классов на это не влияет. */}
         <div className="hidden xl:block">
-          <Button href="/editor" variant="header" tone="dark" labelKey="cta.create" />
+          <Link
+            href="/account"
+            aria-current={current("/account")}
+            className="font-ui caps text-btn-header-d bg-ink text-canvas hover:bg-body active:bg-muted aria-[current=page]:bg-gold aria-[current=page]:text-ink min-h-tap inline-flex items-center gap-[10px] rounded-full ps-[8px] pe-[20px] font-medium transition-colors"
+          >
+            <Icon name="user" size={28} />
+            {t("nav.account")}
+          </Link>
         </div>
+
+        {/* На мобильном профиль — значком рядом с бургером: до него
+            один тап, а не два через меню. */}
+        <Link
+          href="/account"
+          aria-label={t("nav.account")}
+          aria-current={current("/account")}
+          className="size-tap text-ink hover:text-gold-deep active:text-gold-deep aria-[current=page]:text-gold-deep ms-auto flex items-center justify-center transition-colors xl:hidden"
+        >
+          <Icon name="user" size={30} />
+        </Link>
 
         <button
           ref={burgerRef}
@@ -159,7 +179,7 @@ export function Header() {
           aria-label={t("nav.menu")}
           aria-expanded={open}
           aria-controls={panelId}
-          className="size-tap text-ink hover:text-gold-deep active:text-gold-deep ms-auto flex items-center justify-center transition-colors xl:hidden"
+          className="size-tap text-ink hover:text-gold-deep active:text-gold-deep flex items-center justify-center transition-colors xl:hidden"
         >
           <Icon name="burger" size={32} />
         </button>
@@ -184,6 +204,8 @@ export function Header() {
             </ul>
           </nav>
 
+          {/* В панели меню — «Создать открытку»: профиль уже есть значком
+              в строке шапки. */}
           <Button href="/editor" labelKey="cta.create" className="mt-5" />
         </div>
       ) : null}
