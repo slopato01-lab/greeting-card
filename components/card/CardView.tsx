@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
+import { BirthdayCover } from "@/components/card/BirthdayCover";
 import { Button } from "@/components/Button";
 import { ScratchCard } from "@/components/games/ScratchCard";
 import { GhostButton } from "@/components/GhostButton";
@@ -29,9 +30,14 @@ import { type TextKey, t } from "@/lib/i18n";
  * --photo, как в карточках на /games. «Дальше» после скретч-карты
  * появляется только когда она пройдена.
  *
- * **Оформление.** У темы `birthday` свои фото: торт на обложке, если
- * автор не добавил снимков, подарки в покрытии скретч-карты,
- * конфетти над финалом. Текст на фото не лежит нигде.
+ * **Оформление.** У темы `birthday` обложка — слоёная композиция
+ * (BirthdayCover): фото автора в рамках, заголовок, наклейки. Подарки
+ * в покрытии скретч-карты, конфетти над финалом. Текст на фото не
+ * лежит нигде.
+ *
+ * **Анимация сборки** — как у SUPA: каждая стадия собирается из слоёв,
+ * которые влетают по очереди (.assemble-layer в globals.css). Стадия
+ * монтируется заново — анимация проигрывается заново.
  *
  * **Музыка** включается только нажатием «Начать» — звук до первого
  * касания запрещён (docs/TESTING.md) — и играет по кругу. Кнопка
@@ -80,6 +86,11 @@ function safeUrl(value: string): string | null {
 }
 
 const CARD = "rounded-card xl:rounded-card-d overflow-hidden bg-surface";
+
+/** Номер слоя в очереди сборки, см. .assemble-layer в globals.css. */
+function layer(index: number): CSSProperties {
+  return { "--i": index } as CSSProperties;
+}
 
 /** Игра, которая уже существует в коде. Остальные — плейсхолдер. */
 const SCRATCH = "games.card.3.title" satisfies GameKey;
@@ -215,9 +226,37 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
         </div>
       ) : null}
 
-      <div ref={stageRef} tabIndex={-1} className="outline-none">
+      {/* Слои на старте сборки увеличены в 1.6 раза — без обрезки
+          по горизонтали страница на миг становилась бы шире экрана.
+          Поле в 4px оставлено под обводку фокуса у краёв. */}
+      <div ref={stageRef} tabIndex={-1} className="-mx-[4px] overflow-x-clip px-[4px] outline-none">
         {/* ── Обложка ──────────────────────────────────────── */}
-        {stage === "cover" ? (
+        {stage === "cover" && card.theme === "birthday" ? (
+          <div>
+            <BirthdayCover photos={card.photos.map((photo) => photo.url)} seed={card.seed} />
+
+            {/* Обращение автора — на плашке под холстом: его длину
+                не знает никто, а холст фиксированный. Плашка влетает
+                вместе с композицией, следом за заголовком. */}
+            <div
+              className={`assemble-layer ${CARD} mx-auto mt-[16px] max-w-[560px] px-[24px] py-[24px] xl:mt-[20px] xl:px-[32px] xl:py-[28px]`}
+              style={layer(2)}
+            >
+              {greeting === "" ? null : (
+                <p className="font-display text-h3 xl:text-h3-d font-medium tracking-tight break-words whitespace-pre-line">
+                  {greeting}
+                </p>
+              )}
+              <Button
+                labelKey="cta.start"
+                onClick={start}
+                className={greeting === "" ? "" : "mt-[20px] xl:mt-[28px]"}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {stage === "cover" && card.theme !== "birthday" ? (
           <div className={CARD}>
             {/* Обычный img: оптимизатор Next в статическом экспорте
                 недоступен, а фото автора — это blob из его вкладки. */}
@@ -252,12 +291,15 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
         {stage === "game" ? (
           <div>
             {hint === null ? null : (
-              <h2 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
+              <h2
+                className="assemble-layer font-display text-h3 xl:text-h3-d font-medium tracking-tight"
+                style={layer(0)}
+              >
                 {t(hint)}
               </h2>
             )}
 
-            <div className="mt-[20px] xl:mt-[30px]">
+            <div className="assemble-layer mt-[20px] xl:mt-[30px]" style={layer(1)}>
               {card.game === SCRATCH ? (
                 <ScratchCard
                   seed={card.seed}
@@ -293,7 +335,8 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
               <img
                 src={art.finale}
                 alt=""
-                className="rounded-card xl:rounded-card-d mb-[16px] h-[140px] w-full object-cover xl:mb-[20px] xl:h-[220px]"
+                className="assemble-layer rounded-card xl:rounded-card-d mb-[16px] h-[140px] w-full object-cover xl:mb-[20px] xl:h-[220px]"
+                style={layer(0)}
               />
             )}
 
@@ -301,7 +344,10 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                 поломкой, поэтому карточка появляется только тогда,
                 когда внутри действительно что-то есть. */}
             {surprise === "" && sign === "" ? null : (
-              <div className={`${CARD} px-[24px] py-[28px] xl:px-[54px] xl:py-[40px]`}>
+              <div
+                className={`assemble-layer ${CARD} px-[24px] py-[28px] xl:px-[54px] xl:py-[40px]`}
+                style={layer(1)}
+              >
                 {code !== null ? (
                   <div>
                     <p className="font-display text-h2 xl:text-h2-d text-gold font-medium tracking-tight break-all">

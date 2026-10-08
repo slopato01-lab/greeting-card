@@ -55,6 +55,10 @@ Figma и перестанут работать примерно через не�
 | Признание | `fluent-emoji-flat:e-mail` | `confession` |
 | Перевод | `noto:money-bag` | `transfer` |
 | Билет | `noto-v1:ticket` | `ticket` |
+| Наклейка «шар» (открытка) | `noto:balloon` | `balloon` |
+| Наклейка «торт» (открытка) | `noto:birthday-cake` | `cake` |
+| Наклейка «хлопушка» (открытка) | `noto:party-popper` | `popper` |
+| Наклейка «подарок» (открытка) | `noto:wrapped-gift` | `gift` |
 | Галочки в карточках преимуществ | `hugeicons:tick-04` | `tick` |
 | Instagram | `line-md:instagram` | `instagram` |
 | Twitter | `line-md:twitter` | `twitter` |

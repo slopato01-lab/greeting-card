@@ -48,6 +48,11 @@ const ICONS = [
   { name: "planet", source: "tabler:planet", mono: true, where: "декор в герое, десктоп" },
   { name: "prev", source: "tabler:arrow-left", mono: true, where: "стрелки рядов на главной" },
   { name: "next", source: "tabler:arrow-right", mono: true, where: "стрелки рядов на главной" },
+  // Наклейки открытки «С днём рождения!» — Noto, Apache 2.0.
+  { name: "balloon", source: "noto:balloon", where: "наклейка в открытке «С днём рождения!»" },
+  { name: "cake", source: "noto:birthday-cake", where: "наклейка в открытке «С днём рождения!»" },
+  { name: "popper", source: "noto:party-popper", where: "наклейка в открытке «С днём рождения!»" },
+  { name: "gift", source: "noto:wrapped-gift", where: "наклейка в открытке «С днём рождения!»" },
 ];
 
 /** Убирает анимацию и приводит иконку к её конечному, видимому состоянию. */
