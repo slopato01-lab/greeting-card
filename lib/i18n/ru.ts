@@ -678,6 +678,8 @@ export const ru = {
   "editor.hue.pink": "Розовый",
   "editor.hue.neutral": "Нейтральный",
   "editor.color.shade": "оттенок",
+  // Строка белый→чёрный во вкладке «Фон» (09.10.2026).
+  "editor.color.row.neutral": "Белый и чёрный",
   "editor.color.more": "Все цвета",
   "editor.color.less": "Свернуть",
   "editor.color.custom": "Свой цвет",
@@ -837,7 +839,6 @@ export const ru = {
   "editor.tab.text": "Текст",
   "editor.tab.photo": "Фото",
   "editor.tab.background": "Фон",
-  "editor.tab.edit": "Изменить",
   "editor.tab.animation": "Анимация",
   "editor.tab.file": "Файл",
   "editor.text.preset.title": "Добавить заголовок",
@@ -847,7 +848,7 @@ export const ru = {
   "editor.text.subtitle": "Подзаголовок",
   "editor.text.body": "Основной текст",
   "editor.photo.hint":
-    "JPG, PNG или HEIC до 10 МБ, до 10 фото в открытке. Фон у фото можно убрать во вкладке «Изменить».",
+    "JPG, PNG или HEIC до 10 МБ, до 10 фото в открытке. Выберите фото на открытке — здесь же появится, что с ним можно сделать: заменить, убрать фон, сделать чёрно-белым.",
   "editor.anim.empty":
     "Выберите элемент на открытке — и задайте, как он появится, двигается и уходит.",
 

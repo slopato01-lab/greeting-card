@@ -189,7 +189,7 @@ export function PhotoPanel({
   );
 }
 
-/** Вкладка «Фон»: цвет открытки. */
+/** Вкладка «Фон»: цвет открытки — все семейства с оттенками сразу. */
 export function BackgroundPanel({
   background,
   onBackground,
@@ -202,7 +202,12 @@ export function BackgroundPanel({
   return (
     <Panel labelledBy="editor-background" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-background" labelKey="editor.background" />
-      <ColorPicker labelledBy="editor-background" value={background} onChange={onBackground} />
+      <ColorPicker
+        labelledBy="editor-background"
+        value={background}
+        onChange={onBackground}
+        byHue
+      />
     </Panel>
   );
 }

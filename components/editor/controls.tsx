@@ -4,7 +4,14 @@ import { type ChangeEvent, type ReactNode, useRef, useState, useSyncExternalStor
 
 import { Icon } from "@/components/Icon";
 import { type Color, parseColor, type HexColor } from "@/lib/editor/document";
-import { ALL_SWATCHES, MAIN_SWATCHES, type Hue, type Swatch } from "@/lib/editor/palette";
+import {
+  ALL_SWATCHES,
+  HUES,
+  MAIN_SWATCHES,
+  PALETTE,
+  type Hue,
+  type Swatch,
+} from "@/lib/editor/palette";
 import { type TextKey, t } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons/generated";
 
@@ -348,15 +355,21 @@ function SwatchButton({
  * Выбор цвета: двенадцать основных, по кнопке — все 45, ряд недавних
  * своих и системный выбор любого цвета. Все кружки — кнопки с названием
  * цвета для скринридера и aria-pressed у выбранного.
+ *
+ * `byHue` — вид для вкладки «Фон» (09.10.2026, просьба пользователя):
+ * все цвета сразу, семействами друг за другом — строка с названием
+ * («Красный», «Синий»…) и пять оттенков от светлого к тёмному.
  */
 export function ColorPicker({
   labelledBy,
   value,
   onChange,
+  byHue = false,
 }: {
   labelledBy: string;
   value: Color;
   onChange: (color: Color) => void;
+  byHue?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const recent = useSyncExternalStore(subscribeRecent, readRecent, () => NO_RECENT);
@@ -365,8 +378,32 @@ export function ColorPicker({
 
   return (
     <div role="group" aria-labelledby={labelledBy} className="flex flex-col gap-[8px]">
+      {byHue ? (
+        <ul role="list" className="flex flex-col gap-[8px]">
+          {HUES.map((hue) => (
+            <li key={hue} className="flex flex-col">
+              {/* Название над оттенками, а не слева: иначе пять кружков
+                  не влезают в узкую панель и пятый уходит на новую строку. */}
+              <span className="font-ui text-note xl:text-note-d text-ink">
+                {t(hue === "neutral" ? "editor.color.row.neutral" : HUE_NAME[hue])}
+              </span>
+              <div className="flex flex-wrap">
+                {PALETTE[hue].map((color, shade) => (
+                  <SwatchButton
+                    key={color}
+                    color={color}
+                    label={swatchName({ color, hue, shade })}
+                    selected={color === value}
+                    onClick={() => onChange(color)}
+                  />
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <div className="flex flex-wrap">
-        {swatches.map((swatch) => (
+        {(byHue ? [] : swatches).map((swatch) => (
           <SwatchButton
             key={swatch.color}
             color={swatch.color}
@@ -417,14 +454,16 @@ export function ColorPicker({
         </div>
       )}
 
-      <button
-        type="button"
-        aria-expanded={expanded}
-        onClick={() => setExpanded((open) => !open)}
-        className="font-ui text-note xl:text-note-d text-body hover:text-ink min-h-tap self-start underline underline-offset-4 transition-colors"
-      >
-        {t(expanded ? "editor.color.less" : "editor.color.more")}
-      </button>
+      {byHue ? null : (
+        <button
+          type="button"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((open) => !open)}
+          className="font-ui text-note xl:text-note-d text-body hover:text-ink min-h-tap self-start underline underline-offset-4 transition-colors"
+        >
+          {t(expanded ? "editor.color.less" : "editor.color.more")}
+        </button>
+      )}
     </div>
   );
 }

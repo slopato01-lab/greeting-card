@@ -150,6 +150,12 @@ export function useCardEditor() {
   const [status, setStatus] = useState<EditorStatus>("loading");
   const [attempt, setAttempt] = useState(0);
   const [selected, setSelected] = useState<Layer | null>(null);
+  /**
+   * Растёт, когда выделили другой объект (а не правят тот же):
+   * по нему Editor открывает вкладку под вид элемента.
+   */
+  const [selectionSerial, setSelectionSerial] = useState(0);
+  const selectedObject = useRef<unknown>(null);
   const [background, setBackgroundState] = useState<Color>("paper");
   const backgroundRef = useRef<Color>("paper");
   const [duration, setDurationState] = useState(DEFAULT_DURATION);
@@ -183,6 +189,11 @@ export function useCardEditor() {
   const syncSelection = useCallback(() => {
     const current = live.current;
     const object = current?.canvas.getActiveObject();
+    const identity = object ?? null;
+    if (identity !== selectedObject.current) {
+      selectedObject.current = identity;
+      setSelectionSerial((value) => value + 1);
+    }
     setSelected(
       current === null || object === undefined ? null : objectToLayer(current.fabric, object),
     );
@@ -943,6 +954,7 @@ export function useCardEditor() {
 
     playback.current = { raf: requestAnimationFrame(tick), items, audio };
     setPlaying(true);
+    selectedObject.current = null;
     setSelected(null);
   }, [saveDraft, stopPlayback]);
 
@@ -1064,6 +1076,7 @@ export function useCardEditor() {
     if (active instanceof fabric.IText && active.isEditing) active.exitEditing();
     canvas.discardActiveObject();
     canvas.skipTargetFind = true;
+    selectedObject.current = null;
     setSelected(null);
 
     const items = canvas.getObjects().flatMap((object) => {
@@ -1236,6 +1249,7 @@ export function useCardEditor() {
     progressRef,
     status,
     selected,
+    selectionSerial,
     background,
     duration,
     still,

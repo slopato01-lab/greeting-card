@@ -55,7 +55,8 @@ const seconds = (value: number) => `${value.toFixed(1)} ${t("editor.unit.seconds
 
 /**
  * Список шрифтов по группам. Каждое название написано своим шрифтом:
- * выбирать шрифт по имени без образца бесполезно. Цена — браузер
+ * выбирать шрифт по имени без образца бесполезно. С 09.10.2026 список
+ * без своей прокрутки — видны все шрифты, прокручивается панель. Цена — браузер
  * скачивает файлы шрифтов, когда список впервые показан, то есть
  * только на /editor и только когда выделен текст.
  */
@@ -64,7 +65,7 @@ function FontList({ value, onChange }: { value: FontId; onChange: (font: FontId)
     <div
       role="group"
       aria-labelledby="editor-font"
-      className="border-line rounded-inner max-h-[220px] overflow-y-auto border p-[4px]"
+      className="border-line rounded-inner border p-[4px]"
     >
       {FONT_GROUPS.map((group) => (
         <div key={group} className="flex flex-col">
@@ -221,9 +222,9 @@ export function AnimationPanel({
 }
 
 /**
- * Панель свойств выделенного слоя («Изменить»). Пока ничего не выделено —
- * пустое состояние с подсказкой; во время просмотра — сообщение, что
- * правки на паузе.
+ * Панель свойств выделенного слоя. С 09.10.2026 своей вкладки нет:
+ * Editor ставит её сверху вкладки слоя — «Текст», «Фото» или
+ * «Элементы». Во время просмотра — сообщение, что правки на паузе.
  */
 export function Inspector({
   selected,
@@ -305,6 +306,15 @@ export function Inspector({
             </button>
           ) : null}
 
+          {/* Шрифты — первыми и все сразу (09.10.2026, просьба
+              пользователя): выбрал текст — тут же меняешь шрифт. */}
+          {selected.kind !== "text" ? null : (
+            <>
+              <GroupLabel id="editor-font" labelKey="editor.props.font" />
+              <FontList value={selected.font} onChange={(font) => onTextStyle({ font })} />
+            </>
+          )}
+
           {selected.kind === "image" || selected.kind === "sticker" ? null : (
             <>
               <GroupLabel id="editor-color" labelKey="editor.props.color" />
@@ -314,9 +324,6 @@ export function Inspector({
 
           {selected.kind !== "text" ? null : (
             <>
-              <GroupLabel id="editor-font" labelKey="editor.props.font" />
-              <FontList value={selected.font} onChange={(font) => onTextStyle({ font })} />
-
               <Slider
                 labelKey="editor.props.fontSize"
                 value={selected.fontSize}

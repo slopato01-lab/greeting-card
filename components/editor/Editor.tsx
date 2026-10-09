@@ -20,6 +20,7 @@ import { useCardEditor } from "@/components/editor/useCardEditor";
 import { claimCard, useAuth } from "@/lib/auth/client";
 import { type Layer, LIMITS } from "@/lib/editor/document";
 import { FONTS } from "@/lib/editor/fonts";
+import { stickerInfo } from "@/lib/editor/stickers";
 import { cardKey } from "@/lib/editor/premium";
 import { videoSupported } from "@/lib/editor/record";
 import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
@@ -67,10 +68,17 @@ const PRESET_FAMILIES = Object.fromEntries(
 ) as Record<TextPreset, string>;
 
 /**
- * Вкладки, где пользователь добавляет элементы. Выделение нового
- * элемента не уводит отсюда: добавлять стикеры подряд — обычное дело.
+ * Вкладка, где живут свойства слоя (09.10.2026, просьба пользователя:
+ * выбрал текст — сразу «Текст» со всеми шрифтами, выбрал фото или
+ * заглушку под фото — сразу «Фото» с тем, что с ним можно сделать).
+ * Отдельной вкладки «Изменить» больше нет.
  */
-const ADDING_TABS: readonly EditorTab[] = ["elements", "text", "photo"];
+function tabFor(layer: Layer): EditorTab {
+  if (layer.kind === "text") return "text";
+  if (layer.kind === "image") return "photo";
+  if (layer.kind === "sticker" && stickerInfo(layer.sticker)?.placeholder === true) return "photo";
+  return "elements";
+}
 
 /** Подписи идущего экспорта — при них на плашке есть «Остановить». */
 const EXPORT_TEXTS: readonly TextKey[] = ["editor.export.gif.busy", "editor.export.video.busy"];
@@ -87,6 +95,7 @@ export function Editor() {
     progressRef,
     status,
     selected,
+    selectionSerial,
     background,
     duration,
     still,
@@ -158,21 +167,33 @@ export function Editor() {
   // гидратации, а не мигнёт включённой и выключится.
   const canRecord = useSyncExternalStore(noSubscribe, videoSupported, () => false);
 
-  // Выделили элемент на холсте — панель переходит на «Изменить»,
-  // как контекстная панель Canva. Считается во время рендера, а не
-  // в эффекте: так React советует подстраивать состояние под пропсы.
-  const [previous, setPrevious] = useState<Layer | null>(null);
-  if (selected !== previous) {
-    setPrevious(selected);
-    if (
-      selected !== null &&
-      previous === null &&
-      tab !== "animation" &&
-      !ADDING_TABS.includes(tab)
-    ) {
-      setTab("edit");
-    }
+  // Выделили другой элемент на холсте — панель переходит на его
+  // вкладку, как контекстная панель Canva. «Анимацию» не трогаем:
+  // там настраивают слои по очереди. Считается во время рендера,
+  // а не в эффекте: так React советует подстраивать состояние под пропсы.
+  const [seenSerial, setSeenSerial] = useState(selectionSerial);
+  if (selectionSerial !== seenSerial) {
+    setSeenSerial(selectionSerial);
+    if (selected !== null && tab !== "animation") setTab(tabFor(selected));
   }
+
+  // Свойства выделенного слоя — сверху его вкладки.
+  const inspector = (owner: EditorTab) =>
+    selected !== null && tabFor(selected) === owner ? (
+      <Inspector
+        selected={selected}
+        playing={playing}
+        onFill={actions.setFill}
+        onOpacity={actions.setOpacity}
+        onFontSize={actions.setFontSize}
+        onTextStyle={(style) => void actions.setTextStyle(style)}
+        onRemove={actions.remove}
+        onReplaceImage={(file) => void actions.replaceImage(file)}
+        onRemoveBackground={() => void actions.removeBackground()}
+        onMono={actions.setMono}
+        onSpacing={actions.setSpacing}
+      />
+    ) : null;
 
   const panel = (() => {
     switch (tab) {
@@ -187,42 +208,35 @@ export function Editor() {
         );
       case "elements":
         return (
-          <ElementsPanel
-            disabled={!editable}
-            onAdd={(kind) => void actions.add(kind)}
-            onAddSticker={(id) => void actions.addSticker(id)}
-          />
+          <div className="flex flex-col gap-[12px]">
+            {inspector("elements")}
+            <ElementsPanel
+              disabled={!editable}
+              onAdd={(kind) => void actions.add(kind)}
+              onAddSticker={(id) => void actions.addSticker(id)}
+            />
+          </div>
         );
       case "text":
         return (
-          <TextPanel
-            disabled={!editable}
-            presetFamilies={PRESET_FAMILIES}
-            onAddText={(preset) => void actions.addText(preset)}
-          />
+          <div className="flex flex-col gap-[12px]">
+            {inspector("text")}
+            <TextPanel
+              disabled={!editable}
+              presetFamilies={PRESET_FAMILIES}
+              onAddText={(preset) => void actions.addText(preset)}
+            />
+          </div>
         );
       case "photo":
         return (
-          <PhotoPanel disabled={!editable} onAddImage={(file) => void actions.addImage(file)} />
+          <div className="flex flex-col gap-[12px]">
+            {inspector("photo")}
+            <PhotoPanel disabled={!editable} onAddImage={(file) => void actions.addImage(file)} />
+          </div>
         );
       case "background":
         return <BackgroundPanel background={background} onBackground={actions.setBackground} />;
-      case "edit":
-        return (
-          <Inspector
-            selected={selected}
-            playing={playing}
-            onFill={actions.setFill}
-            onOpacity={actions.setOpacity}
-            onFontSize={actions.setFontSize}
-            onTextStyle={(style) => void actions.setTextStyle(style)}
-            onRemove={actions.remove}
-            onReplaceImage={(file) => void actions.replaceImage(file)}
-            onRemoveBackground={() => void actions.removeBackground()}
-            onMono={actions.setMono}
-            onSpacing={actions.setSpacing}
-          />
-        );
       case "animation":
         return (
           <AnimationPanel
@@ -336,7 +350,9 @@ export function Editor() {
 
       {/* Нижняя полоса: просмотр, время, длительность, черновик. */}
       <div className="xl:border-line order-2 flex flex-col gap-[8px] xl:order-none xl:col-start-3 xl:row-start-2 xl:flex-row xl:items-center xl:gap-[20px] xl:border-t xl:px-[24px] xl:py-[10px]">
-        <div className="flex min-w-0 flex-1 items-center gap-[12px]">
+        {/* Без min-w-0: блок не сжимается уже кнопки «Просмотр» —
+            иначе на 1280 её перекрывала галочка «Без анимации». */}
+        <div className="flex flex-1 items-center gap-[12px]">
           <ToolButton
             icon={playing ? "stop" : "play"}
             labelKey={playing ? "editor.stop" : "editor.play"}
