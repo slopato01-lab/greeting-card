@@ -21,6 +21,7 @@ import type { TextKey } from "@/lib/i18n";
 export type CatalogFilter =
   | "catalog.filter.2"
   | "catalog.filter.3"
+  | "catalog.filter.7"
   | "catalog.filter.8"
   | "catalog.filter.9"
   | "catalog.filter.10";
@@ -69,13 +70,15 @@ export const CATALOG_CUSTOM = "catalog.filter.6" satisfies TextKey;
 
 /**
  * Номера не сдвигаются: «Хорошие новости» (4) и «Любовь» (7) сняты
- * с сайта 08.10.2026 (просьба пользователя) вместе с их шаблонами,
+ * с сайта 08.10.2026 (просьба пользователя) вместе с их шаблонами;
+ * «Любовь» вернулась 09.10.2026 с третьей серией (series-3.ts),
  * «8 марта» (5) — 09.10.2026: в нём были только серые карточки,
  * а ключи остальных фильтров уже живут в словаре и docs/PRODUCT.md.
  */
 export const CATALOG_FILTERS = [
   "catalog.filter.2",
   "catalog.filter.3",
+  "catalog.filter.7",
   // Темы серии по design/открытки/ (08.10.2026): 14 февраля, подруге, свадьба.
   "catalog.filter.8",
   "catalog.filter.9",
@@ -210,6 +213,19 @@ export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
   animated("wd-savedate", "catalog.filter.10", "anim.wd-savedate.name", "anim.wd-savedate.lead"),
   animated("wd-post", "catalog.filter.10", "anim.wd-post.name", "anim.wd-post.lead"),
   animated("wd-amor", "catalog.filter.10", "anim.wd-amor.name", "anim.wd-amor.lead"),
+  // Третья серия (09.10.2026), lib/editor/series-3.ts.
+  animated("bd-vogue", "catalog.filter.2", "anim.bd-vogue.name", "anim.bd-vogue.lead"),
+  animated("bd-bff", "catalog.filter.2", "anim.bd-bff.name", "anim.bd-bff.lead"),
+  animated("bd-kodak", "catalog.filter.2", "anim.bd-kodak.name", "anim.bd-kodak.lead"),
+  animated("bd-camera", "catalog.filter.2", "anim.bd-camera.name", "anim.bd-camera.lead"),
+  animated("lv-pin", "catalog.filter.7", "anim.lv-pin.name", "anim.lv-pin.lead"),
+  animated("lv-polaroid", "catalog.filter.7", "anim.lv-polaroid.name", "anim.lv-polaroid.lead"),
+  animated("lv-moon", "catalog.filter.7", "anim.lv-moon.name", "anim.lv-moon.lead"),
+  animated("lv-home", "catalog.filter.7", "anim.lv-home.name", "anim.lv-home.lead"),
+  animated("lv-grid", "catalog.filter.7", "anim.lv-grid.name", "anim.lv-grid.lead"),
+  animated("lv-feeling", "catalog.filter.7", "anim.lv-feeling.name", "anim.lv-feeling.lead"),
+  animated("fr-moments", "catalog.filter.9", "anim.fr-moments.name", "anim.fr-moments.lead"),
+  animated("wd-quote", "catalog.filter.10", "anim.wd-quote.name", "anim.wd-quote.lead"),
 ];
 
 /** Шаблоны редактора, которых нет в каталоге, — со своим поводом. */

@@ -56,6 +56,7 @@ import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
 import { musicAudioSrc, musicCredit } from "@/lib/editor/music";
 import { encodeGif, GIF_WIDTH, recordVideo, VIDEO_WIDTH } from "@/lib/editor/record";
 import { DRAFT_KEY, draftKeyFor, readDraft } from "@/lib/editor/drafts";
+import { PHOTO_LIMIT, photoLimit } from "@/lib/editor/premium";
 import {
   createHistory,
   type History,
@@ -98,6 +99,13 @@ const CASCADE_STEPS = 6;
 const BLOB_TTL_MS = 10_000;
 /** Превью шаблона: 180 × 240, вчетверо меньше PNG-экспорта. */
 const PREVIEW_MULTIPLIER = 0.3;
+
+/** Сообщение о лимите фото: в коллаже с короной он другой. */
+function photoLimitNotice(template: TemplateId | null): TextKey {
+  return photoLimit(template) > PHOTO_LIMIT
+    ? "editor.error.photoLimitCollage"
+    : "editor.error.photoLimit";
+}
 
 export type EditorStatus = "loading" | "ready" | "error";
 
@@ -183,6 +191,8 @@ export function useCardEditor() {
   const live = useRef<Live | null>(null);
   const dirty = useRef(false);
   const assets = useRef(new Map<string, Asset>());
+  /** Фото, записанные в базу, но ещё не попавшие на холст (см. saveDraft). */
+  const pendingAssets = useRef(new Set<string>());
   const playback = useRef<Playback | null>(null);
 
   const [status, setStatus] = useState<EditorStatus>("loading");
@@ -222,6 +232,8 @@ export function useCardEditor() {
   const playOnReady = useRef(false);
   /** Шаблон, открытый сейчас: подсвечен во вкладке «Шаблоны». */
   const [currentTemplate, setCurrentTemplate] = useState<TemplateId | null>(null);
+  /** То же для обработчиков: лимит фото зависит от шаблона (premium.ts). */
+  const templateRef = useRef<TemplateId | null>(null);
   /** Превью шаблонов для вкладки «Шаблоны». */
   const [previews, setPreviews] = useState<Partial<Record<TemplateId, string>>>({});
   /** «Отменить» и «Вернуть» (09.10.2026), см. lib/editor/history.ts. */
@@ -313,6 +325,7 @@ export function useCardEditor() {
   const assetUrl = useCallback((id: string) => assets.current.get(id)?.url ?? null, []);
 
   const registerAsset = useCallback((id: string, blob: Blob) => {
+    pendingAssets.current.add(id);
     const existing = assets.current.get(id);
     if (existing !== undefined) URL.revokeObjectURL(existing.url);
     assets.current.set(id, { blob, url: URL.createObjectURL(blob) });
@@ -331,6 +344,14 @@ export function useCardEditor() {
       // Фото удалённых слоёв больше не нужны — освобождаем место.
       // Кроме тех, что помнит история: «Отменить» может их вернуть.
       const keep = usedAssets(current.canvas);
+      // Новое фото уже в базе, но ещё не на холсте: между записью
+      // в IndexedDB и появлением слоя проходит декодирование, и уборка
+      // в этот момент стирала его — после перезагрузки «Часть фото
+      // не нашлась». Такое фото бережём, пока холст его не увидит.
+      for (const id of pendingAssets.current) {
+        if (keep.has(id)) pendingAssets.current.delete(id);
+        else keep.add(id);
+      }
       for (const id of historyAssets(history.current)) keep.add(id);
       if (gameRef.current?.asset !== undefined) keep.add(gameRef.current.asset);
       void pruneAssets(keep);
@@ -404,6 +425,7 @@ export function useCardEditor() {
       const template = templateFromUrl();
       draftKey.current = draftKeyFor(template);
       playOnReady.current = template !== null;
+      templateRef.current = template;
       setCurrentTemplate(template);
       const doc =
         readDraft(draftKey.current) ??
@@ -680,8 +702,8 @@ export function useCardEditor() {
       const current = live.current;
       if (current === null || playback.current !== null) return;
       setNotice(null);
-      if (usedAssets(current.canvas).size >= LIMITS.images) {
-        setNotice("editor.error.photoLimit");
+      if (usedAssets(current.canvas).size >= photoLimit(templateRef.current)) {
+        setNotice(photoLimitNotice(templateRef.current));
         return;
       }
       setBusyText("loading.upload");
@@ -773,6 +795,16 @@ export function useCardEditor() {
       if (before === null || (before.kind !== "image" && before.kind !== "sticker")) return;
       const info = before.kind === "sticker" ? stickerInfo(before.sticker) : null;
       const autoCutout = info?.cutout === true;
+      // Пример → своё фото добавляет одно фото к открытке; замена своего
+      // своим — нет. Без проверки черновик с фото сверх лимита
+      // отбрасывался бы целиком при следующем открытии.
+      if (
+        before.kind === "sticker" &&
+        usedAssets(current.canvas).size >= photoLimit(templateRef.current)
+      ) {
+        setNotice(photoLimitNotice(templateRef.current));
+        return;
+      }
 
       setNotice(null);
       setBusyText("loading.upload");
@@ -1152,6 +1184,7 @@ export function useCardEditor() {
         // в соседний шаблон.
         resetHistory();
         syncSelection();
+        templateRef.current = id;
         setCurrentTemplate(id);
         const url = new URL(window.location.href);
         url.searchParams.set("template", id);

@@ -46,6 +46,8 @@ const NOTO = {
   sunflower: "sunflower",
   strawberry: "strawberry",
   cherries: "cherries",
+  // Третья серия (09.10.2026): мишки в «Happy Birthday» с фотоаппаратом.
+  "teddy-bear": "teddy-bear",
 };
 
 /** Обесцвеченные: диско-шар на макете серебряный, у Noto он сине-фиолетовый. */
@@ -176,6 +178,94 @@ picsum.photos по номеру, обрезаны по центру, \`bw\` — 
 - \`sample-sunset.jpg\` — Caleb Ekeroth, https://stocksnap.io/photo/couple-love-6QXTZFW51U
 - \`xmas-tree-photo.png\` — Pawel Kadysz, https://stocksnap.io/photo/christmas-tree-ELVRAJB0NI
   (край срезан волной, 256 цветов)
+
+Третья серия по design/открытки/ (09.10.2026) — StockSnap, CC0, превью 960 px,
+обрезаны под окно шаблона:
+
+- \`sample-cover.jpg\` — Sergei Solovev, https://stocksnap.io/photo/cake-food-L28IBU4Y3J
+- \`sample-bff-1.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-fun-TK55STNQN8, тонировано в красный
+- \`sample-bff-2.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-fun-NPEZGYPUYP, тонировано в красный
+- \`sample-bff-3.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-together-UHTM70G1AS, тонировано в красный
+- \`sample-bff-4.jpg\` — Candace McDaniel, https://stocksnap.io/photo/women-friends-9VP7PKBGGT, тонировано в красный
+- \`sample-bff-5.jpg\` — Candace McDaniel, https://stocksnap.io/photo/girl-friends-3YF2EP4KOA, тонировано в красный
+- \`sample-bff-6.jpg\` — Bruce Mars, https://stocksnap.io/photo/friends-dinner-RRSDBIHUMS, тонировано в красный
+- \`sample-kodak-1.jpg\` — Hiking Adventures, https://stocksnap.io/photo/friends-hiking-WQE4AZ2BPU
+- \`sample-kodak-2.jpg\` — Living Together, https://stocksnap.io/photo/couple-selfie-XNOUUIHJGG
+- \`sample-kodak-3.jpg\` — Brodie Vissers, https://stocksnap.io/photo/people-men-XO53SBWVMF
+- \`sample-kodak-4.jpg\` — Duri from Mocup, https://stocksnap.io/photo/couple-man-E9QVYLY3DI
+- \`sample-kodak-5.jpg\` — Clarisse Meyer, https://stocksnap.io/photo/people-friends-EVSKT1I1QG
+- \`sample-kodak-6.jpg\` — Helena Lopes, https://stocksnap.io/photo/group-friends-YBGQFVYDDC
+- \`sample-kodak-big.jpg\` — Candace McDaniel, https://stocksnap.io/photo/selfie-women-TDLN8CRA4P
+- \`sample-cam.jpg\` — Benjamin Combs, https://stocksnap.io/photo/girl-woman-TNK87N7464
+- \`sample-pin.jpg\` — Scott Webb, https://stocksnap.io/photo/couple-love-MIMZ4PUM2F
+- \`sample-tape.jpg\` — Redd Angelo, https://stocksnap.io/photo/couple-love-CTYF2POOT3
+- \`sample-moon-1.jpg\` — Helena Lopes, https://stocksnap.io/photo/friends-hugging-6ZYX4YY4IR, ч/б
+- \`sample-moon-2.jpg\` — Helena Lopes, https://stocksnap.io/photo/friends-family-EI9BBWFMXB, ч/б
+- \`sample-moon-3.jpg\` — Helena Lopes, https://stocksnap.io/photo/male-friends-HFWBLKKCXV, ч/б
+- \`sample-moon-4.jpg\` — Helena Lopes, https://stocksnap.io/photo/group-friends-M16QHPDGYJ, ч/б
+- \`sample-moon-5.jpg\` — Helena Lopes, https://stocksnap.io/photo/friends-picnic-3IVBNKC2JH, ч/б
+- \`sample-moon-6.jpg\` — Aidan Meyer, https://stocksnap.io/photo/people-friends-DDYC9U7O2P, ч/б
+- \`sample-moon-7.jpg\` — Aidan Meyer, https://stocksnap.io/photo/group-friends-B740UADQ1E, ч/б
+- \`sample-moon-8.jpg\` — Daria Shevtsova, https://stocksnap.io/photo/friends-talking-JQCWIM78PZ, ч/б
+- \`sample-moon-9.jpg\` — Tirachard Kumtanom, https://stocksnap.io/photo/people-friends-5ZC9K92S09, ч/б
+- \`sample-moon-10.jpg\` — Oliver Sjöström, https://stocksnap.io/photo/friends-running-KWBUZNDC9A, ч/б
+- \`sample-moon-11.jpg\` — Asaf R, https://stocksnap.io/photo/friends-people-SG89Q67Y7J, ч/б
+- \`sample-moon-12.jpg\` — Candace McDaniel, https://stocksnap.io/photo/girl-friends-VCOMSBEPUK, ч/б
+- \`sample-moon-13.jpg\` — RachelH, https://stocksnap.io/photo/silhouette-family-Q7UIKF58IR, ч/б
+- \`sample-moon-14.jpg\` — Ian Schneider, https://stocksnap.io/photo/peace-girls-G9CLJC5580, ч/б
+- \`sample-moon-15.jpg\` — Living Together, https://stocksnap.io/photo/couple-selfie-IR1NI4RTUN, ч/б
+- \`sample-moon-16.jpg\` — Family Moments, https://stocksnap.io/photo/father-child-MF5LAZWIOE, ч/б
+- \`sample-moon-17.jpg\` — Helena Lopes, https://stocksnap.io/photo/group-friends-YBGQFVYDDC, ч/б
+- \`sample-moon-18.jpg\` — Hiking Adventures, https://stocksnap.io/photo/friends-hiking-WQE4AZ2BPU, ч/б
+- \`sample-moon-19.jpg\` — Bruce Mars, https://stocksnap.io/photo/friends-dinner-RRSDBIHUMS, ч/б
+- \`sample-moon-20.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-fun-TK55STNQN8, ч/б
+- \`sample-moon-21.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-fun-NPEZGYPUYP, ч/б
+- \`sample-moon-22.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-together-UHTM70G1AS, ч/б
+- \`sample-moon-23.jpg\` — Candace McDaniel, https://stocksnap.io/photo/girl-friends-3YF2EP4KOA, ч/б
+- \`sample-moon-24.jpg\` — Candace McDaniel, https://stocksnap.io/photo/women-friends-9VP7PKBGGT, ч/б
+- \`sample-moon-25.jpg\` — Candace McDaniel, https://stocksnap.io/photo/selfie-women-TDLN8CRA4P, ч/б
+- \`sample-moon-26.jpg\` — Brodie Vissers, https://stocksnap.io/photo/people-men-XO53SBWVMF, ч/б
+- \`sample-moon-27.jpg\` — Duri from Mocup, https://stocksnap.io/photo/couple-man-E9QVYLY3DI, ч/б
+- \`sample-moon-28.jpg\` — Living Together, https://stocksnap.io/photo/couple-selfie-XNOUUIHJGG, ч/б
+- \`sample-home-main.jpg\` — Freestocks.org, https://stocksnap.io/photo/wedding-bride-GI154PSYGF
+- \`sample-home-1.jpg\` — Nathan Walker, https://stocksnap.io/photo/couple-kissing-JRTQVF9EQC
+- \`sample-home-2.jpg\` — Nathan Walker, https://stocksnap.io/photo/couple-kissing-UG86T8KW5X
+- \`sample-home-3.jpg\` — Vladimir Kudinov, https://stocksnap.io/photo/couple-love-FP4R72OQII
+- \`sample-home-4.jpg\` — Jenelle Ball, https://stocksnap.io/photo/couple-love-J1Z9HDHZAC
+- \`sample-home-5.jpg\` — Tord Sollie, https://stocksnap.io/photo/people-couple-2F6A2051DE
+- \`sample-home-6.jpg\` — Daryn Bartlett, https://stocksnap.io/photo/couple-love-9UVAGMWV89
+- \`sample-home-7.jpg\` — Anggoro Sakti, https://stocksnap.io/photo/couple-holding-DSGMWWUKM8
+- \`sample-home-8.jpg\` — Freestocks.org, https://stocksnap.io/photo/couple-hugging-ZK4IUPNIUE
+- \`sample-home-9.jpg\` — Pavel Badrtdinov, https://stocksnap.io/photo/couple-holdinghands-UIM4X385QF
+- \`sample-home-10.jpg\` — Ezra Jeffrey, https://stocksnap.io/photo/holdinghands-couple-2X3JMDXU78
+- \`sample-home-11.jpg\` — Burst, https://stocksnap.io/photo/couple-holding-WCZBVEEQKC
+- \`sample-home-12.jpg\` — Jeremy Wong, https://stocksnap.io/photo/love-couple-KVSHDPVIXH
+- \`sample-home-13.jpg\` — Direct Media, https://stocksnap.io/photo/couple-kissing-X8N6YH8IZD
+- \`sample-home-14.jpg\` — Freestocks.org, https://stocksnap.io/photo/holdinghands-couple-4WIPPD231S
+- \`sample-home-15.jpg\` — Burst, https://stocksnap.io/photo/couple-holding-BOKT0DPZBB
+- \`sample-home-16.jpg\` — Living Together, https://stocksnap.io/photo/young-couple-OGXSXATG8X
+- \`sample-home-17.jpg\` — PALOMA Aviles, https://stocksnap.io/photo/couple-love-ZFPLRQHJ8U
+- \`sample-grid-1.jpg\` — Direct Media, https://stocksnap.io/photo/couple-kissing-X8N6YH8IZD, ч/б
+- \`sample-grid-2.jpg\` — Living Together, https://stocksnap.io/photo/young-couple-OGXSXATG8X, ч/б
+- \`sample-grid-3.jpg\` — Freestocks.org, https://stocksnap.io/photo/couple-hugging-ZK4IUPNIUE, ч/б
+- \`sample-grid-4.jpg\` — Tord Sollie, https://stocksnap.io/photo/people-couple-2F6A2051DE, ч/б
+- \`sample-grid-5.jpg\` — Burst, https://stocksnap.io/photo/couple-holding-WCZBVEEQKC, ч/б
+- \`sample-grid-6.jpg\` — Eric Alves, https://stocksnap.io/photo/marriage-wedding-JB4CPU0LCU, ч/б
+- \`sample-grid-7.jpg\` — Nathan Walker, https://stocksnap.io/photo/couple-kissing-JRTQVF9EQC, ч/б
+- \`sample-grid-8.jpg\` — Jeremy Wong, https://stocksnap.io/photo/love-couple-KVSHDPVIXH, ч/б
+- \`sample-grid-9.jpg\` — PALOMA Aviles, https://stocksnap.io/photo/couple-love-ZFPLRQHJ8U, ч/б
+- \`sample-grid-10.jpg\` — Senior Living, https://stocksnap.io/photo/couple-park-GL9XJQTLJK, ч/б
+- \`sample-dark.jpg\` — Nathan Walker, https://stocksnap.io/photo/couple-kissing-UG86T8KW5X, ч/б
+- \`sample-wd-dance.jpg\` — Jason Briscoe, https://stocksnap.io/photo/wedding-party-X3UU2014U4
+- \`sample-wd-hands.jpg\` — Jeremy Wong, https://stocksnap.io/photo/wedding-bride-KBSWTHYXXH, ч/б
+- \`sample-moment-1.jpg\` — Candace McDaniel, https://stocksnap.io/photo/women-friends-9VP7PKBGGT
+- \`sample-moment-2.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-fun-TK55STNQN8
+- \`sample-moment-3.jpg\` — Candace McDaniel, https://stocksnap.io/photo/selfie-women-TDLN8CRA4P
+- \`sample-moment-4.jpg\` — Bruce Mars, https://stocksnap.io/photo/friends-dinner-RRSDBIHUMS
+- \`sample-moment-5.jpg\` — Matt Moloney, https://stocksnap.io/photo/friends-together-UHTM70G1AS
+- \`sample-moment-6.jpg\` — Candace McDaniel, https://stocksnap.io/photo/girl-friends-3YF2EP4KOA
+- \`sample-bff-cut.png\` — Candace McDaniel, https://stocksnap.io/photo/women-friends-9VP7PKBGGT
+  (фон убран моделью MediaPipe selfie_segmenter, края по бокам растушёваны)
 
 \`kevin.png\` — Кевин из фильма «Один дома» (20th Century Fox, 1990),
 вырезан из макета design/открытки/новый год 6.jpg по просьбе

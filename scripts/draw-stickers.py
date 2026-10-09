@@ -864,4 +864,233 @@ svg(
 )
 
 
+# ── Третья серия по design/открытки/ (09.10.2026), lib/editor/series-3.ts ──
+# Свой генератор: старые файлы остаются байт в байт.
+rng3 = random.Random(20261010)
+
+
+def wobble(points, amp):
+    """Ломаная с дрожью — край рваной бумаги."""
+    return " L".join(f"{x + rng3.uniform(-amp, amp):.1f} {y + rng3.uniform(-amp, amp):.1f}" for x, y in points)
+
+
+def edge(x0, y0, x1, y1, step):
+    n = max(2, int(math.hypot(x1 - x0, y1 - y0) / step))
+    return [(x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n) for i in range(n)]
+
+
+def torn_rect(x0, y0, x1, y1, step, amp):
+    pts = edge(x0, y0, x1, y0, step) + edge(x1, y0, x1, y1, step) + edge(x1, y1, x0, y1, step) + edge(x0, y1, x0, y0, step)
+    return "M" + wobble(pts, amp) + " Z"
+
+
+SOFT = '<filter id="soft" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".28"/></filter>'
+
+# Мятая бумага на всю открытку: светло-серая, складки — шум со светом. 600 × 800.
+svg(
+    "paper-crumpled",
+    600,
+    800,
+    '<rect width="600" height="800" fill="#e7e7e5"/>'
+    '<rect width="600" height="800" filter="url(#crumple)" opacity=".55"/>',
+    '<filter id="crumple" x="0" y="0" width="100%" height="100%">'
+    '<feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="4" seed="7"/>'
+    '<feDiffuseLighting lighting-color="#ffffff" surfaceScale="6"><feDistantLight azimuth="235" elevation="48"/></feDiffuseLighting>'
+    '<feComponentTransfer><feFuncA type="linear" slope="1"/></feComponentTransfer></filter>',
+)
+
+# Красная нить через всю открытку. 600 × 800.
+svg(
+    "red-thread",
+    600,
+    800,
+    '<path d="M330 4 C440 -6 600 20 560 120 C520 230 640 330 560 430 C500 510 420 470 300 600 '
+    'C230 670 120 540 40 520 C-20 506 -10 640 120 700 C230 750 360 640 400 800" '
+    'fill="none" stroke="#b5343a" stroke-width="5" stroke-linecap="round"/>',
+)
+
+# Красная канцелярская кнопка, вид сбоку. 140 × 150.
+svg(
+    "push-pin",
+    140,
+    150,
+    '<path d="M52 92 L22 140" stroke="#9a9a9a" stroke-width="5" stroke-linecap="round"/>'
+    '<g filter="url(#soft)"><path d="M40 70 C30 50 46 30 66 34 L96 12 C110 4 128 18 120 34 L102 62 C108 82 88 100 70 92 Z" fill="url(#pinG)"/>'
+    '<ellipse cx="96" cy="26" rx="18" ry="12" transform="rotate(-35 96 26)" fill="#e2353c"/>'
+    '<ellipse cx="90" cy="22" rx="6" ry="4" transform="rotate(-35 90 22)" fill="#fff" opacity=".6"/></g>',
+    SOFT + '<linearGradient id="pinG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5a5f"/><stop offset=".6" stop-color="#c01d24"/><stop offset="1" stop-color="#7a0d12"/></linearGradient>',
+)
+
+# Белая рваная подложка под фото. 520 × 500.
+svg(
+    "torn-frame",
+    520,
+    500,
+    f'<path d="{torn_rect(14, 14, 506, 486, 9, 4)}" fill="#f7f7f5" filter="url(#soft)"/>',
+    SOFT,
+)
+
+# Бежевая записка-облако для «Soulmate». 300 × 150.
+cloud = "M20 40 C10 10 60 4 90 16 C120 0 170 6 190 18 C220 4 280 8 284 40 C300 70 290 110 270 126 C240 150 180 140 150 146 C110 150 60 150 34 132 C6 114 0 70 20 40 Z"
+svg("paper-cloud", 300, 150, f'<path d="{cloud}" fill="#e3ddd2" filter="url(#soft)"/>', SOFT)
+
+# Обрывок письма от руки: кремовый лист с рукописными строками. 300 × 460.
+def scribble(y, x0, x1):
+    pts = []
+    x = x0
+    while x < x1:
+        pts.append(f"Q{x + 4:.0f} {y - rng3.uniform(4, 9):.1f} {x + 8:.0f} {y:.1f}")
+        pts.append(f"Q{x + 11:.0f} {y + rng3.uniform(1, 4):.1f} {x + 14:.0f} {y:.1f}")
+        x += 14 + rng3.uniform(0, 10) if rng3.random() < 0.2 else 14
+    return f'<path d="M{x0} {y} {" ".join(pts)}" fill="none" stroke="#3b3128" stroke-width="1.6" stroke-linecap="round"/>'
+
+
+letter_edge = "M0 0 L300 0 L300 30 " + wobble([(270, 60), (240, 90), (250, 130), (220, 170), (236, 210), (200, 250), (180, 300), (150, 330), (170, 380), (130, 420), (100, 460)], 6) + " L0 460 Z"
+svg(
+    "letter-scrap",
+    300,
+    460,
+    f'<clipPath id="lc"><path d="{letter_edge}"/></clipPath>'
+    '<g clip-path="url(#lc)"><rect width="300" height="460" fill="#efe6d2"/>'
+    + "".join(scribble(28 + i * 30, 12, 290) for i in range(15))
+    + "</g>",
+)
+
+# Чугунный фонарь с тёплым стеклом. 60 × 420.
+svg(
+    "street-lamp",
+    60,
+    420,
+    '<rect x="26" y="70" width="8" height="330" fill="url(#lampG)"/>'
+    '<rect x="16" y="396" width="28" height="18" rx="4" fill="#8a8f93"/>'
+    '<rect x="20" y="160" width="20" height="10" rx="3" fill="#9aa0a4"/><rect x="20" y="300" width="20" height="10" rx="3" fill="#9aa0a4"/>'
+    '<path d="M14 26 L46 26 L42 66 L18 66 Z" fill="#f2b8a0" stroke="#5c6266" stroke-width="3"/>'
+    '<path d="M10 26 L50 26 L30 8 Z" fill="#5c6266"/><circle cx="30" cy="6" r="4" fill="#5c6266"/>'
+    '<rect x="16" y="64" width="28" height="8" fill="#5c6266"/>',
+    '<linearGradient id="lampG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6f7579"/><stop offset=".5" stop-color="#d6dadc"/><stop offset="1" stop-color="#6f7579"/></linearGradient>',
+)
+
+# Сухой цветок на веточке, бежевый. 200 × 260.
+petals = "".join(
+    f'<ellipse cx="{cx + 14 * math.cos(a):.1f}" cy="{cy + 14 * math.sin(a):.1f}" rx="13" ry="7" transform="rotate({math.degrees(a):.0f} {cx + 14 * math.cos(a):.1f} {cy + 14 * math.sin(a):.1f})" fill="#e9d6c4" stroke="#c9ab92" stroke-width="1"/>'
+    for cx, cy in ((120, 60), (150, 110), (96, 120)) for a in [i * math.pi / 3 + 0.3 for i in range(6)]
+)
+svg(
+    "dried-flower",
+    200,
+    260,
+    '<path d="M20 250 C60 200 90 160 120 60 M80 170 C110 150 130 130 150 110 M70 190 C80 160 90 140 96 120" fill="none" stroke="#9c8a6c" stroke-width="3" stroke-linecap="round"/>'
+    + petals
+    + '<circle cx="120" cy="60" r="6" fill="#c7a46d"/><circle cx="150" cy="110" r="6" fill="#c7a46d"/><circle cx="96" cy="120" r="6" fill="#c7a46d"/>',
+)
+
+# Красная сургучная печать. 120 × 120.
+wax = " L".join(
+    f"{60 + (52 + rng3.uniform(-5, 4)) * math.cos(i * math.pi / 14):.1f} {60 + (52 + rng3.uniform(-5, 4)) * math.sin(i * math.pi / 14):.1f}"
+    for i in range(28)
+)
+svg(
+    "wax-seal",
+    120,
+    120,
+    f'<path d="M{wax} Z" fill="url(#waxG)" filter="url(#soft)"/>'
+    '<circle cx="60" cy="60" r="34" fill="none" stroke="#5e0f12" stroke-width="3" opacity=".7"/>'
+    '<path d="M60 76 C40 62 38 48 48 42 C54 38 60 44 60 50 C60 44 66 38 72 42 C82 48 80 62 60 76 Z" fill="#5e0f12" opacity=".75"/>',
+    SOFT + '<radialGradient id="waxG" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#b8343a"/><stop offset=".7" stop-color="#7d1418"/><stop offset="1" stop-color="#5a0c10"/></radialGradient>',
+)
+
+# Однотонная клейкая лента: бежевая полупрозрачная и тёмно-красная. 260 × 70.
+def plain_tape(name, color, opacity):
+    teeth_r = "".join(f"L{254 if i % 2 == 0 else 246} {6 + i * 7}" for i in range(9))
+    teeth_l = "".join(f"L{6 if i % 2 == 0 else 14} {62 - i * 7}" for i in range(9))
+    svg(
+        name,
+        260,
+        70,
+        f'<path d="M8 4 L250 2 {teeth_r} L10 66 {teeth_l} Z" fill="{color}" opacity="{opacity}"/>',
+    )
+
+
+plain_tape("tape-beige", "#d9cbb2", ".88")
+plain_tape("tape-maroon", "#8e2a24", ".95")
+
+# Серебряная надутая звезда. 160 × 160.
+silver_star = star_points(80, 84, 74, 34)
+svg(
+    "star-silver",
+    160,
+    160,
+    f'<polygon points="{silver_star}" fill="url(#ssG)" stroke="#8d949b" stroke-width="2" stroke-linejoin="round" filter="url(#soft)"/>'
+    '<ellipse cx="62" cy="62" rx="16" ry="8" transform="rotate(-30 62 62)" fill="#fff" opacity=".75"/>',
+    SOFT + '<linearGradient id="ssG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#bfc5ca"/><stop offset=".7" stop-color="#7f878e"/><stop offset="1" stop-color="#d9dde0"/></linearGradient>',
+)
+
+# Компактная серебряная «мыльница» сзади, без марки. 360 × 520.
+# Окно экрана: x 40–232, y 40–300 (192 × 260) — фото кладётся поверх.
+svg(
+    "camera-silver",
+    360,
+    520,
+    '<g filter="url(#soft)"><rect x="4" y="4" width="330" height="512" rx="22" fill="url(#bodyG)"/>'
+    '<rect x="330" y="300" width="26" height="110" rx="10" fill="#9da3a8"/></g>'
+    '<rect x="30" y="30" width="212" height="280" rx="6" fill="#2a2d30"/>'
+    '<rect x="40" y="40" width="192" height="260" fill="#ffffff"/>'
+    '<rect x="264" y="40" width="44" height="12" rx="4" fill="#7b8186"/>'
+    '<circle cx="286" cy="196" r="26" fill="#1d1f21" stroke="#8d9398" stroke-width="5"/><circle cx="286" cy="196" r="10" fill="#3a3e42"/>'
+    '<circle cx="268" cy="258" r="7" fill="#33373a"/><circle cx="296" cy="258" r="7" fill="#33373a"/>'
+    '<circle cx="168" cy="420" r="78" fill="url(#dialG)" stroke="#7c8287" stroke-width="3"/>'
+    '<circle cx="168" cy="420" r="30" fill="#c9ced2" stroke="#7c8287" stroke-width="3"/>'
+    '<circle cx="54" cy="360" r="20" fill="#d4d8db" stroke="#7c8287" stroke-width="3"/>'
+    '<circle cx="282" cy="360" r="20" fill="#d4d8db" stroke="#7c8287" stroke-width="3"/>'
+    '<circle cx="54" cy="450" r="16" fill="#d4d8db" stroke="#7c8287" stroke-width="3"/>'
+    '<g fill="#3a3e42">' + "".join(f'<circle cx="{282 + dx}" cy="{444 + dy}" r="2.6"/>' for dx in (-10, 0, 10) for dy in (-10, 0, 10)) + '</g>'
+    '<rect x="270" y="320" width="40" height="8" rx="3" fill="#7b8186" opacity=".6"/>',
+    SOFT
+    + '<linearGradient id="bodyG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9ecee"/><stop offset=".4" stop-color="#b9bfc4"/><stop offset=".75" stop-color="#d7dbde"/><stop offset="1" stop-color="#9aa1a7"/></linearGradient>'
+    '<radialGradient id="dialG" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#f4f6f7"/><stop offset=".6" stop-color="#b3b9be"/><stop offset="1" stop-color="#8b9297"/></radialGradient>',
+)
+
+# Два котика дай-пять, рисунок линией. 200 × 150.
+svg(
+    "cats-doodle",
+    200,
+    150,
+    '<g fill="none" stroke="#2b2b2b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
+    '<path d="M24 140 L26 70 C26 52 36 44 52 44 C70 44 80 52 80 70 L82 140"/><path d="M30 50 L28 28 L44 42 M66 42 L80 28 L78 50"/>'
+    '<path d="M80 74 L96 36"/><circle cx="44" cy="64" r="2"/><circle cx="62" cy="64" r="2"/><path d="M50 74 Q53 78 56 74"/>'
+    '<path d="M118 140 L120 70 C120 52 130 44 146 44 C164 44 174 52 174 70 L176 140"/><path d="M124 50 L122 28 L138 42 M160 42 L174 28 L172 50"/>'
+    '<path d="M120 74 L104 36"/><circle cx="138" cy="64" r="2"/><circle cx="156" cy="64" r="2"/><path d="M144 74 Q147 78 150 74"/>'
+    '<path d="M86 22 C80 10 92 4 98 14 C104 4 116 10 110 22 L98 34 Z"/><path d="M78 16 L72 10 M118 16 L124 10 M98 4 L98 0"/></g>'
+    '<path d="M26 110 L82 110 L82 140 L24 140 Z" fill="#2b2b2b"/><circle cx="150" cy="58" r="10" fill="#2b2b2b"/>',
+)
+
+# Белый рваный обрывок под «ЛЮБОВЬ». 220 × 400.
+svg(
+    "paper-scrap",
+    220,
+    400,
+    f'<path d="{torn_rect(10, 12, 210, 388, 10, 6)}" fill="#fafafa" filter="url(#soft)"/>',
+    SOFT,
+)
+
+# Тетрадный лист с рваным краем слева. 480 × 360.
+holes = "".join(f'<rect x="20" y="{30 + i * 28}" width="16" height="12" rx="2" fill="#2a2a2a"/>' for i in range(11))
+rules = "".join(f'<line x1="44" y1="{56 + i * 26}" x2="470" y2="{56 + i * 26}" stroke="#c9c2b4" stroke-width="1"/>' for i in range(12))
+svg(
+    "notebook-sheet",
+    480,
+    360,
+    f'<path d="M8 4 L476 4 L476 356 L8 356 {wobble([(4, 320), (14, 280), (2, 240), (16, 200), (4, 160), (14, 120), (2, 80), (14, 40)], 4)} Z" fill="#f1ece2" filter="url(#soft)"/>'
+    + rules + holes,
+    SOFT,
+)
+
+# Обведённое от руки кольцо — вокруг надписи-кнопки. 200 × 90.
+svg(
+    "circle-doodle",
+    200,
+    90,
+    '<path d="M150 10 C190 14 198 50 170 70 C130 92 40 90 14 64 C-6 42 30 10 100 8 C130 7 160 12 176 24" fill="none" stroke="#1d1d1d" stroke-width="2.4" stroke-linecap="round"/>',
+)
+
 print("Готово:", len(list(OUT.glob("*.svg"))), "стикеров")

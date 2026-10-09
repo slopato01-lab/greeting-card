@@ -12,6 +12,7 @@ import {
 } from "@/lib/editor/document";
 import { SERIES, SERIES_IDS } from "@/lib/editor/series";
 import { SERIES2, SERIES2_IDS } from "@/lib/editor/series-2";
+import { SERIES3, SERIES3_IDS } from "@/lib/editor/series-3";
 import { anim, sticker, text as kitText } from "@/lib/editor/template-kit";
 import type { TextKey } from "@/lib/i18n";
 
@@ -38,6 +39,7 @@ export const TEMPLATE_IDS = [
   "polaroid",
   ...SERIES_IDS,
   ...SERIES2_IDS,
+  ...SERIES3_IDS,
 ] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
@@ -404,4 +406,6 @@ export const TEMPLATES: readonly TemplateInfo[] = [
   ...SERIES_IDS.map((id): TemplateInfo => ({ id, label: `tpl.${id}.label`, build: SERIES[id] })),
   // Вторая серия (09.10.2026), lib/editor/series-2.ts.
   ...SERIES2_IDS.map((id): TemplateInfo => ({ id, label: `tpl.${id}.label`, build: SERIES2[id] })),
+  // Третья серия (09.10.2026), lib/editor/series-3.ts.
+  ...SERIES3_IDS.map((id): TemplateInfo => ({ id, label: `tpl.${id}.label`, build: SERIES3[id] })),
 ];

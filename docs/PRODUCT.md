@@ -1029,6 +1029,7 @@
 | `editor.playing` | Идёт просмотр — правки на паузе |
 | `editor.error.photoDecode` | Это фото не открылось в браузере. Попробуйте JPG или PNG |
 | `editor.error.photoLimit` | В открытке уже 10 фото — это максимум |
+| `editor.error.photoLimitCollage` | В коллаже уже 30 фото — это максимум |
 | `editor.error.photoMissing` | Часть фото не нашлась в этом браузере — их слои убраны |
 | `editor.error.photoStorage` | Фото добавлено, но браузер не дал его сохранить. После перезагрузки оно пропадёт |
 
@@ -1178,7 +1179,7 @@
 | `editor.text.title` | Заголовок |
 | `editor.text.subtitle` | Подзаголовок |
 | `editor.text.body` | Основной текст |
-| `editor.photo.hint` | JPG, PNG или HEIC до 10 МБ, до 10 фото в открытке. Выберите фото на открытке — здесь же появится, что с ним можно сделать: заменить, убрать фон, сделать чёрно-белым. |
+| `editor.photo.hint` | JPG, PNG или HEIC до 10 МБ, до 10 фото в открытке, в коллажах с короной — до 30. Выберите фото на открытке — здесь же появится, что с ним можно сделать: заменить, убрать фон, сделать чёрно-белым. |
 | `editor.anim.empty` | Выберите элемент на открытке — и задайте, как он появится, двигается и уходит. |
 
 ## Афиша-приглашение (08.10.2026)
@@ -1571,6 +1572,128 @@
 | `sticker.bicycle` | Велосипед |
 | `sticker.heart-line-red` | Сердце-линия |
 | `sticker.gloss-sheen` | Глянец |
+
+## Третья серия шаблонов (09.10.2026)
+
+Двенадцать макетов из `design/открытки/`, `lib/editor/series-3.ts`.
+Надписи открыток — как на макетах, без перевода. Названия и вводки
+карточек — черновые, ждут утверждения. `tpl.fr-moments.text` и
+`tpl.fr-moments.love` заменяют рекламу фотопечати из макета (решение
+пользователя), тоже черновые. Фильтр «Любовь» (`catalog.filter.7`)
+вернулся для шести открыток о любви.
+
+| Ключ | Текст |
+|---|---|
+| `tpl.bd-vogue.label` | Обложка журнала |
+| `tpl.bd-vogue.masthead` | VOGUE |
+| `tpl.bd-vogue.age` | 21 |
+| `tpl.bd-vogue.suffix` | st |
+| `tpl.bd-vogue.edition` | Birthday ⏎ Edition |
+| `tpl.bd-vogue.golden` | Celebrating The ⏎ Golden Year |
+| `tpl.bd-vogue.about` | Everything ⏎ About Your Name! |
+| `tpl.bd-vogue.happy` | Happy |
+| `tpl.bd-vogue.birthday` | Birthday |
+| `anim.bd-vogue.name` | Birthday Edition |
+| `anim.bd-vogue.lead` | Обложка глянцевого журнала: ваше фото во весь лист и «Happy Birthday» от руки. |
+| `tpl.bd-bff.label` | Лучшей подруге |
+| `tpl.bd-bff.best` | MY BEST FRIEND |
+| `tpl.bd-bff.grateful` | GRATEFUL ALWAYS |
+| `tpl.bd-bff.happy` | Happy |
+| `tpl.bd-bff.birthday` | Birthday |
+| `tpl.bd-bff.family` | YOU ARE MY ⏎ CHOSEN FAMILY |
+| `tpl.bd-bff.together` | THROUGH ⏎ EVERYTHING, ⏎ TOGETHER. |
+| `anim.bd-bff.name` | Chosen Family |
+| `anim.bd-bff.lead` | Шесть фото в тёплом красном, сургучные печати и вы с подругой внизу — фон за вами уберётся сам. |
+| `tpl.bd-kodak.label` | Плёнка Kodak |
+| `tpl.bd-kodak.film` | KODAK PORTRA 400          43          KODAK PORTRA 400 |
+| `tpl.bd-kodak.happy` | Happy Birthday |
+| `tpl.bd-kodak.wish` | May all your dreams come true! ⏎ Enjoy your day. Love You |
+| `anim.bd-kodak.name` | Portra 400 |
+| `anim.bd-kodak.lead` | Семь кадров на плёнке: три сверху, большой с пожеланием посередине и три снизу. |
+| `tpl.bd-camera.label` | Фотоаппарат |
+| `tpl.bd-camera.happy` | HAPPY |
+| `tpl.bd-camera.birthday` | BIRTHDAY |
+| `anim.bd-camera.name` | Say Cheese |
+| `anim.bd-camera.lead` | Ваше фото на экране серебряного фотоаппарата, буквы-шарики, мишки и звёзды. |
+| `tpl.lv-pin.label` | Любить |
+| `tpl.lv-pin.love` | Любить |
+| `tpl.lv-pin.line1` | Любить тебя бывает сложно, |
+| `tpl.lv-pin.line2` | но без тебя и невозможно |
+| `tpl.lv-pin.word` | Soulmate |
+| `tpl.lv-pin.meaning` | (n.) Someone who does the ⏎ same weird things you do. |
+| `tpl.lv-pin.sign` | With love, |
+| `anim.lv-pin.name` | Любить |
+| `anim.lv-pin.lead` | Фото на красной кнопке поверх мятой бумаги, красная нить и словарное «Soulmate». |
+| `tpl.lv-polaroid.label` | I love you |
+| `tpl.lv-polaroid.i-love` | I LOVE |
+| `tpl.lv-polaroid.you` | YOU |
+| `tpl.lv-polaroid.always` | I will always love you... |
+| `anim.lv-polaroid.name` | I Love You |
+| `anim.lv-polaroid.lead` | Полароид на скотче на чёрном, обрывок старого письма, фонарь и ромашка. |
+| `tpl.lv-moon.label` | До луны и обратно |
+| `tpl.lv-moon.line1` | I love you to |
+| `tpl.lv-moon.line2` | the moon and back |
+| `anim.lv-moon.name` | To the Moon and Back |
+| `anim.lv-moon.lead` | Полумесяц из 30 чёрно-белых фото и признание от руки. По подписке — с местом для всех 30 ваших фото. |
+| `tpl.lv-home.label` | Сердце из фото |
+| `tpl.lv-home.home` | home |
+| `tpl.lv-home.text` | a place where you will always ⏎ be welcome. You are my home, ⏎ my family. |
+| `tpl.lv-home.love` | i love you. |
+| `anim.lv-home.name` | Home |
+| `anim.lv-home.lead` | Сердце из 18 фото с большим снимком в середине и слова о доме. По подписке. |
+| `tpl.lv-grid.label` | Люблю тебя |
+| `tpl.lv-grid.love` | люблю тебя |
+| `tpl.lv-grid.text` | Ты показываешь ⏎ мне, ⏎ как прекрасно ⏎ любить ⏎ и быть ⏎ любимой. |
+| `tpl.lv-grid.stronger` | все сильнее! |
+| `anim.lv-grid.name` | Люблю тебя |
+| `anim.lv-grid.lead` | Десять чёрно-белых фото рамкой вокруг признания. |
+| `tpl.lv-feeling.label` | Самое прекрасное чувство |
+| `tpl.lv-feeling.title` | ЛЮБИТЬ ТЕБЯ |
+| `tpl.lv-feeling.definition` | любовь — чувство, свойственное ⏎ человеку, глубокая привязанность ⏎ и устремлённость к другому человеку. |
+| `tpl.lv-feeling.l1` | ЛЮ |
+| `tpl.lv-feeling.l2` | Б |
+| `tpl.lv-feeling.l3` | О |
+| `tpl.lv-feeling.l4` | ВЬ |
+| `tpl.lv-feeling.most` | САМОЕ |
+| `tpl.lv-feeling.beautiful` | ПРЕКРАСНОЕ |
+| `tpl.lv-feeling.feeling` | ЧУВСТВО |
+| `tpl.lv-feeling.text` | любовь — длительная и сильная привязанность, которая ⏎ сопряжена с тёплыми поступками по отношению к объекту ⏎ воздыхания. Любовь — это нескончаемый источник энергии, ⏎ с которым можно реализовать все свои мечты. |
+| `anim.lv-feeling.name` | Самое прекрасное чувство |
+| `anim.lv-feeling.lead` | Красный маркер, котики, «ЛЮБОВЬ» из вырезанных букв и ваше фото. |
+| `tpl.fr-moments.label` | Моменты с подругой |
+| `tpl.fr-moments.cherish` | Cherish Your Memories |
+| `tpl.fr-moments.line1` | Some moments |
+| `tpl.fr-moments.line2` | are too good to |
+| `tpl.fr-moments.line3` | stay in gallery. |
+| `tpl.fr-moments.text` | REAL MOMENTS FEEL DIFFERENT. ⏎ THANK YOU FOR EVERY LAUGH, ⏎ EVERY ADVENTURE AND EVERY NIGHT ⏎ WE TALKED UNTIL MORNING. |
+| `tpl.fr-moments.love` | LOVE YOU |
+| `anim.fr-moments.name` | Some Moments |
+| `anim.fr-moments.lead` | Лист на скотче среди шести полароидов: ваши лучшие моменты с подругой. |
+| `tpl.wd-quote.label` | Цитата о любви |
+| `tpl.wd-quote.line1` | “Love is that condition in which |
+| `tpl.wd-quote.line2` | the happiness of another person |
+| `tpl.wd-quote.line3` | is essential to your own.” |
+| `tpl.wd-quote.author` | – Robert A. Heinlein |
+| `anim.wd-quote.name` | Love Is… |
+| `anim.wd-quote.lead` | Полароид со свадьбы на скотче и цитата Хайнлайна от руки на тетрадном листе. |
+| `sticker.camera-silver` | Фотоаппарат-рамка |
+| `sticker.star-silver` | Серебряная звезда |
+| `sticker.teddy-bear` | Мишка |
+| `sticker.wax-seal` | Сургучная печать |
+| `sticker.paper-crumpled` | Мятая бумага |
+| `sticker.red-thread` | Красная нить |
+| `sticker.push-pin` | Кнопка |
+| `sticker.torn-frame` | Рваная рамка |
+| `sticker.paper-cloud` | Записка-облако |
+| `sticker.letter-scrap` | Обрывок письма |
+| `sticker.street-lamp` | Фонарь |
+| `sticker.dried-flower` | Сухоцвет |
+| `sticker.tape-beige` | Бежевый скотч |
+| `sticker.tape-maroon` | Бордовый скотч |
+| `sticker.cats-doodle` | Котики |
+| `sticker.paper-scrap` | Обрывок бумаги |
+| `sticker.notebook-sheet` | Тетрадный лист |
+| `sticker.circle-doodle` | Обводка от руки |
 
 ## Сняты из каталога (09.10.2026, просьба пользователя)
 
