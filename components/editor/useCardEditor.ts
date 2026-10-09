@@ -232,6 +232,8 @@ export function useCardEditor() {
   const playOnReady = useRef(false);
   /** Шаблон, открытый сейчас: подсвечен во вкладке «Шаблоны». */
   const [currentTemplate, setCurrentTemplate] = useState<TemplateId | null>(null);
+  /** Вкладка, которую просит адрес страницы (?game=puzzle → «Игра»). */
+  const [startTab, setStartTab] = useState<"game" | null>(null);
   /** То же для обработчиков: лимит фото зависит от шаблона (premium.ts). */
   const templateRef = useRef<TemplateId | null>(null);
   /** Превью шаблонов для вкладки «Шаблоны». */
@@ -441,6 +443,26 @@ export function useCardEditor() {
       if (signal.aborted) return;
       applyDocMeta(doc);
       if (missing > 0) setNotice("editor.error.photoMissing");
+
+      // Пришли из попапа пазла на /games (/editor?game=puzzle): пазл
+      // сразу в открытке, редактор открывает вкладку «Игра». Параметр
+      // снимается с адреса — иначе обновление вернуло бы убранную игру.
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("game") === "puzzle") {
+        if (gameRef.current === null) {
+          const game: CardGame = {
+            kind: "puzzle",
+            title: t("game.demo.title"),
+            caption: t("game.demo.caption"),
+          };
+          gameRef.current = game;
+          setGameState(game);
+          dirty.current = true;
+        }
+        setStartTab("game");
+        url.searchParams.delete("game");
+        window.history.replaceState(null, "", url);
+      }
 
       // ── Масштаб под ширину экрана ─────────────────────────
       // Внутри холст всегда 600 × 800, меняется только CSS-размер.
@@ -1536,6 +1558,7 @@ export function useCardEditor() {
     saved,
     notice,
     currentTemplate,
+    startTab,
     previews,
     canUndo,
     canRedo,

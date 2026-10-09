@@ -27,8 +27,11 @@ export type GamePopupProps = {
   photo: string;
   title: string;
   caption: string;
-  /** Кнопка под игрой, например «Добавить в открытку». */
-  action?: { labelKey: TextKey; onClick: () => void };
+  /**
+   * Кнопка под игрой: действие («Добавить в открытку» в редакторе)
+   * или ссылка («Выбрать» на /games ведёт в редактор).
+   */
+  action?: { labelKey: TextKey; onClick: () => void } | { labelKey: TextKey; href: string };
   onClose: () => void;
 };
 
@@ -89,7 +92,9 @@ export function GamePopup({ open, seed, photo, title, caption, action, onClose }
             <p className="font-ui caps text-badge text-body text-center break-words">{caption}</p>
           )}
 
-          {action === undefined ? null : (
+          {action === undefined ? null : "href" in action ? (
+            <Button labelKey={action.labelKey} href={action.href} className="xl:w-full" />
+          ) : (
             <Button labelKey={action.labelKey} onClick={action.onClick} className="xl:w-full" />
           )}
         </div>

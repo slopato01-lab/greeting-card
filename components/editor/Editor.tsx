@@ -109,6 +109,7 @@ export function Editor() {
     saved,
     notice,
     currentTemplate,
+    startTab,
     previews,
     canUndo,
     canRedo,
@@ -167,6 +168,14 @@ export function Editor() {
   const closePaywall = useCallback(() => setPaywall(null), []);
 
   const [tab, setTab] = useState<EditorTab>("templates");
+
+  // Адрес попросил вкладку (?game=puzzle из попапа на /games) —
+  // открываем её, как при выделении слоя: во время рендера, не в эффекте.
+  const [seenStartTab, setSeenStartTab] = useState(startTab);
+  if (startTab !== seenStartTab) {
+    setSeenStartTab(startTab);
+    if (startTab !== null) setTab(startTab);
+  }
   // Умеет ли браузер писать видео — известно только в браузере.
   // Сервер и первый рендер считают, что нет: кнопка оживёт после
   // гидратации, а не мигнёт включённой и выключится.
