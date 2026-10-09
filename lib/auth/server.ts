@@ -1,6 +1,7 @@
 import { codeHash, randomCode, randomToken, sameString, sha256Hex } from "./crypto.ts";
 import { isPremium } from "../editor/premium.ts";
 import { parseCodeRequest, parseVerifyRequest } from "./validate.ts";
+import { LIMITS, MAIL_KEY, hit, ipKey, sweep } from "./limits.ts";
 
 /**
  * Вход по коду на почту: серверная часть (Cloudflare Pages Functions,
@@ -13,6 +14,8 @@ import { parseCodeRequest, parseVerifyRequest } from "./validate.ts";
  * зарегистрирован.
  *
  * Ни почта, ни код, ни токен не пишутся в лог.
+ *
+ * Лимиты по IP и общий потолок писем в сутки — lib/auth/limits.ts.
  */
 
 // ── Типы окружения ──────────────────────────────────────────
@@ -160,6 +163,8 @@ export async function requestCode({ request, env }: Context): Promise<Response> 
   }
 
   const time = now();
+  const byIp = await hit(env.DB, await ipKey("code", request), LIMITS.code, time);
+  if (!byIp.ok) return fail("too_many", 429, { retryIn: byIp.retryIn });
   const row = await env.DB.prepare(
     "SELECT code_hash, expires_at, attempts, sent_at, window_start, window_count FROM login_codes WHERE email = ?",
   )
@@ -175,6 +180,10 @@ export async function requestCode({ request, env }: Context): Promise<Response> 
   if (windowCount >= PER_WINDOW) {
     return fail("too_many", 429, { retryIn: windowStart + WINDOW - time });
   }
+
+  // Общий потолок: даже с тысячи адресов за сутки уйдёт не больше
+  // LIMITS.mail.max писем — квота почтового сервиса не кончится.
+  if (!(await hit(env.DB, MAIL_KEY, LIMITS.mail, time)).ok) return fail("mail_unavailable", 503);
 
   const code = randomCode();
   if (!(await sendCode(env, body.email, code))) return fail("mail_failed", 502);
@@ -194,6 +203,7 @@ export async function requestCode({ request, env }: Context): Promise<Response> 
       windowCount + 1,
     )
     .run();
+  await sweep(env.DB, time, WINDOW);
 
   return json({ ok: true, resendIn: RESEND_AFTER });
 }
@@ -205,6 +215,9 @@ export async function verifyCode({ request, env }: Context): Promise<Response> {
   if (body === null) return fail("bad_request", 400);
 
   const time = now();
+  const byIp = await hit(env.DB, await ipKey("verify", request), LIMITS.verify, time);
+  if (!byIp.ok) return fail("too_many", 429, { retryIn: byIp.retryIn });
+
   const row = await env.DB.prepare(
     "SELECT code_hash, expires_at, attempts FROM login_codes WHERE email = ?",
   )
@@ -306,6 +319,9 @@ export async function claimCard({ request, env }: Context): Promise<Response> {
   const key =
     typeof body === "object" && body !== null && "cardKey" in body ? body.cardKey : undefined;
   if (typeof key !== "string" || !/^[a-z0-9-]{1,40}$/.test(key)) return fail("bad_request", 400);
+
+  const byIp = await hit(env.DB, await ipKey("claim", request), LIMITS.claim, now());
+  if (!byIp.ok) return fail("too_many", 429, { retryIn: byIp.retryIn });
 
   const user = await sessionUser(request, env);
   if (user === null) return fail("unauthorized", 401);
