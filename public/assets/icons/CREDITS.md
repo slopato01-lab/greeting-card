@@ -71,6 +71,8 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `tabFile.svg` | `tabler:file` | редактор: вкладка «Файл» |
 | `undo.svg` | `tabler:arrow-back-up` | редактор: отменить |
 | `redo.svg` | `tabler:arrow-forward-up` | редактор: вернуть |
+| `tabGame.svg` | `tabler:puzzle` | редактор: вкладка «Игра» |
+| `close.svg` | `tabler:x` | попап игры: закрыть |
 | `balloon.svg` | `noto:balloon` | наклейка в открытке «С днём рождения!» |
 | `cake.svg` | `noto:birthday-cake` | наклейка в открытке «С днём рождения!» |
 | `popper.svg` | `noto:party-popper` | наклейка в открытке «С днём рождения!» |

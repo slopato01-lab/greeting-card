@@ -19,6 +19,7 @@ import {
   parseColor,
   parseEditorDoc,
   parseEditorJson,
+  parseGame,
 } from "./document.ts";
 
 const anim = { ...NO_ANIMATION, in: "slide-left", out: "fade" };
@@ -316,4 +317,32 @@ test("музыка: библиотека и Яндекс проходят, чу�
     assert.ok(doc, "открытка не должна падать из-за музыки");
     assert.equal(doc.music, undefined);
   }
+});
+
+test("игра: пазл со своими текстами и фото проходит, фото остаётся в assets", () => {
+  const game = { kind: "puzzle", asset: "gamephoto1", title: "Ты лучший", caption: "Тебе от меня" };
+  const doc = parseEditorDoc({
+    ...valid,
+    game,
+    assets: { ...valid.assets, gamephoto1: "data:image/jpeg;base64,/9j/4AAQ" },
+  });
+  assert.deepEqual(doc?.game, game);
+  assert.deepEqual(Object.keys(doc?.assets ?? {}).sort(), ["abcdef1234", "gamephoto1"]);
+});
+
+test("игра: непонятная не валит открытку, а просто пропадает", () => {
+  assert.equal(
+    parseEditorDoc({ ...valid, game: { kind: "memory", title: "", caption: "" } })?.game,
+    undefined,
+  );
+  assert.equal(
+    parseGame({ kind: "puzzle", title: "x".repeat(LIMITS.gameText + 1), caption: "" }),
+    null,
+  );
+  assert.equal(parseGame({ kind: "puzzle", title: 1, caption: "" }), null);
+  assert.deepEqual(parseGame({ kind: "puzzle", asset: "../../etc", title: "", caption: "" }), {
+    kind: "puzzle",
+    title: "",
+    caption: "",
+  });
 });

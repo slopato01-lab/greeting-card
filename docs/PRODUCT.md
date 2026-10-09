@@ -1163,6 +1163,15 @@
 | `editor.tab.background` | Фон |
 | `editor.tab.animation` | Анимация |
 | `editor.tab.file` | Файл |
+| `editor.tab.game` | Игра — вкладка с игрой открытки (09.10.2026, утверждено) |
+| `editor.game.photo` | Фото для игры |
+| `editor.game.title` | Обращение — поле над игрой («Ты лучший») |
+| `editor.game.caption` | Подпись — поле под фото («Тебе от меня») |
+| `editor.game.note` | Игра откроется у получателя по ссылке, в GIF и видео её нет |
+| `game.try` | Попробовать — открывает попап-пробу игры |
+| `game.add` | Добавить в открытку — кнопка в попапе-пробе |
+| `game.remove` | Убрать игру |
+| `game.close` | Закрыть — крестик попапа игры (подпись для чтения с экрана) |
 | `editor.text.preset.title` | Добавить заголовок |
 | `editor.text.preset.subtitle` | Добавить подзаголовок |
 | `editor.text.preset.body` | Добавить основной текст |

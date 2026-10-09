@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 
 import { Button } from "@/components/Button";
 import { IconButton, ToolButton } from "@/components/editor/controls";
+import { GamePanel } from "@/components/editor/GamePanel";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
 import { MusicPanel } from "@/components/editor/MusicPanel";
 import { Paywall, type PaywallReason } from "@/components/editor/Paywall";
@@ -100,6 +101,8 @@ export function Editor() {
     duration,
     still,
     music,
+    game,
+    gamePhoto,
     playing,
     busy,
     busyText,
@@ -249,6 +252,16 @@ export function Editor() {
         );
       case "music":
         return <MusicPanel music={music} disabled={!ready || busy} onMusic={actions.setMusic} />;
+      case "game":
+        return (
+          <GamePanel
+            game={game}
+            photo={gamePhoto}
+            disabled={!ready || busy}
+            onGame={actions.setGame}
+            onPhoto={actions.setGamePhoto}
+          />
+        );
       case "file":
         return (
           <FilePanel

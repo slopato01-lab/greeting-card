@@ -20,7 +20,9 @@ import { t } from "@/lib/i18n";
  * открытки. «Собрать ещё раз» перемонтирует игру с той же раскладкой.
  */
 
-const PHOTO = "/assets/games/puzzle/friends.jpg";
+/** Пример фото пазла — и для пробы в редакторе, пока нет своего. */
+export const PUZZLE_SAMPLE_PHOTO = "/assets/games/puzzle/friends.jpg";
+const PHOTO = PUZZLE_SAMPLE_PHOTO;
 const PHOTOS = [PHOTO] as const;
 
 export function PuzzleDemo() {

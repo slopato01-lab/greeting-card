@@ -8,6 +8,7 @@ import { getAsset, pruneAssets, putAsset } from "@/lib/editor/assets";
 import {
   type Animation,
   CARD_HEIGHT,
+  type CardGame,
   type CardMusic,
   CARD_WIDTH,
   clampDuration,
@@ -120,10 +121,23 @@ type Playback = {
 type ExportOptions = { watermark: boolean };
 
 /** Поля открытки, которые живут не на холсте, а в состоянии редактора. */
-function withMeta(doc: EditorDoc, still: boolean, music: CardMusic | null): EditorDoc {
+function withMeta(
+  doc: EditorDoc,
+  still: boolean,
+  music: CardMusic | null,
+  game: CardGame | null,
+): EditorDoc {
   if (still) doc.still = true;
   if (music !== null) doc.music = music;
+  if (game !== null) doc.game = game;
   return doc;
+}
+
+/** Фото, которые нужны открытке: фото-слои и снимок игры. */
+function docAssets(doc: EditorDoc): string[] {
+  const ids = doc.layers.flatMap((layer) => (layer.kind === "image" ? [layer.asset] : []));
+  if (doc.game?.asset !== undefined) ids.push(doc.game.asset);
+  return ids;
 }
 
 /**
@@ -190,6 +204,10 @@ export function useCardEditor() {
   /** Песня открытки; null — без музыки. */
   const [music, setMusicState] = useState<CardMusic | null>(null);
   const musicRef = useRef<CardMusic | null>(null);
+  const [game, setGameState] = useState<CardGame | null>(null);
+  const gameRef = useRef<CardGame | null>(null);
+  /** Адрес своего фото игры: считается при смене игры, а не в рендере. */
+  const [gamePhoto, setGamePhotoUrl] = useState<string | null>(null);
   /** Идущий экспорт GIF или видео — его можно прервать. */
   const exporting = useRef<AbortController | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -240,7 +258,7 @@ export function useCardEditor() {
       backgroundRef.current,
       durationRef.current,
     );
-    return JSON.stringify(withMeta(doc, stillRef.current, musicRef.current));
+    return JSON.stringify(withMeta(doc, stillRef.current, musicRef.current, gameRef.current));
   }, []);
 
   const syncHistory = useCallback(() => {
@@ -275,7 +293,7 @@ export function useCardEditor() {
   }, [commitHistory]);
 
   const applyDocMeta = useCallback(
-    (doc: Pick<EditorDoc, "background" | "duration" | "still" | "music">) => {
+    (doc: Pick<EditorDoc, "background" | "duration" | "still" | "music" | "game">) => {
       backgroundRef.current = doc.background;
       setBackgroundState(doc.background);
       durationRef.current = doc.duration;
@@ -284,6 +302,10 @@ export function useCardEditor() {
       setStillState(doc.still === true);
       musicRef.current = doc.music ?? null;
       setMusicState(doc.music ?? null);
+      gameRef.current = doc.game ?? null;
+      setGameState(doc.game ?? null);
+      const photo = doc.game?.asset;
+      setGamePhotoUrl(photo === undefined ? null : (assets.current.get(photo)?.url ?? null));
     },
     [],
   );
@@ -310,6 +332,7 @@ export function useCardEditor() {
       // Кроме тех, что помнит история: «Отменить» может их вернуть.
       const keep = usedAssets(current.canvas);
       for (const id of historyAssets(history.current)) keep.add(id);
+      if (gameRef.current?.asset !== undefined) keep.add(gameRef.current.asset);
       void pruneAssets(keep);
     } catch {
       // Приватный режим Safari или переполненное хранилище: сохранить
@@ -386,10 +409,10 @@ export function useCardEditor() {
         readDraft(draftKey.current) ??
         TEMPLATES.find((item) => item.id === template)?.build() ??
         emptyDoc();
-      for (const layer of doc.layers) {
-        if (layer.kind !== "image" || owned.has(layer.asset)) continue;
-        const blob = await getAsset(layer.asset);
-        if (blob !== null) registerAsset(layer.asset, blob);
+      for (const id of docAssets(doc)) {
+        if (owned.has(id)) continue;
+        const blob = await getAsset(id);
+        if (blob !== null) registerAsset(id, blob);
       }
       if (signal.aborted) return;
       const missing = await loadDocIntoCanvas(fabric, canvas, doc, theme, assetUrl);
@@ -995,6 +1018,43 @@ export function useCardEditor() {
     [markDirty, stopPlayback],
   );
 
+  /** Игра открытки: добавить, поменять тексты, убрать (null). */
+  const setGame = useCallback(
+    (value: CardGame | null) => {
+      gameRef.current = value;
+      setGameState(value);
+      const photo = value?.asset;
+      setGamePhotoUrl(photo === undefined ? null : (assets.current.get(photo)?.url ?? null));
+      markDirty();
+    },
+    [markDirty],
+  );
+
+  /** Своё фото для игры — как фото-слой: проверка, сжатие, IndexedDB. */
+  const setGamePhoto = useCallback(
+    async (file: File) => {
+      if (gameRef.current === null) return;
+      setNotice(null);
+      setBusyText("loading.upload");
+      setBusy(true);
+      try {
+        const result = await prepareImage(file);
+        if (!result.ok) {
+          setNotice(result.error);
+          return;
+        }
+        const id = newAssetId();
+        registerAsset(id, result.image.blob);
+        if (!(await putAsset(id, result.image.blob))) setNotice("editor.error.photoStorage");
+        const current = gameRef.current;
+        if (current !== null) setGame({ ...current, asset: id });
+      } finally {
+        setBusy(false);
+      }
+    },
+    [registerAsset, setGame],
+  );
+
   /**
    * Просмотр анимации: кадр за кадром по requestAnimationFrame,
    * положение каждого слоя считает frameAt. В конце или по «Стоп»
@@ -1073,10 +1133,10 @@ export function useCardEditor() {
       try {
         draftKey.current = draftKeyFor(id);
         const doc = readDraft(draftKey.current) ?? template.build();
-        for (const layer of doc.layers) {
-          if (layer.kind !== "image" || assets.current.has(layer.asset)) continue;
-          const blob = await getAsset(layer.asset);
-          if (blob !== null) registerAsset(layer.asset, blob);
+        for (const id of docAssets(doc)) {
+          if (assets.current.has(id)) continue;
+          const blob = await getAsset(id);
+          if (blob !== null) registerAsset(id, blob);
         }
         const missing = await loadDocIntoCanvas(
           current.fabric,
@@ -1148,9 +1208,11 @@ export function useCardEditor() {
         backgroundRef.current,
         durationRef.current,
       );
-      withMeta(doc, stillRef.current, musicRef.current);
+      withMeta(doc, stillRef.current, musicRef.current, gameRef.current);
       const embedded: Record<string, string> = {};
-      for (const id of usedAssets(current.canvas)) {
+      const embed = usedAssets(current.canvas);
+      if (gameRef.current?.asset !== undefined) embed.add(gameRef.current.asset);
+      for (const id of embed) {
         const asset = assets.current.get(id);
         if (asset !== undefined) embedded[id] = await blobToDataUrl(asset.blob);
       }
@@ -1433,6 +1495,8 @@ export function useCardEditor() {
     duration,
     still,
     music,
+    game,
+    gamePhoto,
     playing,
     busy,
     busyText,
@@ -1465,6 +1529,8 @@ export function useCardEditor() {
       setDuration,
       setStill,
       setMusic,
+      setGame,
+      setGamePhoto: (file: File) => void setGamePhoto(file),
       play,
       stop: stopPlayback,
       exportPng,

@@ -368,6 +368,8 @@ export const LIMITS = {
   layers: 200,
   images: 10,
   textLength: 500,
+  /** Обращение и подпись игры — одна строка на плашке. */
+  gameText: 60,
   fontSize: { min: 8, max: 200 },
   /** Слой может выходить за край открытки, но не улетать в бесконечность. */
   position: { min: -CARD_HEIGHT, max: CARD_HEIGHT * 2 },
@@ -458,6 +460,26 @@ export type Layer = TextLayer | RectLayer | CircleLayer | ImageLayer | StickerLa
 export type CardMusic =
   { kind: "library"; id: string } | { kind: "yandex"; album: string; track: string };
 
+/**
+ * Игра открытки (09.10.2026, план утверждён пользователем): пока только
+ * фото-пазл. Свои фото и тексты автора; нет фото — пазл собирает пример
+ * с /games. Игра живёт в открытке по ссылке, на холст и в GIF/видео
+ * не попадает. Поле `asset` названо как у фото-слоя: история
+ * (historyAssets) и уборка IndexedDB находят снимок игры сами.
+ */
+export const GAME_KINDS = ["puzzle"] as const;
+
+export type GameKind = (typeof GAME_KINDS)[number];
+
+export type CardGame = {
+  kind: GameKind;
+  asset?: string;
+  /** Обращение над игрой («Ты лучший»). */
+  title: string;
+  /** Подпись под фото («Тебе от меня»). */
+  caption: string;
+};
+
 export type EditorDoc = {
   format: typeof EDITOR_FORMAT;
   version: typeof EDITOR_VERSION;
@@ -474,6 +496,8 @@ export type EditorDoc = {
   still?: true;
   /** Песня открытки. Нет поля — открытка без музыки. */
   music?: CardMusic;
+  /** Игра открытки. Нет поля — открытка без игры. */
+  game?: CardGame;
   /**
    * Фото внутри файла шаблона: id → data URL. Есть только в файле,
    * который скачали кнопкой «Сохранить шаблон». В черновике пусто:
@@ -759,6 +783,20 @@ export function parseMusic(raw: unknown): CardMusic | null {
   return null;
 }
 
+/** Игра из недоверенного JSON. Непонятная — null: открытка будет без игры. */
+export function parseGame(raw: unknown): CardGame | null {
+  if (!isObj(raw)) return null;
+  const kind = oneOf(raw.kind, GAME_KINDS);
+  const line = (value: unknown) =>
+    typeof value === "string" && value.length <= LIMITS.gameText ? value : null;
+  const title = line(raw.title);
+  const caption = line(raw.caption);
+  if (kind === null || title === null || caption === null) return null;
+  const game: CardGame = { kind, title, caption };
+  if (isAssetId(raw.asset)) game.asset = raw.asset;
+  return game;
+}
+
 export function parseEditorDoc(input: unknown): EditorDoc | null {
   if (!isObj(input) || input.format !== EDITOR_FORMAT) return null;
   const version = input.version === 1 || input.version === 2 ? input.version : null;
@@ -782,7 +820,9 @@ export function parseEditorDoc(input: unknown): EditorDoc | null {
 
   const allAssets = parseAssets(input.assets);
   if (allAssets === null) return null;
+  const game = parseGame(input.game);
   const used = new Set(parsed.flatMap((l) => (l.kind === "image" ? [l.asset] : [])));
+  if (game?.asset !== undefined) used.add(game.asset);
   const assets = Object.fromEntries(Object.entries(allAssets).filter(([id]) => used.has(id)));
 
   const doc: EditorDoc = {
@@ -796,6 +836,7 @@ export function parseEditorDoc(input: unknown): EditorDoc | null {
   // Непонятная музыка не валит открытку: она просто будет без звука.
   const music = parseMusic(input.music);
   if (music !== null) doc.music = music;
+  if (game !== null) doc.game = game;
   if (Object.keys(assets).length > 0) doc.assets = assets;
   return doc;
 }
