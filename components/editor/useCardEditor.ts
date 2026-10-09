@@ -55,6 +55,14 @@ import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
 import { musicAudioSrc, musicCredit } from "@/lib/editor/music";
 import { encodeGif, GIF_WIDTH, recordVideo, VIDEO_WIDTH } from "@/lib/editor/record";
 import { DRAFT_KEY, draftKeyFor, readDraft } from "@/lib/editor/drafts";
+import {
+  createHistory,
+  type History,
+  historyAssets,
+  record,
+  redo as redoStep,
+  undo as undoStep,
+} from "@/lib/editor/history";
 import { stickerInfo } from "@/lib/editor/stickers";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { type TextKey, t } from "@/lib/i18n";
@@ -116,6 +124,22 @@ function withMeta(doc: EditorDoc, still: boolean, music: CardMusic | null): Edit
   if (still) doc.still = true;
   if (music !== null) doc.music = music;
   return doc;
+}
+
+/**
+ * Сколько ждать тишины, прежде чем правка станет шагом истории.
+ * Перетаскивание ползунка и набор текста шлют десятки событий —
+ * отмена должна снимать их одним шагом, а не по букве.
+ */
+const HISTORY_IDLE_MS = 400;
+
+/** Фокус в поле, где Ctrl+Z принадлежит самому полю, а не открытке. */
+function typingIn(target: EventTarget | null): boolean {
+  if (target instanceof HTMLTextAreaElement) return true;
+  if (target instanceof HTMLInputElement) {
+    return !["range", "checkbox", "radio", "button", "color", "file"].includes(target.type);
+  }
+  return target instanceof HTMLElement && target.isContentEditable;
 }
 
 /** Шаблон страницы: /editor?template=… Чужое значение — свободный холст. */
@@ -182,6 +206,13 @@ export function useCardEditor() {
   const [currentTemplate, setCurrentTemplate] = useState<TemplateId | null>(null);
   /** Превью шаблонов для вкладки «Шаблоны». */
   const [previews, setPreviews] = useState<Partial<Record<TemplateId, string>>>({});
+  /** «Отменить» и «Вернуть» (09.10.2026), см. lib/editor/history.ts. */
+  const history = useRef<History>(createHistory(null));
+  const historyTimer = useRef<number | undefined>(undefined);
+  /** Идёт откат к снимку — события холста в это время не правки. */
+  const restoring = useRef(false);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   // ── Общие помощники ───────────────────────────────────────
 
@@ -199,10 +230,49 @@ export function useCardEditor() {
     );
   }, []);
 
+  /** Открытка целиком строкой — шаг истории. null во время просмотра: слои не на местах. */
+  const snapshot = useCallback((): string | null => {
+    const current = live.current;
+    if (current === null || playback.current !== null) return null;
+    const doc = canvasToDoc(
+      current.fabric,
+      current.canvas,
+      backgroundRef.current,
+      durationRef.current,
+    );
+    return JSON.stringify(withMeta(doc, stillRef.current, musicRef.current));
+  }, []);
+
+  const syncHistory = useCallback(() => {
+    setCanUndo(history.current.past.length > 0);
+    setCanRedo(history.current.future.length > 0);
+  }, []);
+
+  /** Записывает накопленную правку шагом истории — сразу, не дожидаясь паузы. */
+  const commitHistory = useCallback(() => {
+    window.clearTimeout(historyTimer.current);
+    historyTimer.current = undefined;
+    if (restoring.current) return;
+    const shot = snapshot();
+    if (shot === null) return;
+    history.current = record(history.current, shot);
+    syncHistory();
+  }, [snapshot, syncHistory]);
+
+  /** Новая открытка на холсте — история начинается заново. */
+  const resetHistory = useCallback(() => {
+    window.clearTimeout(historyTimer.current);
+    historyTimer.current = undefined;
+    history.current = createHistory(snapshot());
+    syncHistory();
+  }, [snapshot, syncHistory]);
+
   const markDirty = useCallback(() => {
     dirty.current = true;
     setSaved(false);
-  }, []);
+    window.clearTimeout(historyTimer.current);
+    historyTimer.current = window.setTimeout(commitHistory, HISTORY_IDLE_MS);
+  }, [commitHistory]);
 
   const applyDocMeta = useCallback(
     (doc: Pick<EditorDoc, "background" | "duration" | "still" | "music">) => {
@@ -231,24 +301,22 @@ export function useCardEditor() {
     const current = live.current;
     if (!dirty.current || current === null || playback.current !== null) return;
     try {
-      const draft = canvasToDoc(
-        current.fabric,
-        current.canvas,
-        backgroundRef.current,
-        durationRef.current,
-      );
-      withMeta(draft, stillRef.current, musicRef.current);
-      window.localStorage.setItem(draftKey.current, JSON.stringify(draft));
+      const draft = snapshot();
+      if (draft === null) return;
+      window.localStorage.setItem(draftKey.current, draft);
       dirty.current = false;
       setSaved(true);
       // Фото удалённых слоёв больше не нужны — освобождаем место.
-      void pruneAssets(usedAssets(current.canvas));
+      // Кроме тех, что помнит история: «Отменить» может их вернуть.
+      const keep = usedAssets(current.canvas);
+      for (const id of historyAssets(history.current)) keep.add(id);
+      void pruneAssets(keep);
     } catch {
       // Приватный режим Safari или переполненное хранилище: сохранить
       // некуда, но работу это не останавливает.
       setSaved(false);
     }
-  }, []);
+  }, [snapshot]);
 
   /** Останавливает просмотр и возвращает слои на место. */
   const stopPlayback = useCallback(() => {
@@ -447,6 +515,7 @@ export function useCardEditor() {
         { signal },
       );
 
+      resetHistory();
       setStatus("ready");
 
       // ── Превью шаблонов ───────────────────────────────────
@@ -494,6 +563,7 @@ export function useCardEditor() {
       stopPlayback();
       saveDraft();
       controller.abort();
+      window.clearTimeout(historyTimer.current);
       live.current = null;
       const disposing = canvas?.dispose() ?? Promise.resolve(true);
       void disposing.finally(() => {
@@ -508,6 +578,7 @@ export function useCardEditor() {
     assetUrl,
     markDirty,
     registerAsset,
+    resetHistory,
     saveDraft,
     stopPlayback,
     syncSelection,
@@ -915,7 +986,9 @@ export function useCardEditor() {
 
     const active = canvas.getActiveObject();
     if (active instanceof fabric.IText && active.isEditing) active.exitEditing();
-    // Правки до просмотра — в черновик сейчас: во время просмотра он не пишется.
+    // Правки до просмотра — в черновик и историю сейчас: во время
+    // просмотра слои не на местах, и ни то ни другое не пишется.
+    commitHistory();
     saveDraft();
     canvas.discardActiveObject();
     canvas.skipTargetFind = true;
@@ -956,7 +1029,7 @@ export function useCardEditor() {
     setPlaying(true);
     selectedObject.current = null;
     setSelected(null);
-  }, [saveDraft, stopPlayback]);
+  }, [commitHistory, saveDraft, stopPlayback]);
 
   /**
    * Переключение на другой шаблон из вкладки «Шаблоны». Без вопроса
@@ -993,6 +1066,9 @@ export function useCardEditor() {
         applyDocMeta(doc);
         if (missing > 0) setNotice("editor.error.photoMissing");
         dirty.current = false;
+        // История у каждого шаблона своя: отмена не должна уводить
+        // в соседний шаблон.
+        resetHistory();
         syncSelection();
         setCurrentTemplate(id);
         const url = new URL(window.location.href);
@@ -1003,7 +1079,16 @@ export function useCardEditor() {
       }
       if (live.current === current) play();
     },
-    [applyDocMeta, assetUrl, play, registerAsset, saveDraft, stopPlayback, syncSelection],
+    [
+      applyDocMeta,
+      assetUrl,
+      play,
+      registerAsset,
+      resetHistory,
+      saveDraft,
+      stopPlayback,
+      syncSelection,
+    ],
   );
 
   // Открытый шаблон проигрывается, как только холст готов.
@@ -1238,6 +1323,78 @@ export function useCardEditor() {
     [applyDocMeta, assetUrl, markDirty, registerAsset, syncSelection],
   );
 
+  // ── Отменить и вернуть ────────────────────────────────────
+
+  /**
+   * Кладёт на холст состояние из истории. Свежий снимок после загрузки
+   * становится настоящим: если Fabric записал что-то чуть иначе
+   * (округление), следующее событие холста не сочтёт это правкой
+   * и не оборвёт шаги «вперёд».
+   */
+  const restore = useCallback(
+    async (next: History) => {
+      const current = live.current;
+      const doc = next.present === null ? null : parseEditorJson(next.present);
+      if (current === null || doc === null) return;
+      restoring.current = true;
+      try {
+        const active = current.canvas.getActiveObject();
+        if (active instanceof current.fabric.IText && active.isEditing) active.exitEditing();
+        await loadDocIntoCanvas(current.fabric, current.canvas, doc, current.theme, assetUrl);
+        if (live.current !== current) return;
+        applyDocMeta(doc);
+        window.clearTimeout(historyTimer.current);
+        history.current = { ...next, present: snapshot() ?? next.present };
+        syncHistory();
+        dirty.current = true;
+        setSaved(false);
+        syncSelection();
+      } finally {
+        restoring.current = false;
+      }
+    },
+    [applyDocMeta, assetUrl, snapshot, syncHistory, syncSelection],
+  );
+
+  const undo = useCallback(() => {
+    if (playback.current !== null || restoring.current) return;
+    // Правка, которая ещё ждёт паузы, — тоже шаг: отменяется первой.
+    commitHistory();
+    const next = undoStep(history.current);
+    if (next !== null) void restore(next);
+  }, [commitHistory, restore]);
+
+  const redo = useCallback(() => {
+    if (playback.current !== null || restoring.current) return;
+    commitHistory();
+    const next = redoStep(history.current);
+    if (next !== null) void restore(next);
+  }, [commitHistory, restore]);
+
+  // Ctrl+Z — отменить; Ctrl+Shift+Z и Ctrl+Y — вернуть (на Mac — Cmd).
+  // По коду клавиши, а не по букве: в русской раскладке это «я» и «н».
+  // В текстовых полях и в правке текста на холсте клавиши остаются им.
+  useEffect(() => {
+    const controller = new AbortController();
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+        const back = event.code === "KeyZ" && !event.shiftKey;
+        const forward = event.code === "KeyY" || (event.code === "KeyZ" && event.shiftKey);
+        if (!back && !forward) return;
+        if (typingIn(event.target)) return;
+        const active = live.current?.canvas.getActiveObject();
+        if (active !== undefined && "isEditing" in active && active.isEditing === true) return;
+        event.preventDefault();
+        if (back) undo();
+        else redo();
+      },
+      { signal: controller.signal },
+    );
+    return () => controller.abort();
+  }, [undo, redo]);
+
   const retry = useCallback(() => {
     setStatus("loading");
     setAttempt((value) => value + 1);
@@ -1261,7 +1418,11 @@ export function useCardEditor() {
     notice,
     currentTemplate,
     previews,
+    canUndo,
+    canRedo,
     actions: {
+      undo,
+      redo,
       switchTemplate,
       add,
       addText,

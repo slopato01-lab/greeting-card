@@ -112,6 +112,8 @@ const ICONS = [
     where: "редактор: вкладка «Анимация»",
   },
   { name: "tabFile", source: "tabler:file", mono: true, where: "редактор: вкладка «Файл»" },
+  { name: "undo", source: "tabler:arrow-back-up", mono: true, where: "редактор: отменить" },
+  { name: "redo", source: "tabler:arrow-forward-up", mono: true, where: "редактор: вернуть" },
   // Наклейки открытки «С днём рождения!» — Noto, Apache 2.0.
   { name: "balloon", source: "noto:balloon", where: "наклейка в открытке «С днём рождения!»" },
   { name: "cake", source: "noto:birthday-cake", where: "наклейка в открытке «С днём рождения!»" },

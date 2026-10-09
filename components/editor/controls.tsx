@@ -62,6 +62,35 @@ export function ToolButton({
 }
 
 /**
+ * Круглая кнопка только с иконкой — «Отменить» и «Вернуть». Подпись
+ * для скринридера и всплывающей подсказки, выключенная — серая.
+ */
+export function IconButton({
+  icon,
+  labelKey,
+  onClick,
+  disabled = false,
+}: {
+  icon: IconName;
+  labelKey: TextKey;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={t(labelKey)}
+      title={t(labelKey)}
+      onClick={onClick}
+      disabled={disabled}
+      className={[TOOL_BASE, "size-tap shrink-0 justify-center px-0"].join(" ")}
+    >
+      <Icon name={icon} size={20} className="shrink-0" />
+    </button>
+  );
+}
+
+/**
  * Квадратная кнопка-переключатель с иконкой: жирный, курсив,
  * выравнивание. Подпись — для скринридера и всплывающей подсказки.
  * Включённая — белая, как выбранная пилюля.

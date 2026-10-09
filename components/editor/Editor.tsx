@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/Button";
-import { ToolButton } from "@/components/editor/controls";
+import { IconButton, ToolButton } from "@/components/editor/controls";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
 import { MusicPanel } from "@/components/editor/MusicPanel";
 import { Paywall, type PaywallReason } from "@/components/editor/Paywall";
@@ -107,6 +107,8 @@ export function Editor() {
     notice,
     currentTemplate,
     previews,
+    canUndo,
+    canRedo,
     actions,
   } = useCardEditor();
   const auth = useAuth();
@@ -353,6 +355,22 @@ export function Editor() {
         {/* Без min-w-0: блок не сжимается уже кнопки «Просмотр» —
             иначе на 1280 её перекрывала галочка «Без анимации». */}
         <div className="flex flex-1 items-center gap-[12px]">
+          {/* Отменить и вернуть (09.10.2026): до 50 шагов, на компьютере
+              ещё и Ctrl+Z / Ctrl+Shift+Z — см. useCardEditor. */}
+          <div className="flex shrink-0 gap-[6px]">
+            <IconButton
+              icon="undo"
+              labelKey="editor.undo"
+              disabled={!ready || busy || playing || !canUndo}
+              onClick={actions.undo}
+            />
+            <IconButton
+              icon="redo"
+              labelKey="editor.redo"
+              disabled={!ready || busy || playing || !canRedo}
+              onClick={actions.redo}
+            />
+          </div>
           <ToolButton
             icon={playing ? "stop" : "play"}
             labelKey={playing ? "editor.stop" : "editor.play"}
