@@ -31,7 +31,7 @@ export type EditorTab = (typeof EDITOR_TABS)[number];
 const TAB_INFO: Record<EditorTab, { icon: IconName; label: TextKey }> = {
   templates: { icon: "tabTemplates", label: "editor.tab.templates" },
   elements: { icon: "tabElements", label: "editor.tab.elements" },
-  text: { icon: "text", label: "editor.tab.text" },
+  text: { icon: "text", label: "editor.tab.edit" },
   photo: { icon: "photo", label: "editor.tab.photo" },
   background: { icon: "tabBackground", label: "editor.tab.background" },
   animation: { icon: "tabAnimation", label: "editor.tab.animation" },

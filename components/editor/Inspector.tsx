@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import {
   ColorPicker,
   FileButton,
@@ -55,17 +57,34 @@ const seconds = (value: number) => `${value.toFixed(1)} ${t("editor.unit.seconds
 
 /**
  * Список шрифтов по группам. Каждое название написано своим шрифтом:
- * выбирать шрифт по имени без образца бесполезно. С 09.10.2026 список
- * без своей прокрутки — видны все шрифты, прокручивается панель. Цена — браузер
+ * выбирать шрифт по имени без образца бесполезно. Список листается
+ * внутри своей рамки — сразу под ним видно, что можно поменять и цвет
+ * (09.10.2026, просьба пользователя). Цена — браузер
  * скачивает файлы шрифтов, когда список впервые показан, то есть
  * только на /editor и только когда выделен текст.
  */
 function FontList({ value, onChange }: { value: FontId; onChange: (font: FontId) => void }) {
+  const list = useRef<HTMLDivElement>(null);
+
+  // Выбранный шрифт может быть внизу списка — докручиваем рамку до него.
+  // Считаем scrollTop сами: scrollIntoView прокрутил бы ещё и страницу.
+  useEffect(() => {
+    const box = list.current;
+    const item = box?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (box === null || item === null || item === undefined) return;
+    const top = item.offsetTop;
+    const bottom = top + item.offsetHeight;
+    if (top < box.scrollTop || bottom > box.scrollTop + box.clientHeight) {
+      box.scrollTop = top - (box.clientHeight - item.offsetHeight) / 2;
+    }
+  }, [value]);
+
   return (
     <div
+      ref={list}
       role="group"
       aria-labelledby="editor-font"
-      className="border-line rounded-inner border p-[4px]"
+      className="border-line rounded-inner relative max-h-[240px] overflow-y-auto overscroll-contain border p-[4px]"
     >
       {FONT_GROUPS.map((group) => (
         <div key={group} className="flex flex-col">
@@ -306,8 +325,8 @@ export function Inspector({
             </button>
           ) : null}
 
-          {/* Шрифты — первыми и все сразу (09.10.2026, просьба
-              пользователя): выбрал текст — тут же меняешь шрифт. */}
+          {/* Шрифты — первыми, в рамке со своей прокруткой, цвет сразу
+              под ними (09.10.2026, просьба пользователя). */}
           {selected.kind !== "text" ? null : (
             <>
               <GroupLabel id="editor-font" labelKey="editor.props.font" />

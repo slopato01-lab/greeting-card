@@ -837,6 +837,9 @@ export const ru = {
   "editor.tab.templates": "Шаблоны",
   "editor.tab.elements": "Элементы",
   "editor.tab.text": "Текст",
+  // Подпись вкладки «Текст» на рейке с 09.10.2026: там меняют и шрифт,
+  // и цвет, и размер. Заголовок внутри панели остаётся «Текст».
+  "editor.tab.edit": "Изменить",
   "editor.tab.photo": "Фото",
   "editor.tab.background": "Фон",
   "editor.tab.animation": "Анимация",
