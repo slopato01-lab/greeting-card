@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { BirthdayCover } from "@/components/card/BirthdayCover";
 import { Button } from "@/components/Button";
+import { PhotoPuzzle } from "@/components/games/PhotoPuzzle";
 import { ScratchCard } from "@/components/games/ScratchCard";
 import { GhostButton } from "@/components/GhostButton";
 import { Icon } from "@/components/Icon";
@@ -26,9 +27,10 @@ import { type TextKey, t } from "@/lib/i18n";
  *
  * **Игры.** Скретч-карта уже настоящая — первая игра по контракту
  * из lib/games/contract.ts, под покрытием лежит сюрприз автора.
- * Пазла и мемори пока нет: на их месте глухой плейсхолдер цветом
- * --photo, как в карточках на /games. «Дальше» после скретч-карты
- * появляется только когда она пройдена.
+ * С 09.10.2026 настоящий и пазл — собирает первое фото автора. Мемори
+ * пока нет: на его месте глухой плейсхолдер цветом --photo, как
+ * в карточках на /games. «Дальше» после скретч-карты и пазла
+ * появляется только когда игра пройдена.
  *
  * **Оформление.** У темы `birthday` обложка — слоёная композиция
  * (BirthdayCover): фото автора в рамках, заголовок, наклейки. Подарки
@@ -44,8 +46,8 @@ import { type TextKey, t } from "@/lib/i18n";
  * в углу её выключает. Автор и лицензия песни подписаны рядом:
  * этого требует CC BY.
  *
- * Чего здесь нет намеренно: счётчиков хода и времени (`game.moves`,
- * `game.time`) — у скретч-карты считать нечего; кнопки жалобы, которую
+ * Чего здесь нет намеренно: счётчика времени (`game.time`) — пазл
+ * считает только ходы, у скретч-карты считать нечего; кнопки жалобы, которую
  * требует docs/SECURITY.md, — жаловаться некому, пока нет сервера.
  *
  * Раскладки в макете нет, она собрана от токенов, см. docs/DESIGN.md,
@@ -94,6 +96,7 @@ function layer(index: number): CSSProperties {
 
 /** Игра, которая уже существует в коде. Остальные — плейсхолдер. */
 const SCRATCH = "games.card.3.title" satisfies GameKey;
+const PUZZLE = "games.card.1.title" satisfies GameKey;
 
 /** Фото оформления. Скачаны с Unsplash, источники — CREDITS.md рядом. */
 const THEME_ART = {
@@ -141,7 +144,8 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
   const sign = card.sign.trim();
   const surprise = card.surpriseValue.trim();
   const art = card.theme === null ? null : THEME_ART[card.theme];
-  const cover = card.photos[0]?.url ?? art?.cover ?? null;
+  const photoUrls = card.photos.map((photo) => photo.url);
+  const cover = photoUrls[0] ?? art?.cover ?? null;
   const hint = card.game === null ? null : GAME_HINTS[card.game];
   const link = card.surpriseKind === "link" ? safeUrl(surprise) : null;
   const code = card.surpriseKind === "code" && surprise !== "" ? surprise : null;
@@ -233,7 +237,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
         {/* ── Обложка ──────────────────────────────────────── */}
         {stage === "cover" && card.theme === "birthday" ? (
           <div>
-            <BirthdayCover photos={card.photos.map((photo) => photo.url)} seed={card.seed} />
+            <BirthdayCover photos={photoUrls} seed={card.seed} />
 
             {/* Обращение автора — на плашке под холстом: его длину
                 не знает никто, а холст фиксированный. Плашка влетает
@@ -304,11 +308,20 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
                 <ScratchCard
                   seed={card.seed}
                   reward={reward}
+                  photos={photoUrls}
                   cover={art?.coating ?? null}
                   onDone={() => setGameDone(true)}
                 />
+              ) : card.game === PUZZLE ? (
+                <PhotoPuzzle
+                  seed={card.seed}
+                  reward={reward}
+                  photos={photoUrls}
+                  cover={art?.cover ?? null}
+                  onDone={() => setGameDone(true)}
+                />
               ) : (
-                // Пазла и мемори ещё нет. Плейсхолдер тот же, что
+                // Мемори ещё нет. Плейсхолдер тот же, что
                 // в карточках на /games: картинку-обманку сюда нельзя.
                 <div
                   aria-hidden="true"
@@ -317,7 +330,7 @@ export function CardView({ card, onExit }: { card: CardContent; onExit: () => vo
               )}
             </div>
 
-            {card.game !== SCRATCH || gameDone ? (
+            {(card.game !== SCRATCH && card.game !== PUZZLE) || gameDone ? (
               <Button
                 labelKey="cta.next"
                 onClick={() => setStage("final")}

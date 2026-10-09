@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { PuzzleDemo } from "@/components/games/PuzzleDemo";
 import { Cta } from "@/components/site/Cta";
 import { PAGE_TITLE_ID, PageHead } from "@/components/site/PageHead";
 import { Blocks } from "@/components/site/Blocks";
@@ -14,9 +15,9 @@ export const metadata: Metadata = {
  * Три механики MVP. Описания и поводы взяты из docs/PRODUCT.md —
  * из раздела «Три игры MVP» и матрицы «повод × механика».
  *
- * Живого превью в карточках нет: игровых модулей ещё не существует.
- * Вместо превью — плейсхолдер цветом --color-photo, как в карточках
- * шаблонов. Подставлять сюда картинку-обманку нельзя.
+ * В карточке «Фото-пазл» с 09.10.2026 — живой пазл (PuzzleDemo), в него
+ * можно сыграть прямо здесь. У мемори и скретч-карты превью пока нет —
+ * плейсхолдер цветом --color-photo. Подставлять картинку-обманку нельзя.
  *
  * Макета у страницы нет, раскладка собрана из готовых секций.
  */
@@ -89,9 +90,13 @@ export default function GamesPage() {
                   key={game.title}
                   className="rounded-card xl:rounded-card-d bg-surface flex flex-col overflow-hidden"
                 >
-                  {/* Живого превью нет: игровых модулей ещё не существует.
-                  Плейсхолдер тот же, что в карточках шаблонов. */}
-                  <div aria-hidden="true" className="bg-photo min-h-[200px] xl:min-h-[240px]" />
+                  {/* У пазла — живая игра. У остальных превью пока нет:
+                  плейсхолдер тот же, что в карточках шаблонов. */}
+                  {game.title === "games.card.1.title" ? (
+                    <PuzzleDemo />
+                  ) : (
+                    <div aria-hidden="true" className="bg-photo min-h-[200px] xl:min-h-[240px]" />
+                  )}
 
                   <div className="flex flex-1 flex-col px-[24px] pt-[24px] pb-[28px] xl:px-[30px] xl:pt-[30px] xl:pb-[34px]">
                     <h2 className="font-display text-h3 xl:text-h3-d font-semibold tracking-tight">
