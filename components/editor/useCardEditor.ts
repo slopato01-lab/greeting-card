@@ -923,6 +923,29 @@ export function useCardEditor() {
     frameRef.current?.focus();
   }, [markDirty, syncSelection]);
 
+  /**
+   * Вкладка «Изменить» открыта — шрифты и цвет должны быть видны сразу,
+   * а они есть только у выделенного текста (09.10.2026, пользователь:
+   * «пропали шрифты, цвета и всё, что там было»). Останавливаем просмотр
+   * и, если выделен не текст, выделяем верхний текст открытки.
+   */
+  const focusText = useCallback(() => {
+    const current = live.current;
+    if (current === null) return;
+    stopPlayback();
+    const isText = (object: FabricObject) =>
+      objectToLayer(current.fabric, object)?.kind === "text";
+    const active = current.canvas.getActiveObject();
+    if (active !== undefined && isText(active)) return;
+    const text = current.canvas
+      .getObjects()
+      .find((object) => object.visible && object.selectable && isText(object));
+    if (text === undefined) return;
+    current.canvas.setActiveObject(text);
+    current.canvas.requestRenderAll();
+    syncSelection();
+  }, [stopPlayback, syncSelection]);
+
   // ── Открытка целиком ──────────────────────────────────────
 
   const setBackground = useCallback(
@@ -1438,6 +1461,7 @@ export function useCardEditor() {
       setTextStyle,
       setAnimation,
       remove,
+      focusText,
       setBackground,
       setDuration,
       setStill,

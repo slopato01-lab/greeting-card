@@ -268,7 +268,10 @@ export function Editor() {
     <div className="page-shell xl:border-line flex flex-col gap-[16px] pt-[8px] pb-[40px] xl:grid xl:h-[calc(100dvh-var(--spacing-header-d)-1px)] xl:max-w-none xl:grid-cols-[96px_360px_minmax(0,1fr)] xl:grid-rows-[minmax(0,1fr)_auto] xl:gap-0 xl:border-t xl:px-0 xl:py-0">
       <Rail
         tab={tab}
-        onTab={setTab}
+        onTab={(next) => {
+          setTab(next);
+          if (next === "text") actions.focusText();
+        }}
         className="xl:border-line order-3 xl:order-none xl:row-span-2 xl:border-e"
       />
 
