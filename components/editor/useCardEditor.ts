@@ -47,9 +47,10 @@ import {
 import { cutoutPerson } from "@/lib/editor/cutout";
 import { loadFont } from "@/lib/editor/fonts";
 import { attachTouchGestures } from "@/lib/editor/gestures";
+import type { CropRect } from "@/lib/editor/crop";
 import {
   blobToDataUrl,
-  cropToAspect,
+  cropRect,
   dataUrlToBlob,
   newAssetId,
   prepareImage,
@@ -110,6 +111,22 @@ function photoLimitNotice(template: TemplateId | null): TextKey {
 }
 
 export type EditorStatus = "loading" | "ready" | "error";
+
+/**
+ * Окно обрезки при замене примера своим фото. `aspect` — пропорция
+ * места на открытке; `whole` — можно ли поставить фото целиком
+ * (окну полароида нельзя: оно обязано быть заполнено).
+ */
+export type CropRequest = {
+  url: string;
+  width: number;
+  height: number;
+  aspect: number;
+  whole: boolean;
+};
+
+/** Ответ окна: обрезать, поставить целиком или передумать (`null`). */
+export type CropChoice = { kind: "crop"; rect: CropRect } | { kind: "whole" } | null;
 
 type Live = { fabric: FabricModule; canvas: Canvas; theme: Theme };
 
@@ -229,6 +246,9 @@ export function useCardEditor() {
   const [busyText, setBusyText] = useState<TextKey>("loading.upload");
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState<TextKey | null>(null);
+  const [crop, setCrop] = useState<CropRequest | null>(null);
+  /** Ждущая ответа замена фото — её продолжает resolveCrop. */
+  const cropWaiter = useRef<((choice: CropChoice) => void) | null>(null);
   /** Куда пишется черновик — зависит от шаблона страницы. */
   const draftKey = useRef(DRAFT_KEY);
   /** Открыли шаблон — проиграть его, когда холст готов: без движения шаблон не понять. */
@@ -819,8 +839,11 @@ export function useCardEditor() {
    * Своё фото вместо выделенной заглушки или фото. Встаёт в ту же рамку
    * (вписывается по большей стороне), на тот же слой и с той же анимацией.
    * Чёрно-белое по умолчанию — если так помечен пример (коллажи
-   * по образцу видео); выключается в свойствах. Пример с `fill`
-   * (окно полароида) — своё фото обрезается по центру под его пропорцию.
+   * по образцу видео); выключается в свойствах.
+   *
+   * Перед заменой открывается окно обрезки в пропорции места
+   * (CropDialog). Пример с `fill` (окно полароида) поставить целиком
+   * нельзя — только обрезать.
    *
    * Заглушка с флагом `cutout` (пример фото в шаблоне «День рождения»)
    * сама убирает фон у нового фото: человек встаёт вместо примера.
@@ -855,9 +878,23 @@ export function useCardEditor() {
           return;
         }
         let { blob, width, height } = result.image;
-        // Окно полароида: обрезать по центру под пропорцию примера.
-        if (info?.fill === true) {
-          const cropped = await cropToAspect(blob, before.width / before.height);
+
+        // Сначала человек выбирает, какая часть фото встанет на место.
+        const boxAspect = (before.width * before.scaleX) / (before.height * before.scaleY);
+        const url = URL.createObjectURL(blob);
+        setBusy(false);
+        const choice = await new Promise<CropChoice>((resolve) => {
+          cropWaiter.current?.(null);
+          cropWaiter.current = resolve;
+          setCrop({ url, width, height, aspect: boxAspect, whole: info?.fill !== true });
+        });
+        URL.revokeObjectURL(url);
+        if (choice === null) return;
+        // Пока было открыто окно, слой могли убрать или сменить шаблон.
+        if (live.current !== current || !current.canvas.getObjects().includes(old)) return;
+        setBusy(true);
+        if (choice.kind === "crop") {
+          const cropped = await cropRect(blob, choice.rect);
           if (cropped !== null) ({ blob, width, height } = cropped);
         }
         if (autoCutout) {
@@ -894,6 +931,17 @@ export function useCardEditor() {
     },
     [assetUrl, registerAsset, swapObject, tryCutout],
   );
+
+  /** Ответ окна обрезки — продолжает ждущую замену фото. */
+  const resolveCrop = useCallback((choice: CropChoice) => {
+    const waiter = cropWaiter.current;
+    cropWaiter.current = null;
+    setCrop(null);
+    waiter?.(choice);
+  }, []);
+
+  // Ушли со страницы с открытым окном — замена отменяется, ссылка на фото снимается.
+  useEffect(() => () => cropWaiter.current?.(null), []);
 
   /**
    * «Убрать фон» у выделенного фото. Вырезка меньше исходника: масштаб
@@ -1585,6 +1633,7 @@ export function useCardEditor() {
     busyText,
     saved,
     notice,
+    crop,
     currentTemplate,
     startTab,
     previews,
@@ -1599,6 +1648,7 @@ export function useCardEditor() {
       addImage,
       addSticker,
       replaceImage,
+      resolveCrop,
       removeBackground,
       setMono,
       setSpacing,

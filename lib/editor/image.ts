@@ -1,3 +1,4 @@
+import type { CropRect } from "@/lib/editor/crop";
 import type { TextKey } from "@/lib/i18n";
 
 /**
@@ -87,11 +88,10 @@ export async function prepareImage(file: File): Promise<PrepareResult> {
 }
 
 /**
- * Обрезает уже подготовленное фото по центру до пропорции `aspect`
- * (ширина / высота). Для окна полароида: снимок заполняет окно целиком.
- * `null` — не вышло; тогда фото встаёт целиком, вписанным.
+ * Вырезает прямоугольник из уже подготовленного фото и кодирует заново
+ * тем же типом. `null` — не вышло; тогда фото встаёт целиком, вписанным.
  */
-export async function cropToAspect(blob: Blob, aspect: number): Promise<PreparedImage | null> {
+export async function cropRect(blob: Blob, rect: CropRect): Promise<PreparedImage | null> {
   let bitmap: ImageBitmap;
   try {
     bitmap = await createImageBitmap(blob);
@@ -99,15 +99,17 @@ export async function cropToAspect(blob: Blob, aspect: number): Promise<Prepared
     return null;
   }
   try {
-    const { width, height } = bitmap;
-    const w = Math.min(width, Math.round(height * aspect));
-    const h = Math.min(height, Math.round(width / aspect));
+    const x = Math.max(0, Math.min(bitmap.width - 1, Math.round(rect.x)));
+    const y = Math.max(0, Math.min(bitmap.height - 1, Math.round(rect.y)));
+    const w = Math.max(1, Math.min(bitmap.width - x, Math.round(rect.width)));
+    const h = Math.max(1, Math.min(bitmap.height - y, Math.round(rect.height)));
     const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
     const context = canvas.getContext("2d");
     if (context === null) return null;
-    context.drawImage(bitmap, (width - w) / 2, (height - h) / 2, w, h, 0, 0, w, h);
+    context.imageSmoothingQuality = "high";
+    context.drawImage(bitmap, x, y, w, h, 0, 0, w, h);
     const type = blob.type === "image/png" ? "image/png" : "image/jpeg";
     const out = await canvasToBlob(canvas, type);
     return out === null ? null : { blob: out, width: w, height: h };

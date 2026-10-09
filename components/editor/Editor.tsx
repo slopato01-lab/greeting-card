@@ -8,6 +8,7 @@ import { GamePanel } from "@/components/editor/GamePanel";
 import { GameStage } from "@/components/editor/GameStage";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
 import { MusicPanel } from "@/components/editor/MusicPanel";
+import { CropDialog } from "@/components/editor/CropDialog";
 import { Paywall, type PaywallReason } from "@/components/editor/Paywall";
 import { type EditorTab, panelId, Rail, tabId } from "@/components/editor/Rail";
 import { TemplatesPanel } from "@/components/editor/Templates";
@@ -111,6 +112,7 @@ export function Editor() {
     busyText,
     saved,
     notice,
+    crop,
     currentTemplate,
     startTab,
     previews,
@@ -488,6 +490,8 @@ export function Editor() {
           {t("editor.canvas.touchHint")}
         </p>
       </div>
+
+      <CropDialog request={crop} onChoose={actions.resolveCrop} />
 
       <Paywall
         reason={paywall?.reason ?? null}

@@ -811,6 +811,12 @@ export const ru = {
   "editor.photo.replaceHint":
     "Это место для фото. Выберите снимок — он встанет сюда с той же анимацией",
   "editor.photo.mono": "Чёрно-белое",
+  "editor.crop.title": "Обрезать фото",
+  "editor.crop.hint": "Двигайте фото, чтобы выбрать, что попадёт в рамку",
+  "editor.crop.zoom": "Масштаб",
+  "editor.crop.apply": "Готово",
+  "editor.crop.whole": "Без обрезки",
+  "editor.crop.cancel": "Отмена",
   "editor.props.spacing": "Межбуквенный интервал",
   "editor.anim.in.toss-left": "Влёт слева с поворотом",
   "editor.anim.in.toss-right": "Влёт справа с поворотом",
