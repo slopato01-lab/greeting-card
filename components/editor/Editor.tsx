@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { Button } from "@/components/Button";
 import { IconButton, ToolButton } from "@/components/editor/controls";
 import { GamePanel } from "@/components/editor/GamePanel";
+import { GameStage } from "@/components/editor/GameStage";
+import { PUZZLE_SAMPLE_PHOTO } from "@/components/games/PuzzleDemo";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
 import { MusicPanel } from "@/components/editor/MusicPanel";
 import { Paywall, type PaywallReason } from "@/components/editor/Paywall";
@@ -168,6 +170,7 @@ export function Editor() {
   const closePaywall = useCallback(() => setPaywall(null), []);
 
   const [tab, setTab] = useState<EditorTab>("templates");
+  const gameStage = tab === "game" && ready;
 
   // Адрес попросил вкладку (?game=puzzle из попапа на /games) —
   // открываем её, как при выделении слоя: во время рендера, не в эффекте.
@@ -316,6 +319,15 @@ export function Editor() {
           lib/editor/gestures.ts. 72px = поле сверху + промежуток +
           ряд кнопки «Просмотр». */}
       <div className="relative order-1 flex min-h-0 items-center justify-center xl:[container-type:size] xl:order-none xl:col-start-3 xl:row-start-1 xl:p-[24px]">
+        {/* Вкладка «Игра»: на сцене пазл вместо открытки (09.10.2026).
+            Без игры — пример, тот же, что в попапе-пробе. */}
+        {gameStage ? (
+          <GameStage
+            photo={gamePhoto ?? PUZZLE_SAMPLE_PHOTO}
+            title={game?.title ?? t("game.demo.title")}
+            caption={game?.caption ?? t("game.demo.caption")}
+          />
+        ) : null}
         <div
           ref={frameRef}
           tabIndex={0}
@@ -323,6 +335,8 @@ export function Editor() {
           aria-label={t("editor.canvas.label")}
           aria-describedby="editor-hint editor-touch-hint"
           aria-busy={status === "loading" || busy || undefined}
+          // Холст прячется, но не размонтируется: Fabric держит слои.
+          hidden={gameStage}
           className="rounded-inner xl:rounded-inner-d bg-photo relative aspect-[3/4] w-[min(100%,calc((100svh-var(--spacing-header)-72px)*3/4))] max-w-[600px] touch-pan-y overflow-hidden xl:w-[min(100cqw,75cqh)] xl:max-w-none"
         >
           <div ref={hostRef} className="absolute inset-0" />
