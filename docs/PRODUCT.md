@@ -1413,6 +1413,121 @@
   примеров людей в «Диско», «Кинопремьере», «Жених и невеста»).
 
 
+## Вторая серия по design/открытки/ (09.10.2026)
+
+Девять шаблонов по новым макетам: «14 февраля 6–7», «новый год 3–6»,
+«свадьба 3–5». Надписи перенесены с макетов как есть — английские,
+а также португальские («Feliz Natal», «Save the date с аркой») и турецкие
+(«Soul mate»). Чужие ники → @yourname / yourname's archive, годы
+событий → 2027. Названия и вводки карточек (`anim.*`) — черновые,
+ждут утверждения.
+
+| Ключ | Текст |
+|---|---|
+| `tpl.val-booth.label` | Фотобудка: три карточки |
+| `tpl.val-booth.nav` | ‹   PORTAFOLIO   CONTACTS   SAVED   NEW'S   PROFILE   CAMERA   VIDEO   › |
+| `tpl.val-booth.caption` | te adoro mi bebé. |
+| `tpl.val-booth.kicker` | sex, money & fame |
+| `tpl.val-booth.episode` | episodio. ⏎ 25/sep/2027 |
+| `tpl.val-booth.quote` | “ this is my ⏎ favorite boy” |
+| `tpl.val-booth.footer` | voesing on social media |
+| `tpl.val-booth.archive` | yourname's archive |
+| `anim.val-booth.name` | This is my favorite boy |
+| `anim.val-booth.lead` | Три белые карточки по очереди ложатся поверх вашего фото: два кадра и цитата от руки. |
+| `tpl.val-soulmate.label` | Две фотоленты |
+| `tpl.val-soulmate.since` | since. 2023 ⏎ bff |
+| `tpl.val-soulmate.title` | soul ⏎ mate , |
+| `tpl.val-soulmate.sub` | you & i together, ⏎ nothing is better. |
+| `tpl.val-soulmate.nick` | "aptal ⏎ yigit" |
+| `tpl.val-soulmate.quote1` | "ice latteden bile |
+| `tpl.val-soulmate.quote2` | çok sevdiğim itimle." |
+| `tpl.val-soulmate.forever` | forever ? |
+| `tpl.val-soulmate.safe` | safe |
+| `tpl.val-soulmate.place` | place , , |
+| `tpl.val-soulmate.handle` | @yourname |
+| `tpl.val-soulmate.sign` | fs. |
+| `anim.val-soulmate.name` | Soul mate |
+| `anim.val-soulmate.lead` | Две ленты из фотобудки ложатся крест-накрест, «safe place» выводится от руки. Шесть кадров — под ваши фото. |
+| `tpl.ny-bestie.label` | Рождество с подругой |
+| `tpl.ny-bestie.title` | Merry Christmas, you bestie! |
+| `tpl.ny-bestie.nav` | XMAS 2027 #     profile     posts     favorite people     find me     x |
+| `tpl.ny-bestie.letter` | dear Daisie: i'm totally lucky to spend our first ⏎ christmas together as bestfriends. I hope ⏎ this holiday season may all of your dreams ⏎ come true. I'm happy to be together this ⏎ 2027. Merry Christmas, beautiful Dai! |
+| `anim.ny-bestie.name` | Merry Christmas, bestie |
+| `anim.ny-bestie.lead` | Красная глянцевая открытка: фото в белой рамке, пряник, бант, кассета с рождественскими песнями и письмо подруге. |
+| `tpl.ny-film.label` | Рождественская плёнка |
+| `tpl.ny-film.merry` | Merry |
+| `tpl.ny-film.christmas` | Christmas |
+| `tpl.ny-film.text` | Wishing you a season full of ⏎ warmth, joy, and love |
+| `anim.ny-film.name` | Merry Christmas |
+| `anim.ny-film.lead` | Плёнка на три семейных кадра, остролист и снежинки, звёздочки мерцают в красных полосах. |
+| `tpl.ny-natal.label` | Feliz Natal |
+| `tpl.ny-natal.intro` | Que o ⏎ amor seja o ⏎ presente ⏎ deste Natal. |
+| `tpl.ny-natal.feliz` | Um Feliz |
+| `tpl.ny-natal.na` | NA |
+| `tpl.ny-natal.tal` | TAL |
+| `tpl.ny-natal.todos` | para todos! |
+| `tpl.ny-natal.badge` | 25 DE ⏎ DEZEMBRO |
+| `anim.ny-natal.name` | Um Feliz Natal |
+| `anim.ny-natal.lead` | Гирлянда с огоньками, три фото в белых рамках и крупное «NATAL» — светлая открытка-пост. |
+| `tpl.ny-kevin.label` | Один дома |
+| `tpl.ny-kevin.month` | December |
+| `tpl.ny-kevin.month-script` | December |
+| `tpl.ny-kevin.grid` |  S  M  T  W  T  F  S ⏎        1  2  3  4  5 ⏎  6  7  8  9 10 11 12 ⏎ 13 14 15 16 17 18 19 ⏎ 20 21 22 23 24 25 26 ⏎ 27 28 29 30 31 |
+| `anim.ny-kevin.name` | Один дома |
+| `anim.ny-kevin.lead` | Кевин из «Один дома» на шотландской клетке, камера печатает плёнку с вашими четырьмя кадрами. |
+| `tpl.wd-savedate.label` | Save the date с аркой |
+| `tpl.wd-savedate.corner` | SAVE THE DATE |
+| `tpl.wd-savedate.casamento` | CASAMENTO |
+| `tpl.wd-savedate.motto` | TUDO É PERFEITO |
+| `tpl.wd-savedate.names` | GABRIELLA ⏎ E RAPHAEL |
+| `tpl.wd-savedate.big-left` | G |
+| `tpl.wd-savedate.big-right` | R |
+| `tpl.wd-savedate.title` | SAVE THE DATE |
+| `tpl.wd-savedate.since` | DESDE 2018 |
+| `tpl.wd-savedate.year` | 2027 |
+| `tpl.wd-savedate.date` | 19/09/2027 |
+| `anim.wd-savedate.name` | Save the date |
+| `anim.wd-savedate.lead` | Фото в арочной рамке, крупные инициалы за ним, дата свадьбы проявляется последней. |
+| `tpl.wd-post.label` | Свадебная газета |
+| `tpl.wd-post.special` | SPECIAL ⏎ EDITION |
+| `tpl.wd-post.masthead` | Wedding Post |
+| `tpl.wd-post.vol` | VOL 12, NO. 6 |
+| `tpl.wd-post.std` | SAVE THE DATE |
+| `tpl.wd-post.when` | MAY 12TH, 2027 |
+| `tpl.wd-post.save` | SAVE |
+| `tpl.wd-post.the` | the |
+| `tpl.wd-post.date` | DATE |
+| `tpl.wd-post.names` | MARY & ANDREW |
+| `tpl.wd-post.married` | are getting married |
+| `anim.wd-post.name` | Wedding Post |
+| `anim.wd-post.lead` | Первая полоса свадебной газеты: линейки разъезжаются, «SAVE the DATE», ваше фото и имена крупно. |
+| `tpl.wd-amor.label` | You & me |
+| `tpl.wd-amor.date` | 25 ⏎ 02 |
+| `tpl.wd-amor.title` | YOU & ME |
+| `tpl.wd-amor.amor` | Amor |
+| `tpl.wd-amor.text` | это удивительное чувство, которое объединяет нас, ⏎ создавая неповторимую связь. Она дарит нам силу ⏎ и вдохновение, помогает преодолевать трудности ⏎ и радоваться каждому мгновению. Вместе мы можем ⏎ преодолеть любые преграды и разделить радость, ⏎ делясь мыслями и мечтами. |
+| `anim.wd-amor.name` | You & Me |
+| `anim.wd-amor.lead` | Три чёрно-белых кадра, красное сердце одной линией и слова о любви. |
+| `sticker.kevin` | Кевин |
+| `sticker.xmas-tree-photo` | Ёлка |
+| `sticker.gingerbread` | Имбирный пряник |
+| `sticker.bow-red` | Красный бант |
+| `sticker.cassette` | Кассета |
+| `sticker.holly` | Остролист |
+| `sticker.snowflake-rust` | Снежинка-узор |
+| `sticker.asterisk-cream` | Звёздочка-лучи |
+| `sticker.film-strip-red` | Плёнка на три кадра |
+| `sticker.garland` | Гирлянда |
+| `sticker.candy-cane` | Карамельная трость |
+| `sticker.tartan` | Шотландка |
+| `sticker.instant-camera` | Фотоаппарат |
+| `sticker.film-strip-black` | Плёнка на четыре кадра |
+| `sticker.clapperboard` | Хлопушка |
+| `sticker.arch-corner` | Уголок арки |
+| `sticker.bicycle` | Велосипед |
+| `sticker.heart-line-red` | Сердце-линия |
+| `sticker.gloss-sheen` | Глянец |
+
 ## Музыка и экспорт в редакторе (08.10.2026)
 
 Вкладка «Музыка»: библиотека свободных отрывков по 15 секунд

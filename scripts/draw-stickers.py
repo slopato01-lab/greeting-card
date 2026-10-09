@@ -550,4 +550,318 @@ svg(
     "</g>",
 )
 
+
+# ── Вторая серия по design/открытки/ (09.10.2026) ────────────
+# Свой генератор: первые рисунки выше остаются байт в байт прежними.
+# Геометрия окон плёнок и арки известна шаблонам (lib/editor/series-2.ts).
+rng2 = random.Random(20261009)
+
+
+def speckle(x0, y0, x1, y1, n, colors, rmin, rmax):
+    return "".join(
+        f'<circle cx="{rng2.uniform(x0, x1):.1f}" cy="{rng2.uniform(y0, y1):.1f}" r="{rng2.uniform(rmin, rmax):.1f}" '
+        f'fill="{rng2.choice(colors)}" opacity="{rng2.uniform(.35, .8):.2f}"/>'
+        for _ in range(n)
+    )
+
+
+# Имбирный пряник с глазурью.
+icing = '#ffffff'
+svg(
+    "gingerbread",
+    300,
+    320,
+    '<g filter="url(#gbShadow)">'
+    '<path d="M150 18 C112 18 92 46 96 78 C98 94 104 104 112 110 L64 112 C34 112 20 132 24 152 C28 172 48 180 70 172 L102 160 '
+    'L96 210 L58 262 C44 282 54 304 76 306 C92 308 104 298 112 284 L150 236 L188 284 C196 298 208 308 224 306 C246 304 256 282 242 262 '
+    'L204 210 L198 160 L230 172 C252 180 272 172 276 152 C280 132 266 112 236 112 L188 110 C196 104 202 94 204 78 C208 46 188 18 150 18 Z" '
+    'fill="url(#gb)"/></g>'
+    + speckle(70, 40, 230, 290, 90, ["#8a4a1c", "#b8743a"], 0.8, 1.8)
+    + f'<g fill="none" stroke="{icing}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'
+    '<path d="M40 128 q6 8 0 16 q-6 8 0 16"/><path d="M260 128 q-6 8 0 16 q6 8 0 16"/>'
+    '<path d="M64 268 q10 -4 14 6 q4 10 14 6"/><path d="M236 268 q-10 -4 -14 6 q-4 10 -14 6"/>'
+    '<path d="M126 92 Q150 108 174 92"/></g>'
+    f'<circle cx="132" cy="64" r="7" fill="{icing}"/><circle cx="168" cy="64" r="7" fill="{icing}"/>'
+    '<path d="M126 92 Q150 108 174 92" fill="none" stroke="#d6222e" stroke-width="5" stroke-linecap="round"/>'
+    '<path d="M132 128 L150 138 L168 128 L168 148 L150 138 L132 148 Z" fill="#2f9e44"/>'
+    '<circle cx="150" cy="166" r="7" fill="#d6222e"/><circle cx="150" cy="190" r="7" fill="#d6222e"/><circle cx="150" cy="214" r="7" fill="#d6222e"/>'
+    '<circle cx="150" cy="166" r="9" fill="none" stroke="#fff" stroke-width="2"/><circle cx="150" cy="190" r="9" fill="none" stroke="#fff" stroke-width="2"/>'
+    '<circle cx="150" cy="214" r="9" fill="none" stroke="#fff" stroke-width="2"/>',
+    '<radialGradient id="gb" cx=".45" cy=".35" r=".7"><stop offset="0" stop-color="#d48a4a"/><stop offset=".7" stop-color="#b56a2c"/><stop offset="1" stop-color="#8f4d1d"/></radialGradient>'
+    '<filter id="gbShadow" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#3b0a0a" flood-opacity=".45"/></filter>',
+)
+
+# Красный атласный бант с длинными хвостами.
+svg(
+    "bow-red",
+    340,
+    300,
+    '<g filter="url(#bowShadow)">'
+    '<path d="M168 92 C150 120 120 170 96 214 C84 236 92 262 70 286" fill="none" stroke="url(#satin)" stroke-width="18" stroke-linecap="round"/>'
+    '<path d="M176 92 C204 132 246 150 270 196 C288 230 262 260 292 290" fill="none" stroke="url(#satin)" stroke-width="18" stroke-linecap="round"/>'
+    '<path d="M170 86 C130 40 70 20 50 46 C30 74 70 112 170 96 Z" fill="url(#satin)"/>'
+    '<path d="M174 86 C214 40 274 20 294 46 C314 74 274 112 174 96 Z" fill="url(#satin)"/>'
+    '<path d="M160 70 C150 54 102 44 76 56" fill="none" stroke="#ff8a8a" stroke-width="4" opacity=".6"/>'
+    '<path d="M184 70 C194 54 242 44 268 56" fill="none" stroke="#ff8a8a" stroke-width="4" opacity=".6"/>'
+    '<ellipse cx="172" cy="92" rx="20" ry="16" fill="#b80f18"/>'
+    '<ellipse cx="168" cy="88" rx="8" ry="5" fill="#ff7070" opacity=".6"/></g>',
+    '<linearGradient id="satin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3b3b"/><stop offset=".45" stop-color="#d8121c"/><stop offset="1" stop-color="#8e0710"/></linearGradient>'
+    '<filter id="bowShadow" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#3b0a0a" flood-opacity=".4"/></filter>',
+)
+
+# Белая кассета с красной надписью.
+svg(
+    "cassette",
+    380,
+    250,
+    '<g filter="url(#casShadow)"><rect x="6" y="6" width="368" height="238" rx="14" fill="#f4f2ee"/>'
+    '<path d="M60 244 L84 192 L296 192 L320 244 Z" fill="#e6e3dd"/></g>'
+    '<rect x="26" y="22" width="328" height="150" rx="8" fill="#fbfaf7" stroke="#d8d4cc" stroke-width="2"/>'
+    '<text x="190" y="58" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="22" fill="#d81e2a">CULT CHRISTMAS CLASSICS</text>'
+    '<text x="190" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="11" fill="#d81e2a" letter-spacing="1">CONJURE, CONVERT &amp; CELEBRATE</text>'
+    '<rect x="100" y="98" width="180" height="52" rx="26" fill="#ece9e3" stroke="#cfcac0" stroke-width="2"/>'
+    '<circle cx="128" cy="124" r="18" fill="#fff" stroke="#bdb7ac" stroke-width="3"/><circle cx="252" cy="124" r="18" fill="#fff" stroke="#bdb7ac" stroke-width="3"/>'
+    '<rect x="160" y="112" width="60" height="24" fill="#1d1d1d"/>'
+    + "".join(f'<rect x="{124 + i * 8}" y="117" width="3" height="14" fill="#9a958b" transform="rotate({i * 30} 128 124)"/>' for i in range(1))
+    + '<g fill="#d81e2a"><rect x="40" y="96" width="36" height="16"/><rect x="304" y="100" width="30" height="40" opacity=".8"/></g>'
+    '<g fill="#c9c4ba"><circle cx="120" cy="222" r="6"/><circle cx="160" cy="222" r="6"/><circle cx="220" cy="222" r="6"/><circle cx="260" cy="222" r="6"/></g>',
+    '<filter id="casShadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#3b0a0a" flood-opacity=".45"/></filter>',
+)
+
+# Остролист: три листа и ягоды.
+def holly_leaf(angle, length, color, vein):
+    k = length / 200
+    path = (
+        f"M0 0 C{20*k} {-20*k} {30*k} {-40*k} {50*k} {-34*k} C{56*k} {-52*k} {74*k} {-58*k} {92*k} {-50*k} "
+        f"C{100*k} {-66*k} {120*k} {-72*k} {138*k} {-62*k} C{146*k} {-78*k} {168*k} {-82*k} {200*k} {-66*k} "
+        f"C{184*k} {-40*k} {176*k} {-30*k} {182*k} {-14*k} C{164*k} {-10*k} {150*k} {2*k} {148*k} {16*k} "
+        f"C{130*k} {8*k} {112*k} {14*k} {104*k} {28*k} C{88*k} {18*k} {70*k} {20*k} {60*k} {32*k} C{40*k} {20*k} {20*k} {14*k} 0 0 Z"
+    )
+    return (
+        f'<g transform="rotate({angle})"><path d="{path}" fill="{color}" stroke="#123d1d" stroke-width="3" stroke-linejoin="round"/>'
+        f'<path d="M6 0 Q{100*k} {-16*k} {192*k} {-60*k}" fill="none" stroke="{vein}" stroke-width="3" stroke-linecap="round"/></g>'
+    )
+
+svg(
+    "holly",
+    300,
+    260,
+    '<g filter="url(#hollyShadow)"><g transform="translate(150 150)">'
+    + holly_leaf(-165, 135, "#1f6b30", "#4f9a5a")
+    + holly_leaf(-70, 120, "#247a37", "#5aa765")
+    + holly_leaf(15, 135, "#1c6230", "#4f9a5a")
+    + '<circle cx="-14" cy="-6" r="20" fill="url(#berry)"/><circle cx="14" cy="4" r="20" fill="url(#berry)"/><circle cx="-4" cy="22" r="20" fill="url(#berry)"/>'
+    + '<circle cx="-20" cy="-12" r="5" fill="#fff" opacity=".7"/><circle cx="8" cy="-2" r="5" fill="#fff" opacity=".7"/><circle cx="-10" cy="16" r="5" fill="#fff" opacity=".7"/>'
+    + "</g></g>",
+    '<radialGradient id="berry" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#ff5a5a"/><stop offset=".6" stop-color="#d0101c"/><stop offset="1" stop-color="#7d0610"/></radialGradient>'
+    '<filter id="hollyShadow" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#2b1a0a" flood-opacity=".35"/></filter>',
+)
+
+# Ржаво-красная снежинка — та же, что snowflake-line, другим цветом и толще.
+svg(
+    "snowflake-rust",
+    240,
+    240,
+    '<g stroke="#b5401f" stroke-width="9" stroke-linecap="round" fill="none">'
+    + "".join(f'<g transform="rotate({a} 120 120)">{arm}</g>' for a in range(0, 360, 60))
+    + "</g>",
+)
+
+# Восьмилучевая звёздочка для красных полос сверху и снизу.
+svg(
+    "asterisk-cream",
+    100,
+    100,
+    '<g stroke="#f6ead2" stroke-linecap="round">'
+    '<path d="M50 6 L50 94 M6 50 L94 50" stroke-width="5"/>'
+    '<path d="M24 24 L76 76 M76 24 L24 76" stroke-width="3"/></g>',
+)
+
+# Ржавая фотоплёнка на три кадра: 300 × 580, окна 210 × 158,
+# центры окон по высоте 103, 285, 467.
+rust_holes = "".join(
+    f'<rect x="{x}" y="{y}" width="16" height="20" rx="4" fill="#f3ecdf"/>' for y in range(14, 570, 40) for x in (12, 272)
+)
+rust_windows = "".join(
+    f'<rect x="45" y="{cy - 79}" width="210" height="158" fill="#e9dfcf"/>' for cy in (103, 285, 467)
+)
+svg(
+    "film-strip-red",
+    300,
+    580,
+    '<rect width="300" height="580" fill="#b23a1c"/>'
+    + speckle(0, 0, 300, 580, 700, ["#7f220c", "#d2643a", "#8e2c12"], 0.8, 2.6)
+    + rust_holes
+    + rust_windows
+    + '<g fill="#f3ecdf" font-family="Arial, sans-serif" font-size="16" font-weight="700">'
+    '<text x="280" y="200" transform="rotate(-90 280 200)">6A</text><text x="282" y="400" transform="rotate(-90 282 400)">5A</text></g>',
+)
+
+# Гирлянда: еловая лапа по дуге и тёплые лампочки. 600 × 220.
+needles = []
+for i in range(1400):
+    t = rng2.uniform(0, 1)
+    x = t * 600
+    y = 60 + 70 * math.sin(t * math.pi) + rng2.uniform(-40, 40)
+    a = rng2.uniform(0, 2 * math.pi)
+    ln = rng2.uniform(18, 40)
+    c = rng2.choice(["#1d4d2b", "#2b6a3a", "#173f23", "#3a7d48"])
+    needles.append(
+        f'<line x1="{x:.1f}" y1="{y:.1f}" x2="{x + ln * math.cos(a):.1f}" y2="{y + ln * math.sin(a):.1f}" stroke="{c}" stroke-width="{rng2.uniform(2, 3.6):.1f}" stroke-linecap="round"/>'
+    )
+wire = "M0 70 " + " ".join(f"L{x} {70 + 64 * math.sin(x / 600 * math.pi) + 10 * math.sin(x / 40):.1f}" for x in range(0, 601, 10))
+bulbs = "".join(
+    f'<circle cx="{x}" cy="{70 + 64 * math.sin(x / 600 * math.pi) + 10 * math.sin(x / 40) + 6:.1f}" r="22" fill="url(#bulbGlow)"/>'
+    f'<ellipse cx="{x}" cy="{70 + 64 * math.sin(x / 600 * math.pi) + 10 * math.sin(x / 40) + 8:.1f}" rx="5" ry="8" fill="#fff6c8"/>'
+    for x in range(30, 600, 62)
+)
+svg(
+    "garland",
+    600,
+    220,
+    "".join(needles) + f'<path d="{wire}" fill="none" stroke="#2c3b2a" stroke-width="2"/>' + bulbs,
+    '<radialGradient id="bulbGlow"><stop offset="0" stop-color="#fff2b0" stop-opacity=".95"/><stop offset=".35" stop-color="#ffd36b" stop-opacity=".6"/><stop offset="1" stop-color="#ffb43b" stop-opacity="0"/></radialGradient>',
+)
+
+# Карамельная трость. 90 × 300.
+cane = "M45 290 L45 80 C45 30 80 14 64 14 C40 14 18 30 18 60"
+svg(
+    "candy-cane",
+    90,
+    300,
+    '<path d="M45 290 L45 70 C45 30 72 22 72 50" fill="none" stroke="#fbf7f2" stroke-width="22" stroke-linecap="round"/>'
+    '<path d="M45 290 L45 70 C45 30 72 22 72 50" fill="none" stroke="#d61f2c" stroke-width="22" stroke-linecap="butt" stroke-dasharray="14 12"/>'
+    '<path d="M38 286 L38 72" stroke="#fff" stroke-width="3" opacity=".5"/>',
+)
+
+# Шотландская клетка во весь лист 600 × 800.
+tartan = ['<rect width="600" height="800" fill="#b0141c"/>']
+for off in range(0, 800, 120):
+    tartan.append(f'<rect x="0" y="{off + 20}" width="600" height="34" fill="#1d2a52" opacity=".55"/>')
+    tartan.append(f'<rect x="0" y="{off + 66}" width="600" height="10" fill="#1e5a2e" opacity=".7"/>')
+    tartan.append(f'<rect x="0" y="{off + 92}" width="600" height="3" fill="#f4e7b5" opacity=".7"/>')
+    tartan.append(f'<rect x="0" y="{off + 2}" width="600" height="4" fill="#111" opacity=".35"/>')
+for off in range(0, 600, 120):
+    tartan.append(f'<rect x="{off + 20}" y="0" width="34" height="800" fill="#1d2a52" opacity=".45"/>')
+    tartan.append(f'<rect x="{off + 66}" y="0" width="10" height="800" fill="#1e5a2e" opacity=".6"/>')
+    tartan.append(f'<rect x="{off + 92}" y="0" width="3" height="800" fill="#f4e7b5" opacity=".6"/>')
+    tartan.append(f'<rect x="{off + 2}" y="0" width="4" height="800" fill="#111" opacity=".3"/>')
+tartan.append('<rect width="600" height="800" fill="url(#twill)" opacity=".18"/>')
+svg(
+    "tartan",
+    600,
+    800,
+    "".join(tartan),
+    '<pattern id="twill" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0 6 L6 0" stroke="#000" stroke-width="1.5"/></pattern>',
+)
+
+# Камера моментальной печати без марки. 420 × 330.
+svg(
+    "instant-camera",
+    420,
+    330,
+    '<g filter="url(#camShadow)">'
+    '<rect x="10" y="10" width="400" height="230" rx="34" fill="url(#camBody)"/>'
+    '<rect x="10" y="200" width="400" height="120" rx="20" fill="#232323"/>'
+    '<rect x="10" y="200" width="400" height="40" fill="#2e2e2e"/></g>'
+    '<rect x="40" y="36" width="90" height="120" rx="12" fill="#cfd3d6" stroke="#9aa0a5" stroke-width="3"/>'
+    + "".join(f'<line x1="48" y1="{50 + i * 10}" x2="122" y2="{50 + i * 10}" stroke="#eef1f3" stroke-width="3"/>' for i in range(10))
+    + '<circle cx="232" cy="128" r="88" fill="#1b1b1b"/><circle cx="232" cy="128" r="70" fill="#2b2b2b" stroke="#444" stroke-width="4"/>'
+    '<circle cx="232" cy="128" r="46" fill="url(#lens)"/><circle cx="214" cy="110" r="12" fill="#fff" opacity=".35"/>'
+    '<rect x="340" y="34" width="54" height="54" rx="10" fill="#1d1d1d"/><rect x="350" y="44" width="34" height="34" rx="6" fill="#4a5560"/>'
+    '<circle cx="78" cy="196" r="22" fill="#e2412b"/><circle cx="72" cy="190" r="7" fill="#ff8a70" opacity=".6"/>'
+    '<circle cx="340" cy="200" r="10" fill="#1d1d1d"/>'
+    '<rect x="70" y="262" width="280" height="10" rx="5" fill="#0c0c0c"/>'
+    '<rect x="150" y="214" width="120" height="16" rx="8" fill="#3a3a3a"/>',
+    '<linearGradient id="camBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e3e3e3"/></linearGradient>'
+    '<radialGradient id="lens" cx=".45" cy=".4" r=".6"><stop offset="0" stop-color="#3f8f5f"/><stop offset=".5" stop-color="#16362a"/><stop offset="1" stop-color="#050505"/></radialGradient>'
+    '<filter id="camShadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity=".4"/></filter>',
+)
+
+# Чёрная плёнка на четыре кадра: 300 × 670, окна 196 × 140,
+# центры окон по высоте 92, 254, 416, 578.
+black_holes = "".join(
+    f'<rect x="{x}" y="{y}" width="18" height="22" rx="4" fill="#ffffff"/>' for y in range(12, 660, 40) for x in (12, 270)
+)
+black_windows = "".join(
+    f'<rect x="52" y="{cy - 70}" width="196" height="140" fill="#ffffff" stroke="#cfcfcf" stroke-width="2"/>' for cy in (92, 254, 416, 578)
+)
+svg(
+    "film-strip-black",
+    300,
+    670,
+    '<rect width="300" height="670" fill="#0e0e0e"/>' + black_holes + black_windows
+    + '<g fill="#e9b949" font-family="Arial, sans-serif" font-size="16" font-weight="700">'
+    '<text x="40" y="180" transform="rotate(-90 40 180)">4</text><text x="262" y="180" transform="rotate(-90 262 180)">4</text>'
+    '<text x="40" y="500" transform="rotate(-90 40 500)">3</text><text x="262" y="500" transform="rotate(-90 262 500)">3A</text></g>',
+)
+
+# Хлопушка-нумератор. 220 × 180.
+stripes_top = "".join(
+    f'<path d="M{20 + i * 40} 30 L{44 + i * 40} 30 L{36 + i * 40} 62 L{12 + i * 40} 62 Z" fill="#f2f2f2"/>' for i in range(5)
+)
+svg(
+    "clapperboard",
+    220,
+    180,
+    '<g transform="rotate(-8 110 50)"><rect x="10" y="30" width="200" height="32" fill="#151515"/>' + stripes_top + "</g>"
+    '<rect x="10" y="66" width="200" height="104" fill="#1b1b1b"/>'
+    '<g stroke="#e8e8e8" stroke-width="2"><line x1="10" y1="100" x2="210" y2="100"/><line x1="10" y1="134" x2="210" y2="134"/><line x1="110" y1="100" x2="110" y2="170"/></g>'
+    '<g fill="#151515"><rect x="10" y="66" width="200" height="0"/></g>',
+)
+
+# Угол арочной рамки «Save the date»: снаружи — фон открытки, по краю — линия.
+# Рамка 420 × 500; уголок 120 × 100 закрывает фото снаружи рамки.
+ARCH_BG = "#e5dfcb"
+ARCH_LINE = "#4a4f2a"
+inside = "M0 100 L0 86 A36 36 0 0 1 36 50 L50 50 A30 30 0 0 0 80 20 A20 20 0 0 1 100 0 L120 0"
+outside = "M0 0 L100 0 A20 20 0 0 0 80 20 A30 30 0 0 1 50 50 L36 50 A36 36 0 0 0 0 86 Z"
+corner = f'<path d="{outside}" fill="{ARCH_BG}"/><path d="{inside}" fill="none" stroke="{ARCH_LINE}" stroke-width="3"/>'
+svg("arch-corner-l", 120, 100, corner)
+svg("arch-corner-r", 120, 100, f'<g transform="translate(120 0) scale(-1 1)">{corner}</g>')
+
+# Эмблема: велосипед-пенни-фартинг линией. 220 × 150.
+spokes_big = "".join(
+    f'<line x1="80" y1="86" x2="{80 + 56 * math.cos(a):.1f}" y2="{86 + 56 * math.sin(a):.1f}"/>' for a in [i * math.pi / 8 for i in range(16)]
+)
+spokes_small = "".join(
+    f'<line x1="176" y1="122" x2="{176 + 20 * math.cos(a):.1f}" y2="{122 + 20 * math.sin(a):.1f}"/>' for a in [i * math.pi / 4 for i in range(8)]
+)
+svg(
+    "bicycle",
+    220,
+    150,
+    f'<g fill="none" stroke="{ARCH_LINE}" stroke-linecap="round" stroke-linejoin="round">'
+    '<circle cx="80" cy="86" r="58" stroke-width="3"/><circle cx="80" cy="86" r="52" stroke-width="1.5"/>'
+    '<circle cx="176" cy="122" r="22" stroke-width="3"/>'
+    f'<g stroke-width="1">{spokes_big}{spokes_small}</g>'
+    '<path d="M80 86 L96 22 Q140 30 176 122" stroke-width="3"/>'
+    '<path d="M86 20 L110 20 M96 22 L92 10 L72 12" stroke-width="3"/>'
+    '<circle cx="80" cy="86" r="4" fill="#4a4f2a"/></g>',
+)
+
+# Сердце одной красной линией, чуть кривое, как от руки. 520 × 460.
+svg(
+    "heart-line-red",
+    520,
+    460,
+    '<path d="M250 430 C190 380 40 300 30 170 C22 70 110 20 180 34 C230 44 252 90 258 128 '
+    'C270 80 320 30 390 40 C470 52 500 130 486 196 C468 290 340 360 250 430" '
+    'fill="none" stroke="#d24a4a" stroke-width="4" stroke-linecap="round"/>',
+)
+
+# Глянец красной плёнки: размытые светлые полосы. 600 × 800.
+svg(
+    "gloss-sheen",
+    600,
+    800,
+    '<g filter="url(#sheenBlur)" fill="none" stroke="#fff" stroke-linecap="round">'
+    '<path d="M-20 120 C140 60 220 260 420 140 S640 80 640 40" stroke-width="18" opacity=".25"/>'
+    '<path d="M60 820 C120 600 40 420 160 260" stroke-width="10" opacity=".2"/>'
+    '<path d="M520 820 C460 640 600 520 560 300" stroke-width="14" opacity=".18"/>'
+    '<path d="M-20 520 C120 470 200 560 330 500" stroke-width="8" opacity=".15"/></g>',
+    '<filter id="sheenBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>',
+)
+
+
 print("Готово:", len(list(OUT.glob("*.svg"))), "стикеров")

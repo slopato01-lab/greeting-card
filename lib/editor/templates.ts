@@ -11,6 +11,7 @@ import {
   type TextLayer,
 } from "@/lib/editor/document";
 import { SERIES, SERIES_IDS } from "@/lib/editor/series";
+import { SERIES2, SERIES2_IDS } from "@/lib/editor/series-2";
 import { anim, sticker, text as kitText } from "@/lib/editor/template-kit";
 import type { TextKey } from "@/lib/i18n";
 
@@ -31,7 +32,13 @@ import type { TextKey } from "@/lib/i18n";
  * (docs/DESIGN.md, «Цвета и шрифты содержимого открытки»).
  */
 
-export const TEMPLATE_IDS = ["birthday", "party", "polaroid", ...SERIES_IDS] as const;
+export const TEMPLATE_IDS = [
+  "birthday",
+  "party",
+  "polaroid",
+  ...SERIES_IDS,
+  ...SERIES2_IDS,
+] as const;
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 
 export type TemplateInfo = { id: TemplateId; label: TextKey; build: () => EditorDoc };
@@ -396,4 +403,6 @@ export const TEMPLATES: readonly TemplateInfo[] = [
   },
   // Серия по design/открытки/ (08.10.2026), lib/editor/series.ts.
   ...SERIES_IDS.map((id): TemplateInfo => ({ id, label: `tpl.${id}.label`, build: SERIES[id] })),
+  // Вторая серия (09.10.2026), lib/editor/series-2.ts.
+  ...SERIES2_IDS.map((id): TemplateInfo => ({ id, label: `tpl.${id}.label`, build: SERIES2[id] })),
 ];

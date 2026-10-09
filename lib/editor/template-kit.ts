@@ -1,5 +1,6 @@
 import {
   type Animation,
+  type CircleLayer,
   type Color,
   type EditorDoc,
   EDITOR_FORMAT,
@@ -122,6 +123,27 @@ export function rect(
     x,
     y,
     angle,
+    scaleX: 1,
+    scaleY: 1,
+    opacity: 1,
+    anim: animation,
+  };
+}
+
+export function circle(
+  x: number,
+  y: number,
+  radius: number,
+  fill: Color,
+  animation: Animation,
+): CircleLayer {
+  return {
+    kind: "circle",
+    fill,
+    radius,
+    x,
+    y,
+    angle: 0,
     scaleX: 1,
     scaleY: 1,
     opacity: 1,

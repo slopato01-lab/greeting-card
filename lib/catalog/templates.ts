@@ -266,4 +266,14 @@ export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
   animated("fr-disc", "catalog.filter.9", "anim.fr-disc.name", "anim.fr-disc.lead"),
   animated("wd-married", "catalog.filter.10", "anim.wd-married.name", "anim.wd-married.lead"),
   animated("wd-kids", "catalog.filter.10", "anim.wd-kids.name", "anim.wd-kids.lead"),
+  // Вторая серия (09.10.2026), lib/editor/series-2.ts.
+  animated("val-booth", "catalog.filter.8", "anim.val-booth.name", "anim.val-booth.lead"),
+  animated("val-soulmate", "catalog.filter.8", "anim.val-soulmate.name", "anim.val-soulmate.lead"),
+  animated("ny-bestie", "catalog.filter.3", "anim.ny-bestie.name", "anim.ny-bestie.lead"),
+  animated("ny-film", "catalog.filter.3", "anim.ny-film.name", "anim.ny-film.lead"),
+  animated("ny-natal", "catalog.filter.3", "anim.ny-natal.name", "anim.ny-natal.lead"),
+  animated("ny-kevin", "catalog.filter.3", "anim.ny-kevin.name", "anim.ny-kevin.lead"),
+  animated("wd-savedate", "catalog.filter.10", "anim.wd-savedate.name", "anim.wd-savedate.lead"),
+  animated("wd-post", "catalog.filter.10", "anim.wd-post.name", "anim.wd-post.lead"),
+  animated("wd-amor", "catalog.filter.10", "anim.wd-amor.name", "anim.wd-amor.lead"),
 ];

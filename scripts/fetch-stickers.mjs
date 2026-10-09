@@ -143,6 +143,42 @@ picsum.photos по номеру, обрезаны по центру, \`bw\` — 
 - \`sample-bride.png\` — Direct Media, https://stocksnap.io/photo/baby-girl-TOPVUEPEKK
 - \`sample-cinema.png\` — Kristin Hardwick, https://stocksnap.io/photo/woman-business-B9BEJYBUZ5
 - \`sample-disco.png\` — Kristin Hardwick, https://stocksnap.io/photo/young-man-SEZ0BOQJBD
+
+Вторая серия по design/открытки/ (09.10.2026) — StockSnap, CC0.
+Обрезаны под окно шаблона, \`sample-love-*\`, \`sample-strip-*\`,
+\`sample-wed-2\`, \`sample-amor-*\` — в ч/б:
+
+- \`sample-love-1.jpg\` — Kaci Baum, https://stocksnap.io/photo/bride-groom-HXDO55F695
+- \`sample-love-2.jpg\` — Pablo Heimplatz, https://stocksnap.io/photo/people-man-TBZCYT5FNL
+- \`sample-love-bg.jpg\` — Kaci Baum, https://stocksnap.io/photo/bride-groom-HXDO55F695
+- \`sample-strip-1.jpg\` — Nathan Walker, https://stocksnap.io/photo/couple-kissing-JRTQVF9EQC
+- \`sample-strip-2.jpg\` — Freestocks.org, https://stocksnap.io/photo/bokeh-people-TO66YCNJNJ
+- \`sample-strip-3.jpg\` — Direct Media, https://stocksnap.io/photo/couple-kissing-UHDB9OMRIQ
+- \`sample-strip-4.jpg\` — Direct Media, https://stocksnap.io/photo/couple-kissing-X8N6YH8IZD
+- \`sample-strip-5.jpg\` — frank mckenna, https://stocksnap.io/photo/couple-man-F7HEUYRTTH
+- \`sample-strip-6.jpg\` — Alejandra Quiroz, https://stocksnap.io/photo/sunset-kiss-61C38E9964
+- \`sample-xmas-friends.jpg\` — PS Imaging, https://stocksnap.io/photo/christmas-couple-6VMDVAWS4C
+- \`sample-xmas-1.jpg\` — PS Imaging, https://stocksnap.io/photo/christmas-tree-GRDBC0N50P
+- \`sample-xmas-2.jpg\` — PS Imaging, https://stocksnap.io/photo/grandmother-child-NNKPN9QYIR
+- \`sample-xmas-3.jpg\` — PS Imaging, https://stocksnap.io/photo/christmas-tree-XJWYEY8SWX
+- \`sample-xmas-4.jpg\` — PS Imaging, https://stocksnap.io/photo/grandmother-child-LPKCDYIP2T
+- \`sample-xmas-5.jpg\` — PS Imaging, https://stocksnap.io/photo/christmas-child-EVLWWY2UJG
+- \`sample-xmas-6.jpg\` — PS Imaging, https://stocksnap.io/photo/christmas-person-Z5WZJHCE1Y
+- \`sample-xmas-7.jpg\` — PS Imaging, https://stocksnap.io/photo/christmas-person-PDODQ5ZLZ2
+- \`sample-xmas-8.jpg\` — William Stitt, https://stocksnap.io/photo/hat-woman-4HL8TN3VNN
+- \`sample-xmas-9.jpg\` — Family Moments, https://stocksnap.io/photo/family-christmas-BWCM0CU0M8
+- \`sample-xmas-10.jpg\` — PS Imaging, https://stocksnap.io/photo/christmas-child-GO3ZJSS5Z1
+- \`sample-wed-1.jpg\` — Glen McCallum, https://stocksnap.io/photo/people-man-RWMC95HRC0
+- \`sample-wed-2.jpg\` — Candace McDaniel, https://stocksnap.io/photo/bride-wedding-MLZEIPZX1P
+- \`sample-amor-1.jpg\` — Scott Webb, https://stocksnap.io/photo/engagement-ring-4IFH7OWDL8
+- \`sample-amor-2.jpg\` — Shelby Deeter, https://stocksnap.io/photo/couple-love-0X3DOGA75K
+- \`sample-amor-3.jpg\` — frank mckenna, https://stocksnap.io/photo/couple-man-F7HEUYRTTH
+- \`xmas-tree-photo.png\` — Pawel Kadysz, https://stocksnap.io/photo/christmas-tree-ELVRAJB0NI
+  (край срезан волной, 256 цветов)
+
+\`kevin.png\` — Кевин из фильма «Один дома» (20th Century Fox, 1990),
+вырезан из макета design/открытки/новый год 6.jpg по просьбе
+пользователя. Права на кадр — у правообладателя фильма, не CC.
 `,
 );
 console.log(`Готово: ${Object.keys(NOTO).length} стикеров Noto.`);
