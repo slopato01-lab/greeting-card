@@ -1,4 +1,5 @@
 import { codeHash, randomCode, randomToken, sameString, sha256Hex } from "./crypto.ts";
+import { isPremium } from "../editor/premium.ts";
 import { parseCodeRequest, parseVerifyRequest } from "./validate.ts";
 
 /**
@@ -64,7 +65,10 @@ export type AuthError =
   | "mail_unavailable"
   | "mail_failed"
   | "expired"
-  | "wrong";
+  | "wrong"
+  | "unauthorized"
+  | "limit"
+  | "subscription";
 
 export type PublicUser = { email: string; freeLeft: number; createdAt: number };
 
@@ -245,22 +249,30 @@ export async function verifyCode({ request, env }: Context): Promise<Response> {
 }
 
 /** Пользователь по cookie сессии или null. */
-async function sessionUser(request: Request, env: Env): Promise<PublicUser | null> {
+async function sessionUser(request: Request, env: Env): Promise<SessionUser | null> {
   const token = readCookie(request, COOKIE);
   if (token === null || !/^[\w-]{20,100}$/.test(token)) return null;
   return env.DB.prepare(
-    `SELECT users.email AS email, users.free_left AS freeLeft, users.created_at AS createdAt
+    `SELECT users.id AS id, users.email AS email, users.free_left AS freeLeft, users.created_at AS createdAt
      FROM sessions JOIN users ON users.id = sessions.user_id
      WHERE sessions.token_hash = ? AND sessions.expires_at > ?`,
   )
     .bind(await sha256Hex(token), now())
-    .first<PublicUser>();
+    .first<SessionUser>();
 }
+
+type SessionUser = PublicUser & { id: string };
+
+const publicUser = ({ email, freeLeft, createdAt }: SessionUser): PublicUser => ({
+  email,
+  freeLeft,
+  createdAt,
+});
 
 /** GET /api/auth/me — { user } или 401 { user: null }. */
 export async function me({ request, env }: Context): Promise<Response> {
   const user = await sessionUser(request, env);
-  return user === null ? json({ user: null }, 401) : json({ user });
+  return user === null ? json({ user: null }, 401) : json({ user: publicUser(user) });
 }
 
 /** POST /api/auth/logout — снимает сессию этого устройства. */
@@ -273,4 +285,60 @@ export async function logout({ request, env }: Context): Promise<Response> {
       .run();
   }
   return json({ ok: true }, 200, { "Set-Cookie": sessionCookie("", 0) });
+}
+
+// ── Лимит открыток ──────────────────────────────────────────
+
+/**
+ * POST /api/cards/claim — { cardKey }. Можно ли сохранить эту открытку
+ * без водяного знака. Вызывается перед экспортом GIF и видео.
+ *
+ * - шаблон с короной — только по подписке (её пока ни у кого нет): 402;
+ * - открытка уже засчитана — да, лимит не тратится;
+ * - иначе тратится одна бесплатная; кончились — 402 { error: "limit" }.
+ *
+ * Списание атомарно: UPDATE с условием free_left > 0 и вставка в
+ * user_cards идут одним batch, двойной клик не спишет две.
+ */
+export async function claimCard({ request, env }: Context): Promise<Response> {
+  if (!sameOrigin(request)) return fail("bad_request", 400);
+  const body = await readJson(request);
+  const key =
+    typeof body === "object" && body !== null && "cardKey" in body ? body.cardKey : undefined;
+  if (typeof key !== "string" || !/^[a-z0-9-]{1,40}$/.test(key)) return fail("bad_request", 400);
+
+  const user = await sessionUser(request, env);
+  if (user === null) return fail("unauthorized", 401);
+  if (isPremium(key)) return fail("subscription", 402);
+
+  const claimed = await env.DB.prepare(
+    "SELECT 1 AS found FROM user_cards WHERE user_id = ? AND card_key = ?",
+  )
+    .bind(user.id, key)
+    .first<{ found: number }>();
+  if (claimed !== null) return json({ ok: true, user: publicUser(user) });
+  if (user.freeLeft <= 0) return fail("limit", 402);
+
+  const time = now();
+  await env.DB.batch([
+    env.DB.prepare(
+      "INSERT INTO user_cards (user_id, card_key, created_at) SELECT ?1, ?2, ?3 FROM users WHERE id = ?1 AND free_left > 0 ON CONFLICT DO NOTHING",
+    ).bind(user.id, key, time),
+    env.DB.prepare(
+      "UPDATE users SET free_left = free_left - 1 WHERE id = ? AND free_left > 0 AND changes() > 0",
+    ).bind(user.id),
+  ]);
+
+  const after = await env.DB.prepare(
+    `SELECT u.email AS email, u.free_left AS freeLeft, u.created_at AS createdAt,
+       (SELECT COUNT(*) FROM user_cards c WHERE c.user_id = u.id AND c.card_key = ?) AS found
+     FROM users u WHERE u.id = ?`,
+  )
+    .bind(key, user.id)
+    .first<PublicUser & { found: number }>();
+  if (after === null || after.found === 0) return fail("limit", 402);
+  return json({
+    ok: true,
+    user: { email: after.email, freeLeft: after.freeLeft, createdAt: after.createdAt },
+  });
 }

@@ -27,3 +27,19 @@ export const PRICES = [
   { nameKey: "price.item.4", byn: 6, rub: 190 },
   { nameKey: "price.item.5", byn: 6, rub: 190 },
 ] as const satisfies ReadonlyArray<PriceRow>;
+
+/**
+ * Подписка и оплата за штуку в редакторе (решение пользователя
+ * 09.10.2026). Показываются в попапе подписки и в кабинете, «Тариф».
+ * Оплата ещё не подключена — кнопки стоят с меткой «Скоро».
+ *
+ * `crown` — открывает ли вариант шаблоны с короной: за штуку — нет,
+ * они только по подписке.
+ */
+export type PlanRow = PriceRow & { id: "week" | "month" | "single"; crown: boolean };
+
+export const PLANS = [
+  { id: "week", nameKey: "account.sub.week", byn: 9, rub: 290, crown: true },
+  { id: "month", nameKey: "account.sub.month", byn: 19, rub: 590, crown: true },
+  { id: "single", nameKey: "account.sub.single", byn: 12, rub: 390, crown: false },
+] as const satisfies ReadonlyArray<PlanRow>;

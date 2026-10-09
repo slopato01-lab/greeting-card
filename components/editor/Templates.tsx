@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { CrownBadge } from "@/components/CrownBadge";
 import { GroupLabel, Panel } from "@/components/editor/controls";
+import { isPremium } from "@/lib/editor/premium";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { t } from "@/lib/i18n";
 
@@ -13,6 +15,8 @@ import { t } from "@/lib/i18n";
  * у каждого шаблона свой черновик (useCardEditor), поэтому правки
  * текущего не теряются, а сами шаблоны не меняются — вернёшься,
  * и там твои правки поверх нетронутого образца.
+ *
+ * Шаблоны «по подписке» помечены жёлтой короной (CrownBadge).
  *
  * Текущий шаблон подсвечен золотой рамкой и помечен aria-current.
  *
@@ -77,7 +81,7 @@ export function TemplatesPanel({
               >
                 <span
                   className={[
-                    "rounded-inner bg-photo block aspect-[3/4] w-full overflow-hidden border-2 transition-colors",
+                    "rounded-inner bg-photo relative block aspect-[3/4] w-full overflow-hidden border-2 transition-colors",
                     active ? "border-gold-deep" : "group-hover:border-muted border-transparent",
                   ].join(" ")}
                 >
@@ -85,6 +89,9 @@ export function TemplatesPanel({
                     // eslint-disable-next-line @next/next/no-img-element -- data URL с холста, оптимизатор не нужен
                     <img src={preview} alt="" className="block h-full w-full" />
                   )}
+                  {isPremium(template.id) ? (
+                    <CrownBadge className="absolute end-[6px] top-[6px]" />
+                  ) : null}
                 </span>
                 <span
                   className={`font-ui text-note xl:text-note-d ${active ? "text-gold-deep" : "text-ink"}`}

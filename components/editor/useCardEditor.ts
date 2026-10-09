@@ -105,11 +105,11 @@ type Playback = {
 };
 
 /**
- * Водяной знак на GIF и видео. Пока аккаунтов нет, он у всех: без
- * регистрации экспорт со знаком, без знака — после входа
- * (решение пользователя 08.10.2026, docs/PRODUCT.md).
+ * Водяной знак на GIF и видео решает не редактор, а Editor.tsx: гость
+ * сохраняет со знаком, вошедший — без, если сервер засчитал открытку
+ * (/api/cards/claim, решение пользователя 09.10.2026, docs/PRODUCT.md).
  */
-const WATERMARK = true;
+type ExportOptions = { watermark: boolean };
 
 /** Поля открытки, которые живут не на холсте, а в состоянии редактора. */
 function withMeta(doc: EditorDoc, still: boolean, music: CardMusic | null): EditorDoc {
@@ -1104,70 +1104,79 @@ export function useCardEditor() {
   }, []);
 
   /** GIF без звука — такой формат. */
-  const exportGif = useCallback(async () => {
-    if (exporting.current !== null || playback.current !== null) return;
-    const recording = prepareRecording();
-    if (recording === null) return;
-    const controller = new AbortController();
-    exporting.current = controller;
-    setNotice(null);
-    setBusyText("editor.export.gif.busy");
-    setBusy(true);
-    try {
-      const blob = await encodeGif({
-        width: GIF_WIDTH,
-        height: Math.round((GIF_WIDTH * CARD_HEIGHT) / CARD_WIDTH),
-        duration: recording.total,
-        still: recording.still,
-        draw: recording.draw,
-        watermark: WATERMARK ? t("brand.name") : null,
-        onProgress: showProgress,
-        signal: controller.signal,
-      });
-      saveBlob(blob, "otkrytochka.gif");
-    } catch {
-      if (!controller.signal.aborted) setNotice("editor.export.failed");
-    } finally {
-      recording.done();
-      exporting.current = null;
-      setBusy(false);
-    }
-  }, [prepareRecording, saveBlob, showProgress]);
+  const exportGif = useCallback(
+    async ({ watermark }: ExportOptions) => {
+      if (exporting.current !== null || playback.current !== null) return;
+      const recording = prepareRecording();
+      if (recording === null) return;
+      const controller = new AbortController();
+      exporting.current = controller;
+      setNotice(null);
+      setBusyText("editor.export.gif.busy");
+      setBusy(true);
+      try {
+        const blob = await encodeGif({
+          width: GIF_WIDTH,
+          height: Math.round((GIF_WIDTH * CARD_HEIGHT) / CARD_WIDTH),
+          duration: recording.total,
+          still: recording.still,
+          draw: recording.draw,
+          watermark: watermark ? t("brand.name") : null,
+          onProgress: showProgress,
+          signal: controller.signal,
+        });
+        saveBlob(blob, "otkrytochka.gif");
+      } catch {
+        if (!controller.signal.aborted) setNotice("editor.export.failed");
+      } finally {
+        recording.done();
+        exporting.current = null;
+        setBusy(false);
+      }
+    },
+    [prepareRecording, saveBlob, showProgress],
+  );
 
   /** Видео со звуком песни из библиотеки. Пишется в реальном времени. */
-  const exportVideo = useCallback(async () => {
-    if (exporting.current !== null || playback.current !== null) return;
-    const recording = prepareRecording();
-    if (recording === null) return;
-    const controller = new AbortController();
-    exporting.current = controller;
-    setNotice(null);
-    setBusyText("editor.export.video.busy");
-    setBusy(true);
-    const currentMusic = musicRef.current;
-    try {
-      const { blob, extension } = await recordVideo({
-        width: VIDEO_WIDTH,
-        height: Math.round((VIDEO_WIDTH * CARD_HEIGHT) / CARD_WIDTH),
-        duration: recording.total,
-        draw: recording.draw,
-        watermark: WATERMARK ? t("brand.name") : null,
-        audioSrc: musicAudioSrc(currentMusic),
-        credit: musicCredit(currentMusic),
-        onProgress: showProgress,
-        signal: controller.signal,
-      });
-      saveBlob(blob, `otkrytochka.${extension}`);
-      // Трек Яндекса играет только в их плеере — в файл он не попал.
-      if (currentMusic?.kind === "yandex") setNotice("editor.export.video.noYandex");
-    } catch {
-      if (!controller.signal.aborted) setNotice("editor.export.failed");
-    } finally {
-      recording.done();
-      exporting.current = null;
-      setBusy(false);
-    }
-  }, [prepareRecording, saveBlob, showProgress]);
+  const exportVideo = useCallback(
+    async ({ watermark }: ExportOptions) => {
+      if (exporting.current !== null || playback.current !== null) return;
+      const recording = prepareRecording();
+      if (recording === null) return;
+      const controller = new AbortController();
+      exporting.current = controller;
+      setNotice(null);
+      setBusyText("editor.export.video.busy");
+      setBusy(true);
+      const currentMusic = musicRef.current;
+      try {
+        const { blob, extension } = await recordVideo({
+          width: VIDEO_WIDTH,
+          height: Math.round((VIDEO_WIDTH * CARD_HEIGHT) / CARD_WIDTH),
+          duration: recording.total,
+          draw: recording.draw,
+          watermark: watermark ? t("brand.name") : null,
+          audioSrc: musicAudioSrc(currentMusic),
+          credit: musicCredit(currentMusic),
+          onProgress: showProgress,
+          signal: controller.signal,
+        });
+        saveBlob(blob, `otkrytochka.${extension}`);
+        // Трек Яндекса играет только в их плеере — в файл он не попал.
+        if (currentMusic?.kind === "yandex") setNotice("editor.export.video.noYandex");
+      } catch {
+        if (!controller.signal.aborted) setNotice("editor.export.failed");
+      } finally {
+        recording.done();
+        exporting.current = null;
+        setBusy(false);
+      }
+    },
+    [prepareRecording, saveBlob, showProgress],
+  );
+
+  /** Сообщение плашкой поверх сцены — для проверок, идущих вне редактора. */
+  const notify = useCallback((key: TextKey | null) => setNotice(key), []);
 
   /** Прервать идущий экспорт. */
   const cancelExport = useCallback(() => exporting.current?.abort(), []);
@@ -1265,6 +1274,7 @@ export function useCardEditor() {
       exportGif,
       exportVideo,
       cancelExport,
+      notify,
       importFile,
       retry,
     },

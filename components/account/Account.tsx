@@ -21,6 +21,7 @@ import { type Draft, draftsSnapshot, parseDrafts, removeDraft } from "@/lib/edit
 import { TEMPLATES } from "@/lib/editor/templates";
 import type { IconName } from "@/lib/icons/generated";
 import { type TextKey, t } from "@/lib/i18n";
+import { PLANS } from "@/lib/pricing";
 
 /**
  * Личный кабинет (переделан 09.10.2026: «сейчас на кабинет вообще не
@@ -53,17 +54,11 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 const LIMITS = [
-  { label: "account.limit.watermark", value: "account.limit.watermark.value" },
+  { label: "account.limit.watermark", value: "account.limit.watermark.user" },
   { label: "account.limit.free", value: "account.limit.free.user" },
   { label: "account.limit.link", value: "account.limit.link.user" },
   { label: "account.limit.crown", value: "account.limit.crown.value" },
 ] as const satisfies ReadonlyArray<{ label: TextKey; value: TextKey }>;
-
-const SUBSCRIPTIONS = [
-  "account.sub.week",
-  "account.sub.month",
-  "account.sub.single",
-] as const satisfies ReadonlyArray<TextKey>;
 
 /** Сколько бесплатных открыток даёт регистрация — для полоски «осталось». */
 const FREE_TOTAL = 2;
@@ -306,7 +301,9 @@ function PlanSection({ user }: { user: User }) {
           >
             <div className="bg-gold h-full rounded-full" style={{ width: `${share * 100}%` }} />
           </div>
-          <p className="font-ui text-note text-muted leading-[1.5]">{t("account.plan.note")}</p>
+          <p className="font-ui text-note text-muted leading-[1.5]">
+            {t("account.plan.note.user")}
+          </p>
         </div>
 
         <dl className="flex flex-col">
@@ -328,13 +325,18 @@ function PlanSection({ user }: { user: User }) {
         <h3 className={H3}>{t("account.sub.title")}</h3>
         <p className={NOTE}>{t("account.sub.body")}</p>
         <ul role="list" className="grid gap-[6px] md:grid-cols-3">
-          {SUBSCRIPTIONS.map((key) => (
+          {PLANS.map((plan) => (
             <li
-              key={key}
+              key={plan.id}
               className="bg-surface rounded-inner min-h-tap flex items-center justify-between gap-[12px] px-[14px] py-[10px]"
             >
-              <span className="font-ui text-note xl:text-note-d text-ink font-medium">
-                {t(key)}
+              <span className="flex flex-col">
+                <span className="font-ui text-note xl:text-note-d text-ink font-medium">
+                  {t(plan.nameKey)}
+                </span>
+                <span className="font-ui text-note text-body">
+                  {plan.byn}&nbsp;{t("price.byn")} · {plan.rub}&nbsp;{t("price.rub")}
+                </span>
               </span>
               <span className={SOON}>{t("account.soon")}</span>
             </li>

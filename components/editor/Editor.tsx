@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/Button";
 import { ToolButton } from "@/components/editor/controls";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
 import { MusicPanel } from "@/components/editor/MusicPanel";
+import { Paywall, type PaywallReason } from "@/components/editor/Paywall";
 import { type EditorTab, panelId, Rail, tabId } from "@/components/editor/Rail";
 import { TemplatesPanel } from "@/components/editor/Templates";
 import {
@@ -16,8 +17,10 @@ import {
   TextPanel,
 } from "@/components/editor/Toolbar";
 import { useCardEditor } from "@/components/editor/useCardEditor";
+import { claimCard, useAuth } from "@/lib/auth/client";
 import { type Layer, LIMITS } from "@/lib/editor/document";
 import { FONTS } from "@/lib/editor/fonts";
+import { cardKey } from "@/lib/editor/premium";
 import { videoSupported } from "@/lib/editor/record";
 import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
 import { type TextKey, t } from "@/lib/i18n";
@@ -72,6 +75,8 @@ const ADDING_TABS: readonly EditorTab[] = ["elements", "text", "photo"];
 /** Подписи идущего экспорта — при них на плашке есть «Остановить». */
 const EXPORT_TEXTS: readonly TextKey[] = ["editor.export.gif.busy", "editor.export.video.busy"];
 
+type ExportKind = "gif" | "video";
+
 /** Поддержка записи видео не меняется, пока открыта страница. */
 const noSubscribe = () => () => undefined;
 
@@ -95,8 +100,57 @@ export function Editor() {
     previews,
     actions,
   } = useCardEditor();
+  const auth = useAuth();
+  const [claiming, setClaiming] = useState(false);
+  const [paywall, setPaywall] = useState<{ reason: PaywallReason; kind: ExportKind } | null>(null);
+  const claimRef = useRef<AbortController | null>(null);
   const ready = status === "ready";
-  const editable = ready && !playing && !busy;
+  const editable = ready && !playing && !busy && !claiming;
+
+  // Ушли со страницы, пока сервер считал лимит, — запрос снимается.
+  useEffect(() => () => claimRef.current?.abort(), []);
+
+  const runExport = useCallback(
+    (kind: ExportKind, watermark: boolean) => {
+      void (kind === "gif" ? actions.exportGif({ watermark }) : actions.exportVideo({ watermark }));
+    },
+    [actions],
+  );
+
+  /**
+   * GIF и видео (решение пользователя 09.10.2026): гость сохраняет
+   * с водяным знаком. Вошедший сначала спрашивает сервер — тот тратит
+   * бесплатную на новую открытку или говорит «нельзя», и тогда попап
+   * подписки. Повторное сохранение той же открытки бесплатно.
+   */
+  const requestExport = useCallback(
+    async (kind: ExportKind) => {
+      if (auth.status !== "user") {
+        runExport(kind, true);
+        return;
+      }
+      const controller = new AbortController();
+      claimRef.current = controller;
+      setClaiming(true);
+      actions.notify("paywall.checking");
+      const result = await claimCard(cardKey(currentTemplate), controller.signal);
+      if (controller.signal.aborted) return;
+      claimRef.current = null;
+      setClaiming(false);
+      actions.notify(null);
+      if (result.ok) return runExport(kind, false);
+      if (result.error === "limit" || result.error === "subscription") {
+        setPaywall({ reason: result.error, kind });
+        return;
+      }
+      // Сессия кончилась — сохраняем как гость, со знаком.
+      if (result.error === "unauthorized") return runExport(kind, true);
+      actions.notify("auth.error.network");
+    },
+    [actions, auth.status, currentTemplate, runExport],
+  );
+
+  const closePaywall = useCallback(() => setPaywall(null), []);
 
   const [tab, setTab] = useState<EditorTab>("templates");
   // Умеет ли браузер писать видео — известно только в браузере.
@@ -185,8 +239,8 @@ export function Editor() {
             disabled={!editable}
             videoSupported={canRecord}
             onExportPng={actions.exportPng}
-            onExportGif={() => void actions.exportGif()}
-            onExportVideo={() => void actions.exportVideo()}
+            onExportGif={() => void requestExport("gif")}
+            onExportVideo={() => void requestExport("video")}
             onExportJson={() => void actions.exportJson()}
             onImport={(file) => void actions.importFile(file)}
           />
@@ -350,6 +404,17 @@ export function Editor() {
           {t("editor.canvas.touchHint")}
         </p>
       </div>
+
+      <Paywall
+        reason={paywall?.reason ?? null}
+        onClose={closePaywall}
+        onWatermark={() => {
+          if (paywall === null) return;
+          const { kind } = paywall;
+          setPaywall(null);
+          runExport(kind, true);
+        }}
+      />
     </div>
   );
 }

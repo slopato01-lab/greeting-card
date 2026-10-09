@@ -178,6 +178,25 @@ export async function logout(): Promise<boolean> {
 }
 
 /**
+ * POST /api/cards/claim — можно ли сохранить открытку без водяного
+ * знака. Удачный ответ несёт свежий счётчик бесплатных — шапка
+ * и кабинет видят его сразу. 401 — сессия кончилась: вкладка
+ * становится гостевой.
+ */
+export async function claimCard(
+  cardKey: string,
+  signal?: AbortSignal,
+): Promise<ActionResult<{ user: User }>> {
+  const response = await post("/api/cards/claim", { cardKey }, signal);
+  if (response?.status === 401) set({ status: "guest" });
+  if (response === null || !response.ok) return failure(response);
+  const body: unknown = await response.json().catch(() => null);
+  if (!isUserBody(body)) return { ok: false, error: "network" };
+  set({ status: "user", user: body.user });
+  return { ok: true, user: body.user };
+}
+
+/**
  * Куда вернуть после входа. Только свой адрес: иначе ссылка
  * /login?next=https://чужой.сайт уводила бы туда вошедшего.
  */

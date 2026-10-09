@@ -1,8 +1,10 @@
 import Link from "next/link";
 
+import { CrownBadge } from "@/components/CrownBadge";
 import { Icon } from "@/components/Icon";
 import { LoopVideo } from "@/components/site/LoopVideo";
 import type { AnimatedTemplate } from "@/lib/catalog/templates";
+import { isPremium } from "@/lib/editor/premium";
 import { t } from "@/lib/i18n";
 
 /**
@@ -67,6 +69,9 @@ export function AnimatedTemplateCard({
             poster={template.poster}
             className="absolute inset-0 size-full object-cover"
           />
+          {isPremium(template.id) ? (
+            <CrownBadge className="absolute end-[10px] top-[10px] xl:end-[14px] xl:top-[14px]" />
+          ) : null}
           {/* Кружок со стрелкой вместо кнопки «Редактировать» (просьба
               пользователя 08.10.2026: кнопка на каждой карточке была
               аляповатой). Подпись не нужна: имя ссылке даёт заголовок
