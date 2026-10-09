@@ -19,15 +19,14 @@ import { type TextKey, t } from "@/lib/i18n";
  * пункты меняются сами: у каждого своя пастельная заливка и три
  * стикера вокруг круга. Время показа отсчитывает CSS-анимация
  * полоски прогресса, её конец переключает пункт — таймеров нет,
- * снимать нечего. Наведение, фокус внутри и кнопка «Пауза»
- * останавливают полоску, а с ней и смену. При reduced motion полоски
+ * снимать нечего. Наведение и фокус внутри останавливают полоску,
+ * а с ней и смену (кнопку «Пауза» пользователь 09.10.2026 убрать попросил). При reduced motion полоски
  * нет вовсе (см. globals.css), и пункты листаются только стрелкой.
  *
  * Живой регион включается после первого нажатия: сам по себе пункт
  * меняется каждые несколько секунд, и скринридер иначе не умолкал бы.
  *
- * Тексты карточек — черновые: в макете во всех четырёх стоял один
- * и тот же абзац про сертификат. Перенесены как есть, см. PRODUCT.md.
+ * Тексты карточек — с 09.10.2026 свои у каждого пункта, см. PRODUCT.md.
  */
 const CARDS = [
   {
@@ -75,7 +74,6 @@ const STICKER_SPOTS = [
 
 export function Inside() {
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
   const [announce, setAnnounce] = useState(false);
   const card = CARDS[active] ?? CARDS[0];
   const next = () => setActive((index) => (index + 1) % CARDS.length);
@@ -83,7 +81,6 @@ export function Inside() {
   return (
     <section
       aria-labelledby="inside-title"
-      data-paused={paused ? "" : undefined}
       className={`inside rounded-panel xl:rounded-panel-d relative flex flex-col gap-[24px] overflow-hidden p-[24px] pb-[32px] transition-colors duration-700 xl:flex-row xl:items-center xl:gap-[40px] xl:p-[40px] xl:pb-[48px] ${card.fill}`}
     >
       {/* Круг с иконкой, край следующего круга и стикеры. Чисто декор.
@@ -135,32 +132,18 @@ export function Inside() {
         </div>
       </div>
 
-      <div className="absolute end-[20px] top-[20px] flex gap-[8px] xl:end-[32px] xl:top-[32px]">
-        {/* Пауза автосмены. При reduced motion смены нет — кнопка
-            не нужна и скрыта стилями. */}
-        <button
-          type="button"
-          aria-label={t("inside.pause")}
-          aria-pressed={paused}
-          onClick={() => setPaused((value) => !value)}
-          className="inside-pause size-tap text-ink border-ink hover:bg-canvas active:bg-line aria-pressed:bg-ink aria-pressed:text-canvas flex items-center justify-center rounded-full border transition-colors xl:size-[64px]"
-        >
-          <Icon name={paused ? "play" : "pause"} size={18} />
-        </button>
-
-        {/* Пунктирный круг — кнопка «дальше», ходит по кругу. */}
-        <button
-          type="button"
-          aria-label={t("cta.next")}
-          onClick={() => {
-            setAnnounce(true);
-            next();
-          }}
-          className="size-tap text-ink border-ink hover:bg-canvas active:bg-line flex items-center justify-center rounded-full border border-dashed transition-colors xl:size-[64px]"
-        >
-          <Icon name="next" size={20} className="-rotate-45" />
-        </button>
-      </div>
+      {/* Пунктирный круг — кнопка «дальше», ходит по кругу. */}
+      <button
+        type="button"
+        aria-label={t("cta.next")}
+        onClick={() => {
+          setAnnounce(true);
+          next();
+        }}
+        className="size-tap text-ink border-ink hover:bg-canvas active:bg-line absolute end-[20px] top-[20px] flex items-center justify-center rounded-full border border-dashed transition-colors xl:end-[32px] xl:top-[32px] xl:size-[64px]"
+      >
+        <Icon name="next" size={20} className="-rotate-45" />
+      </button>
 
       {/* Полоска прогресса: её анимация и есть таймер смены пункта. */}
       <span

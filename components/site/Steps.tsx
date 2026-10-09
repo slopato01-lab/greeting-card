@@ -8,7 +8,8 @@ import { type TextKey, t } from "@/lib/i18n";
 /**
  * Секция «Три этапа»: как собирается открытка.
  *
- * Раскладка — золотая карточка из макета главной
+ * Раскладка — карточка из макета главной (там золотая, с 09.10.2026
+ * серая --surface, просьба пользователя)
  * (design/главная greetinh-cards.jpg), справа от карточки
  * «что внутри». В макете на ней аватарки в кружках; у нас в тех же
  * тёмных кружках номера этапов.
@@ -63,7 +64,7 @@ export function Steps() {
   return (
     <section
       ref={ref}
-      className="steps-chain rounded-panel xl:rounded-panel-d bg-gold text-ink p-[24px] xl:p-[40px]"
+      className="steps-chain rounded-panel xl:rounded-panel-d bg-surface text-ink p-[24px] xl:p-[40px]"
     >
       {/* role="list" не лишний: preflight Tailwind снимает маркеры через
           list-style: none, а Safari вместе с маркерами теряет и семантику
@@ -94,7 +95,7 @@ export function Steps() {
               <h2 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
                 {t(step.title)}
               </h2>
-              {/* text-card — размер, text-ink — цвет: тёмный текст на золоте */}
+              {/* text-card — размер, text-ink — цвет: тёмный текст на сером */}
               <p className="font-ui text-card xl:text-card-d mt-[8px] leading-[1.5]">
                 {t(step.body)}
               </p>

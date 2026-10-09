@@ -6,15 +6,15 @@ import { type TextKey, t } from "@/lib/i18n";
  * действительно важные вопросы, аккордеоном). Якорь — /#faq, на него
  * ведут шапка и подвал.
  *
- * Раскладка: с 1280 заголовок и подводка слева и прилипают к верху
- * при прокрутке, вопросы справа. На мобильном — друг под другом.
+ * Раскладка (с 09.10.2026, просьба пользователя): заголовок и подводка
+ * сверху, под ними аккордеон на всю ширину полосы страницы, без
+ * подложки — вопросы разделены линиями 1px `--line`.
  *
  * Аккордеон — на `details`/`summary`: клавиатура, скринридер и
  * раскрытие без JS уже есть у браузера. Общее `name` делает их
  * эксклюзивными — открыт один ответ, как в аккордеоне; браузеры без
  * поддержки просто разрешат открыть несколько.
  *
- * Карточки белые с лёгкой тенью, как в «Больше, чем просто открытка».
  * Кружок справа серый, у открытого вопроса — золотой, плюс
  * поворачивается в крестик. Состояние сообщает сам `details`, поэтому
  * значок скрыт от скринридера.
@@ -33,32 +33,29 @@ export function Questions() {
     <section
       id="faq"
       aria-labelledby="faq-list-title"
-      className="page-shell grid gap-[24px] xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-[60px]"
+      className="page-shell flex flex-col gap-[32px] xl:gap-[56px]"
     >
-      <div className="flex flex-col gap-[16px] xl:sticky xl:top-[calc(var(--spacing-header-d)+32px)] xl:self-start">
+      <div className="flex flex-col gap-[16px]">
         <h2
           id="faq-list-title"
           className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
         >
           {t("page.faq.title")}
         </h2>
-        <p className="font-ui text-sub xl:text-sub-d text-body max-w-[520px] leading-[1.5]">
+        <p className="font-ui text-sub xl:text-sub-d text-body max-w-[640px] leading-[1.5]">
           {t("page.faq.lead")}
         </p>
       </div>
 
-      <ul role="list" className="flex flex-col gap-[12px] xl:gap-[16px]">
+      <ul role="list" className="border-line border-b">
         {QA.map((item, index) => (
-          <li key={item.q}>
-            <details
-              name="faq"
-              className="group rounded-card xl:rounded-card-d bg-paper shadow-card"
-            >
+          <li key={item.q} className="border-line border-t">
+            <details name="faq" className="group">
               {/* Нажимается вся строка, а не только текст вопроса. */}
-              <summary className="min-h-tap flex cursor-pointer list-none items-center gap-[14px] px-[18px] py-[18px] xl:gap-[24px] xl:px-[32px] xl:py-[26px] [&::-webkit-details-marker]:hidden">
+              <summary className="min-h-tap flex cursor-pointer list-none items-center gap-[14px] py-[20px] xl:gap-[24px] xl:py-[32px] [&::-webkit-details-marker]:hidden">
                 <span
                   aria-hidden="true"
-                  className="font-display text-note xl:text-card-d text-gold-deep w-[2ch] shrink-0 font-medium tabular-nums"
+                  className="font-display text-note xl:text-card-d text-gold-deep w-[24px] shrink-0 font-medium tabular-nums xl:w-[32px]"
                 >
                   {String(index + 1).padStart(2, "0")}
                 </span>
@@ -77,7 +74,7 @@ export function Questions() {
                 </span>
               </summary>
 
-              <p className="font-ui text-note xl:text-card-d text-body px-[18px] pb-[22px] leading-[1.5] xl:max-w-[820px] xl:ps-[calc(32px+2ch+24px)] xl:pe-[32px] xl:pb-[30px]">
+              <p className="font-ui text-note xl:text-card-d text-body ps-[38px] pe-[50px] pb-[24px] leading-[1.5] xl:max-w-[1016px] xl:ps-[56px] xl:pe-[68px] xl:pb-[36px]">
                 {t(item.a)}
               </p>
             </details>

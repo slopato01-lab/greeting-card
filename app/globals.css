@@ -369,7 +369,7 @@
 
   /* «Что спрятать внутри» (components/site/Inside). Пункты меняются
      сами: полоска прогресса растёт 4.5 с, её animationend листает
-     дальше. Пауза полоски = пауза смены. Прозрачность — только на
+     дальше. Наведение и фокус внутри — пауза. Прозрачность — только на
      время входа (как у сборки открытки), в покое всё непрозрачное. */
   @keyframes inside-progress {
     from {
@@ -419,8 +419,7 @@
   }
 
   .inside:hover .inside-progress,
-  .inside:focus-within .inside-progress,
-  .inside[data-paused] .inside-progress {
+  .inside:focus-within .inside-progress {
     animation-play-state: paused;
   }
 
@@ -443,7 +442,7 @@
   }
 
   /* Без движения смены нет: общий сброс укоротил бы полоску до
-     мгновения, и пункты мелькали бы без остановки. Полоски и паузы
+     мгновения, и пункты мелькали бы без остановки. Полоски
      нет, листает только стрелка. */
   @media (prefers-reduced-motion: reduce) {
     .inside-progress,
@@ -454,8 +453,7 @@
       animation: none;
     }
 
-    .inside-track,
-    .inside-pause {
+    .inside-track {
       display: none;
     }
   }
