@@ -530,6 +530,38 @@
     }
   }
 
+  /* Фото-пазл (components/games/PhotoPuzzle): фрагмент встал на своё
+     место — по нему один раз проходит золотое свечение, дальше остаётся
+     тонкая золотая обводка (ring). Без движения — сразу обводка. */
+  .puzzle-glow {
+    animation: puzzle-glow 900ms ease-out;
+  }
+
+  @keyframes puzzle-glow {
+    0% {
+      box-shadow:
+        inset 0 0 0 0 var(--color-gold),
+        0 0 0 0 var(--color-gold);
+      filter: brightness(1.3);
+    }
+    35% {
+      box-shadow:
+        inset 0 0 24px 6px var(--color-gold),
+        0 0 32px 10px var(--color-gold);
+      filter: brightness(1.15);
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+      filter: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .puzzle-glow {
+      animation: none;
+    }
+  }
+
   /* Общий сброс укоротил бы анимацию до мгновения — и лента застыла бы
      сдвинутой на половину. Без движения ряд стоит и листается пальцем. */
   @media (prefers-reduced-motion: reduce) {

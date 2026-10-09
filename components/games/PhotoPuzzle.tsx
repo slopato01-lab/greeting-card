@@ -4,7 +4,10 @@ import { type PointerEvent, useEffect, useRef, useState } from "react";
 
 import type { GameProps } from "@/lib/games/contract";
 import {
+  canSwap,
+  isLocked,
   isSolved,
+  newlyPlaced,
   pieceBackground,
   PUZZLE_SIZE,
   shuffledOrder,
@@ -28,6 +31,11 @@ import { plural, t } from "@/lib/i18n";
  * - на поле `touch-action: none`, иначе вместо перетаскивания
  *   прокручивается страница. Указатель захватывается полем, поэтому
  *   палец может уйти за край. Слушатели — пропсы React, снимает их он;
+ * - фрагмент на своём месте закреплён (09.10.2026, просьба пользователя):
+ *   по нему проходит золотое свечение, дальше — тонкая золотая обводка;
+ *   его нельзя утащить, и на его клетку ничего не ставится. Бросок на
+ *   закреплённый фрагмент — не ход. Свечение снимает animationend,
+ *   таймеров нет;
  * - считаются только ходы (решение пользователя 09.10.2026): пазл
  *   проходится спокойно, без таймера. Проиграть нельзя;
  * - поворот экрана и блокировка не сбрасывают прогресс: всё в состоянии
@@ -49,6 +57,7 @@ export function PhotoPuzzle({ seed, reward, photos, cover, onDone }: GameProps) 
   const [selected, setSelected] = useState<number | null>(null);
   const [drag, setDrag] = useState<{ cell: number; dx: number; dy: number } | null>(null);
   const [aspect, setAspect] = useState(1);
+  const [glow, setGlow] = useState<ReadonlyArray<number>>([]);
   const boardRef = useRef<HTMLDivElement>(null);
   const pressRef = useRef<Press | null>(null);
   const doneRef = useRef(false);
@@ -86,15 +95,18 @@ export function PhotoPuzzle({ seed, reward, photos, cover, onDone }: GameProps) 
   }, [photo]);
 
   const swap = (a: number, b: number) => {
-    setOrder((current) => swapCells(current, a, b));
-    setMoves((count) => count + 1);
     setSelected(null);
+    if (!canSwap(order, a, b)) return;
+    const next = swapCells(order, a, b);
+    setOrder(next);
+    setMoves((count) => count + 1);
+    setGlow(newlyPlaced(order, next));
   };
 
   // Нажатие без перетаскивания: первый фрагмент выбирается,
   // второй меняется с ним местами, повторный снимает выбор.
   const tap = (cell: number) => {
-    if (solved) return;
+    if (solved || isLocked(order, cell)) return;
     if (selected === null) setSelected(cell);
     else if (selected === cell) setSelected(null);
     else swap(selected, cell);
@@ -115,7 +127,7 @@ export function PhotoPuzzle({ seed, reward, photos, cover, onDone }: GameProps) 
     if (solved || pressRef.current !== null) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     const cell = cellAt(event);
-    if (cell === null) return;
+    if (cell === null || isLocked(order, cell)) return;
     pressRef.current = {
       cell,
       pointer: event.pointerId,
@@ -178,11 +190,13 @@ export function PhotoPuzzle({ seed, reward, photos, cover, onDone }: GameProps) 
         {CELLS.map((cell) => {
           const piece = order[cell] ?? cell;
           const dragged = drag?.cell === cell;
+          const locked = isLocked(order, cell);
           return (
             <button
               key={piece}
               type="button"
-              disabled={solved}
+              disabled={solved || locked}
+              onAnimationEnd={() => setGlow((cells) => cells.filter((item) => item !== cell))}
               aria-pressed={selected === cell}
               aria-label={`${t("game.puzzle.piece")} ${piece + 1}`}
               // Нажатия пальцем и мышью ловит поле (pointerup), сюда
@@ -198,7 +212,10 @@ export function PhotoPuzzle({ seed, reward, photos, cover, onDone }: GameProps) 
               className={[
                 "bg-photo relative bg-no-repeat",
                 "motion-safe:transition-[border-radius,box-shadow] motion-safe:duration-500",
-                solved ? "rounded-none" : "rounded-inner cursor-grab",
+                solved ? "rounded-none" : "rounded-inner",
+                !solved && !locked ? "cursor-grab" : "",
+                !solved && locked ? "ring-gold ring-2 ring-inset" : "",
+                !solved && glow.includes(cell) ? "puzzle-glow z-10" : "",
                 selected === cell ? "ring-gold-deep ring-2 ring-offset-2" : "",
                 dragged ? "shadow-card z-10 cursor-grabbing" : "",
               ].join(" ")}

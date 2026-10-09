@@ -12,14 +12,15 @@ import { t } from "@/lib/i18n";
  * и «Начать», потом сама игра. Оформление светлое, от токенов.
  *
  * Обращение и подпись — образец из видео («Ты лучший», «Тебе от меня»),
- * в настоящей открытке их пишет автор. Фото — мемный пёс в лётных
- * очках, общественное достояние, источник в public/assets/games/puzzle.
+ * в настоящей открытке их пишет автор. Фото — компания друзей
+ * с «С днём рождения!» поверх (09.10.2026, вместо пса в очках),
+ * StockSnap CC0, источник в public/assets/games/puzzle.
  *
  * Зерно постоянное: у всех посетителей одна раскладка, как у одной
  * открытки. «Собрать ещё раз» перемонтирует игру с той же раскладкой.
  */
 
-const PHOTO = "/assets/games/puzzle/dog.jpg";
+const PHOTO = "/assets/games/puzzle/friends.jpg";
 const PHOTOS = [PHOTO] as const;
 
 export function PuzzleDemo() {
@@ -63,8 +64,8 @@ export function PuzzleDemo() {
             <img
               src={PHOTO}
               alt=""
-              width={1200}
-              height={1200}
+              width={1000}
+              height={1000}
               loading="lazy"
               className="rounded-card xl:rounded-card-d bg-photo aspect-square w-full object-cover"
             />

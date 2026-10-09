@@ -933,8 +933,7 @@ export function useCardEditor() {
     const current = live.current;
     if (current === null) return;
     stopPlayback();
-    const isText = (object: FabricObject) =>
-      objectToLayer(current.fabric, object)?.kind === "text";
+    const isText = (object: FabricObject) => objectToLayer(current.fabric, object)?.kind === "text";
     const active = current.canvas.getActiveObject();
     if (active !== undefined && isText(active)) return;
     const text = current.canvas

@@ -60,6 +60,27 @@ export function swapCells(order: readonly number[], a: number, b: number): numbe
   return next;
 }
 
+/**
+ * Фрагмент на своей клетке закреплён (09.10.2026, просьба пользователя):
+ * его больше нельзя ни утащить, ни поменять, ни поставить на его место
+ * другой. Собрать пазл это не мешает — нужный каждой свободной клетке
+ * фрагмент всегда лежит в другой свободной.
+ */
+export function isLocked(order: readonly number[], cell: number): boolean {
+  return order[cell] === cell;
+}
+
+/** Можно ли поменять две клетки: разные, на поле и обе не закреплены. */
+export function canSwap(order: readonly number[], a: number, b: number): boolean {
+  if (a === b || order[a] === undefined || order[b] === undefined) return false;
+  return !isLocked(order, a) && !isLocked(order, b);
+}
+
+/** Клетки, где после хода фрагмент встал на место, — им положено свечение. */
+export function newlyPlaced(before: readonly number[], after: readonly number[]): number[] {
+  return after.flatMap((piece, cell) => (piece === cell && before[cell] !== cell ? [cell] : []));
+}
+
 export function isSolved(order: readonly number[]): boolean {
   return order.every((piece, cell) => piece === cell);
 }
