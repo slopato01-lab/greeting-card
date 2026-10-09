@@ -47,6 +47,10 @@ FAQ и планета в герое заменены на аналоги из Ta
 | `play.svg` | `tabler:player-play` | редактор: просмотр анимации |
 | `stop.svg` | `tabler:player-stop` | редактор: остановить просмотр |
 | `user.svg` | `tabler:user-circle` | шапка: личный кабинет |
+| `logout.svg` | `tabler:logout` | кабинет: выйти |
+| `settings.svg` | `tabler:settings` | кабинет: настройки |
+| `crown.svg` | `tabler:crown` | кабинет: тариф |
+| `mail.svg` | `tabler:mail` | вход: код на почту |
 | `pause.svg` | `tabler:player-pause` | редактор: пауза трека |
 | `tabMusic.svg` | `tabler:music` | редактор: вкладка «Музыка» |
 | `gif.svg` | `tabler:gif` | редактор: сохранить GIF |

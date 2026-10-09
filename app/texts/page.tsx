@@ -169,6 +169,7 @@ const GROUPS: ReadonlyArray<{ title: string; keys: readonly TextKey[] }> = [
       "privacy.s1.item.1",
       "privacy.s1.item.2",
       "privacy.s1.item.3",
+      "privacy.s1.item.4",
       "privacy.s2.title",
       "privacy.s2.item.1",
       "privacy.s2.item.2",

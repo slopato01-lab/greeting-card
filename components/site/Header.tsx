@@ -6,14 +6,15 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
+import { useAuth } from "@/lib/auth/client";
 import { t, type TextKey } from "@/lib/i18n";
 
 /**
  * Шапка сайта. Вид — из design/главная greetinh-cards.jpg: знак
  * и название слева, навигация капсом по центру (текущий раздел
- * подчёркнут), справа — значок профиля в кружке: личный кабинет
- * /account вместо кнопки «Создать открытку» (просьба пользователя
- * 08.10.2026). Одна на все страницы.
+ * подчёркнут), справа — у гостя «Войти» и «Зарегистрироваться»,
+ * у вошедшего — «Личный кабинет» /account (просьба пользователя
+ * 09.10.2026). Одна на все страницы.
  *
  * Шапка прилипает к верху экрана на всех страницах и ширинах
  * (решение 08.10.2026). Фон сплошной --canvas: контент под ней не
@@ -41,6 +42,9 @@ const NAV_LINK =
 
 export function Header() {
   const pathname = usePathname();
+  const auth = useAuth();
+  // Пока сервер не ответил, верим подсказке «в прошлый раз вы входили».
+  const signedIn = auth.status === "user" || (auth.status === "loading" && auth.hint);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const panelId = useId();
@@ -147,20 +151,37 @@ export function Header() {
           </ul>
         </nav>
 
-        {/* Кнопка прячется обёрткой, а не своим классом: у самой кнопки
-            в базовых классах уже есть inline-flex, и он перебивает
-            hidden — порядок в строке классов на это не влияет. */}
-        {/* Профиль — значок в кружке (просьба пользователя 08.10.2026),
-            на всех ширинах. На мобильном стоит рядом с бургером. */}
-        <Link
-          href="/account"
-          aria-label={t("nav.account")}
-          title={t("nav.account")}
-          aria-current={current("/account")}
-          className="border-line text-ink hover:bg-raised hover:border-muted active:bg-line aria-[current=page]:bg-gold aria-[current=page]:border-gold ms-auto flex size-[44px] shrink-0 items-center justify-center rounded-full border transition-colors xl:ms-0"
-        >
-          <Icon name="user" size={24} />
-        </Link>
+        {/* Вход (09.10.2026, просьба пользователя): гость видит «Войти»
+            и кнопку «Зарегистрироваться», вошедший — только «Личный
+            кабинет». На мобильном места на обе нет: в строке «Войти»,
+            «Зарегистрироваться» — первой кнопкой в панели меню. */}
+        {signedIn ? (
+          <Link
+            href="/account"
+            aria-current={current("/account")}
+            className="border-line text-ink hover:bg-raised hover:border-muted active:bg-line aria-[current=page]:bg-gold aria-[current=page]:border-gold ms-auto flex h-[44px] shrink-0 items-center justify-center gap-[8px] rounded-full border transition-colors max-xl:w-[44px] xl:ms-0 xl:px-[18px]"
+          >
+            <Icon name="user" size={24} />
+            <span className="font-ui caps text-nav-d font-medium max-xl:sr-only">
+              {t("nav.account")}
+            </span>
+          </Link>
+        ) : (
+          <div className="ms-auto flex shrink-0 items-center gap-[8px] xl:ms-0 xl:gap-[20px]">
+            <Link
+              href="/login"
+              aria-current={current("/login")}
+              className={`${NAV_LINK} text-nav-d min-h-tap min-w-tap aria-[current=page]:border-ink inline-flex items-center justify-center border-b border-transparent px-[4px]`}
+            >
+              {t("nav.login")}
+            </Link>
+            {/* Кнопка прячется обёрткой, а не своим классом: у самой кнопки
+                в базовых классах уже есть inline-flex, и он перебивает hidden. */}
+            <div className="hidden xl:block">
+              <Button href="/register" labelKey="nav.register" variant="header" />
+            </div>
+          </div>
+        )}
 
         <button
           ref={burgerRef}
@@ -201,9 +222,13 @@ export function Header() {
               </ul>
             </nav>
 
-            {/* В панели меню — «Создать открытку»: профиль уже есть значком
-              в строке шапки. */}
-            <Button href="/editor" labelKey="cta.create" className="mt-5" />
+            {/* Гостю — регистрация (в строке шапки для неё нет места),
+              вошедшему — «Создать открытку»: кабинет уже значком в шапке. */}
+            {signedIn ? (
+              <Button href="/editor" labelKey="cta.create" className="mt-5" />
+            ) : (
+              <Button href="/register" labelKey="nav.register" className="mt-5" />
+            )}
           </div>
         </div>
       ) : null}

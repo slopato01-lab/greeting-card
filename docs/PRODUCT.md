@@ -1560,6 +1560,78 @@
 - Ключи `catalog.card.1–6`, `tpl.1–6.*`, `catalog.filter.5` в словаре
   остались, их видно на /texts.
 
+## Вход и личный кабинет (09.10.2026)
+
+Вход и регистрация — по коду на почту, без пароля (lib/auth/). В шапке
+у гостя «Войти» и «Зарегистрироваться», у вошедшего — «Личный кабинет».
+Тексты написаны 09.10.2026 и черновые.
+
+- `nav.account`: «Профиль» → «Личный кабинет».
+- Ключи `account.guest.*` и `account.login` больше не выводятся.
+
+| Ключ | Текст |
+|---|---|
+| `nav.login` | Войти |
+| `nav.register` | Зарегистрироваться |
+| `page.login.title` | Вход |
+| `page.login.lead` | Пароль не нужен: пришлём на почту код из шести цифр. |
+| `page.register.title` | Регистрация |
+| `page.register.lead` | После регистрации — две открытки без водяного знака. Пароль не нужен: пришлём на почту код. |
+| `auth.email` | Почта |
+| `auth.email.placeholder` | name@mail.ru |
+| `auth.consent` | Принимаю правила обработки персональных данных |
+| `auth.consent.link` | Подробнее |
+| `auth.send` | Получить код |
+| `auth.sending` | Отправляем… |
+| `auth.code` | Код из письма |
+| `auth.code.sent` | Отправили код на |
+| `auth.code.hint` | Письмо приходит за минуту. Если его нет, загляните в «Спам». |
+| `auth.verify` | Войти |
+| `auth.verifying` | Проверяем… |
+| `auth.resend` | Отправить код ещё раз |
+| `auth.resend.in` | Новый код — через |
+| `auth.seconds` | с |
+| `auth.change` | Изменить почту |
+| `auth.to-register` | Нет аккаунта? |
+| `auth.to-login` | Уже есть аккаунт? |
+| `auth.done` | Готово, открываем кабинет… |
+| `auth.error.email` | Проверьте почту — в адресе ошибка. |
+| `auth.error.consent` | Отметьте согласие, чтобы продолжить. |
+| `auth.error.code` | Код — это шесть цифр из письма. |
+| `auth.error.bad_request` | Проверьте почту — в адресе ошибка. |
+| `auth.error.too_soon` | Код уже отправлен. Новый можно запросить через минуту. |
+| `auth.error.too_many` | Слишком много попыток. Попробуйте позже. |
+| `auth.error.too_many.code` | Слишком много неверных попыток. Запросите новый код. |
+| `auth.error.mail_unavailable` | Вход по почте ещё настраивается. Загляните чуть позже. |
+| `auth.error.mail_failed` | Не получилось отправить письмо. Попробуйте ещё раз. |
+| `auth.error.expired` | Код устарел. Запросите новый. |
+| `auth.error.wrong` | Неверный код. Осталось попыток: |
+| `auth.error.network` | Нет связи с сервером. Проверьте интернет и попробуйте ещё раз. |
+| `account.menu` | Разделы кабинета |
+| `account.tab.cards` | Мои открытки |
+| `account.tab.plan` | Тариф |
+| `account.tab.settings` | Настройки |
+| `account.logout` | Выйти |
+| `account.logout.error` | Не получилось выйти. Попробуйте ещё раз. |
+| `account.since` | С нами с |
+| `account.plan.free` | Бесплатный |
+| `account.stat.drafts` | Черновиков |
+| `account.stat.free` | Бесплатных открыток |
+| `account.stat.of` | из |
+| `account.stat.plan` | Тариф |
+| `account.loading.cabinet` | Загружаем кабинет… |
+| `account.guest.redirect` | Вы не вошли — открываем страницу входа… |
+| `account.offline` | Не удалось связаться с сервером. |
+| `account.retry` | Попробовать снова |
+| `account.plan.left` | Бесплатных открыток без водяного знака |
+| `account.plan.note` | Снятие водяного знака и отправка ссылкой заработают в ближайшем обновлении — две бесплатные открытки уже ждут вас. |
+| `account.limit.free.user` | 2 после регистрации |
+| `account.limit.link.user` | скоро |
+| `account.settings.email` | Почта для входа |
+| `account.settings.email.hint` | Сюда приходят коды для входа. |
+| `account.settings.session` | Это устройство |
+| `account.settings.session.hint` | Вход запомнен на 30 дней. Выйдите, если устройство чужое. |
+
 ## Музыка и экспорт в редакторе (08.10.2026)
 
 Вкладка «Музыка»: библиотека свободных отрывков по 15 секунд

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 const SECTIONS = [
   {
     title: "privacy.s1.title",
-    items: ["privacy.s1.item.1", "privacy.s1.item.2", "privacy.s1.item.3"],
+    items: ["privacy.s1.item.1", "privacy.s1.item.2", "privacy.s1.item.3", "privacy.s1.item.4"],
   },
   {
     title: "privacy.s2.title",

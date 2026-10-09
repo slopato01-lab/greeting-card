@@ -2,7 +2,19 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "greeting-card",
   // Проект Cloudflare Pages, а не воркер: сюда попадает статический
-  // экспорт Next из out/. Привязки и секреты появятся вместе
-  // с серверной частью, тогда же пересматриваем сам способ хостинга.
+  // экспорт Next из out/, а серверные адреса /api/* — из functions/.
   "pages_build_output_dir": "out",
+  "compatibility_date": "2026-08-01",
+  // Аккаунты (09.10.2026): база создана в регионе EEUR, схема —
+  // migrations/, правила — docs/SECURITY.md, «Аккаунты».
+  // Секрет RESEND_API_KEY ставится командой
+  // `wrangler pages secret put RESEND_API_KEY --project-name greeting-card`.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "greeting-card",
+      "database_id": "5b617f29-ee53-40b8-ba9d-6267abab6ea1",
+      "migrations_dir": "migrations",
+    },
+  ],
 }
