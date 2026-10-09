@@ -80,7 +80,8 @@ picsum.photos по номеру, обрезаны по центру, `bw` — в
 
 - `sample-groom.png` — Direct Media, https://stocksnap.io/photo/child-toddler-D5VVUIQNDL
 - `sample-bride.png` — Direct Media, https://stocksnap.io/photo/baby-girl-TOPVUEPEKK
-- `sample-cinema.png` — Kristin Hardwick, https://stocksnap.io/photo/woman-business-B9BEJYBUZ5
+- `sample-cinema.png` — Kris Kemp, https://stocksnap.io/photo/fashion-model-ZI3P3U28P8
+  (с 09.10.2026: девушка в пиджаке; фон убран selfie_segmenter)
 - `sample-disco.png` — Kristin Hardwick, https://stocksnap.io/photo/young-man-SEZ0BOQJBD
 
 Вторая серия по design/открытки/ (09.10.2026) — StockSnap, CC0.
@@ -119,7 +120,9 @@ picsum.photos по номеру, обрезаны по центру, `bw` — в
 Третья серия по design/открытки/ (09.10.2026) — StockSnap, CC0, превью 960 px,
 обрезаны под окно шаблона:
 
-- `sample-cover.jpg` — Sergei Solovev, https://stocksnap.io/photo/cake-food-L28IBU4Y3J
+- `sample-cover.jpg` — Candace McDaniel, https://stocksnap.io/photo/woman-model-CRHFNXOZMG
+- `camera-real.png` — Thomas Backa, https://www.flickr.com/photos/76297116@N00/4116965145
+  (Flickr, CC0; фон снят по контуру корпуса, повёрнут вертикально)
 - `sample-bff-1.jpg` — Matt Moloney, https://stocksnap.io/photo/friends-fun-TK55STNQN8, тонировано в красный
 - `sample-bff-2.jpg` — Matt Moloney, https://stocksnap.io/photo/friends-fun-NPEZGYPUYP, тонировано в красный
 - `sample-bff-3.jpg` — Matt Moloney, https://stocksnap.io/photo/friends-together-UHTM70G1AS, тонировано в красный

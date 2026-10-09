@@ -1594,7 +1594,7 @@
 | `tpl.bd-vogue.happy` | Happy |
 | `tpl.bd-vogue.birthday` | Birthday |
 | `anim.bd-vogue.name` | Birthday Edition |
-| `anim.bd-vogue.lead` | Обложка глянцевого журнала: ваше фото во весь лист и «Happy Birthday» от руки. |
+| `anim.bd-vogue.lead` | Обложка глянцевого журнала: портрет как у модели во весь лист и «Happy Birthday» от руки. |
 | `tpl.bd-bff.label` | Лучшей подруге |
 | `tpl.bd-bff.best` | MY BEST FRIEND |
 | `tpl.bd-bff.grateful` | GRATEFUL ALWAYS |
@@ -1614,7 +1614,7 @@
 | `tpl.bd-camera.happy` | HAPPY |
 | `tpl.bd-camera.birthday` | BIRTHDAY |
 | `anim.bd-camera.name` | Say Cheese |
-| `anim.bd-camera.lead` | Ваше фото на экране серебряного фотоаппарата, буквы-шарики, мишки и звёзды. |
+| `anim.bd-camera.lead` | Ваше фото на экране настоящего фотоаппарата, буквы-шарики, мишки и звёзды. |
 | `tpl.lv-pin.label` | Любить |
 | `tpl.lv-pin.love` | Любить |
 | `tpl.lv-pin.line1` | Любить тебя бывает сложно, |
@@ -1694,6 +1694,8 @@
 | `sticker.paper-scrap` | Обрывок бумаги |
 | `sticker.notebook-sheet` | Тетрадный лист |
 | `sticker.circle-doodle` | Обводка от руки |
+| `sticker.camera-real` | Фотоаппарат-фото |
+| `sticker.cinema-seats-front` | Ряд кресел |
 
 ## Сняты из каталога (09.10.2026, просьба пользователя)
 

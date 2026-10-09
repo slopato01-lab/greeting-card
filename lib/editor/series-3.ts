@@ -108,20 +108,20 @@ function bdVogue(): EditorDoc {
       spacing: 40,
       anim: fade(0.4, 0.9),
     }),
-    text("tpl.bd-vogue.age", 476, 262, white, "playfair", 44, { anim: fade(1.0) }),
-    text("tpl.bd-vogue.suffix", 518, 246, white, "playfair", 20, { anim: fade(1.0) }),
-    text("tpl.bd-vogue.edition", 494, 338, white, "playfair", 42, { anim: fade(1.2) }),
-    text("tpl.bd-vogue.golden", 500, 418, white, "playfair", 20, { anim: fade(1.4) }),
-    text("tpl.bd-vogue.about", 124, 652, white, "playfair", 28, {
+    ...shadowed("tpl.bd-vogue.age", 476, 262, white, "playfair", 44, { anim: fade(1.0) }),
+    ...shadowed("tpl.bd-vogue.suffix", 518, 246, white, "playfair", 20, { anim: fade(1.0) }),
+    ...shadowed("tpl.bd-vogue.edition", 494, 338, white, "playfair", 42, { anim: fade(1.2) }),
+    ...shadowed("tpl.bd-vogue.golden", 500, 418, white, "playfair", 20, { anim: fade(1.4) }),
+    ...shadowed("tpl.bd-vogue.about", 124, 652, white, "playfair", 28, {
       bold: true,
       scaleX: 0.88,
       anim: fade(1.7),
     }),
-    text("tpl.bd-vogue.happy", 436, 650, white, "badscript", 80, {
+    ...shadowed("tpl.bd-vogue.happy", 436, 650, white, "badscript", 80, {
       angle: -6,
       anim: write(2.0, 0.8),
     }),
-    text("tpl.bd-vogue.birthday", 470, 736, white, "badscript", 80, {
+    ...shadowed("tpl.bd-vogue.birthday", 470, 736, white, "badscript", 80, {
       angle: -6,
       anim: write(2.6, 1),
     }),
@@ -161,6 +161,10 @@ function bdBff(): EditorDoc {
   ]);
 }
 
+/**
+ * Тень — тот же текст тёмным со сдвигом: белая надпись на светлом
+ * участке своего фото без неё теряется.
+ */
 function shadowed(
   key: TextKey,
   x: number,
@@ -168,11 +172,11 @@ function shadowed(
   fill: Color,
   font: FontId,
   size: number,
-  motion: Animation,
+  options: { bold?: boolean; angle?: number; scaleX?: number; anim: Animation },
 ): Layer[] {
   return [
-    text(key, x + 2, y + 2, "#000000", font, size, { opacity: 0.6, anim: motion }),
-    text(key, x, y, fill, font, size, { anim: motion }),
+    text(key, x + 2, y + 2, "#000000", font, size, { ...options, opacity: 0.55 }),
+    text(key, x, y, fill, font, size, options),
   ];
 }
 
@@ -191,19 +195,19 @@ function bdKodak(): EditorDoc {
     label(592, 1.2),
     ...tiles(row(690), samples("sample-kodak", 6).slice(3), 1.4, 0.15),
     label(788, 1.6),
-    // Тень — тот же текст тёмным со сдвигом: на светлом своём фото
-    // белая надпись без неё теряется.
-    ...shadowed("tpl.bd-kodak.happy", 300, 366, white, "badscript", 46, write(2.0, 1)),
-    ...shadowed("tpl.bd-kodak.wish", 300, 424, white, "ptserif", 16, fade(2.8)),
+    ...shadowed("tpl.bd-kodak.happy", 300, 366, white, "badscript", 46, { anim: write(2.0, 1) }),
+    ...shadowed("tpl.bd-kodak.wish", 300, 424, white, "ptserif", 16, { anim: fade(2.8) }),
   ]);
 }
 
-/** «HAPPY BIRTHDAY» — фото в экране серебряного фотоаппарата, мишки и звёзды. */
+/** «HAPPY BIRTHDAY» — фото в экране настоящего фотоаппарата, мишки и звёзды. */
 function bdCamera(): EditorDoc {
-  // Окно экрана в camera-silver.svg: центр (136, 170), ширина 192 —
-  // от центра стикера (180, 260) это (−44, −90).
-  const camera = { x: 300, y: 476, scale: 0.9 };
-  const screen = attach(camera.x, camera.y, 0, -44 * camera.scale, -90 * camera.scale);
+  // Экран в camera-real.png: x 91–474, y 41–587 (383 × 546), центр
+  // (282.5, 314) — от центра файла (272, 439.5) это (10.5, −125.5).
+  // Фотоаппарат крупный, во всю высоту под надписью (просьба
+  // пользователя 09.10.2026: «настоящий и больше»).
+  const camera = { x: 300, y: 478, scale: 0.72 };
+  const screen = attach(camera.x, camera.y, 0, 10.5 * camera.scale, -125.5 * camera.scale);
   const balloon = (key: TextKey, y: number, size: number, delay: number): Layer[] =>
     (
       [
@@ -219,46 +223,46 @@ function bdCamera(): EditorDoc {
     );
   return doc("#ffffff", [
     sticker(
-      "camera-silver",
+      "camera-real",
       camera.x,
       camera.y,
       camera.scale,
       0,
       anim({ in: "zoom", inDuration: 0.7, delay: 0 }),
     ),
-    photo("sample-cam", screen.x, screen.y, 192 * camera.scale, 0, fade(0.6, 0.8)),
-    ...balloon("tpl.bd-camera.happy", 82, 64, 1.0),
-    ...balloon("tpl.bd-camera.birthday", 152, 60, 1.3),
+    photo("sample-cam", screen.x, screen.y, 383 * camera.scale, 0, fade(0.6, 0.8)),
+    ...balloon("tpl.bd-camera.happy", 60, 58, 1.0),
+    ...balloon("tpl.bd-camera.birthday", 122, 54, 1.3),
     sticker(
       "teddy-bear",
-      470,
+      522,
       300,
-      0.24,
+      0.22,
       10,
       anim({ in: "pop", inDuration: 0.5, delay: 1.8, loop: "swing", loopPeriod: 3.2 }),
     ),
     sticker(
       "teddy-bear",
-      100,
-      692,
-      0.3,
+      88,
+      702,
+      0.28,
       -6,
       anim({ in: "pop", inDuration: 0.5, delay: 2.0, loop: "swing", loopPeriod: 3.6 }),
     ),
-    sticker("party-hat", 92, 600, 0.16, -14, anim({ in: "pop", inDuration: 0.4, delay: 2.2 })),
+    sticker("party-hat", 82, 618, 0.15, -14, anim({ in: "pop", inDuration: 0.4, delay: 2.2 })),
     sticker(
       "star-silver",
-      86,
-      432,
-      0.62,
+      66,
+      420,
+      0.6,
       -12,
       anim({ in: "pop", inDuration: 0.4, delay: 2.3, loop: "pulse", loopPeriod: 2.4 }),
     ),
     sticker(
       "star-silver",
-      470,
-      720,
-      0.66,
+      528,
+      728,
+      0.62,
       14,
       anim({ in: "pop", inDuration: 0.4, delay: 2.5, loop: "pulse", loopPeriod: 2.8 }),
     ),

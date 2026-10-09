@@ -460,20 +460,31 @@ function bdCinema(): EditorDoc {
       bold: true,
       anim: anim({ in: "land", inDuration: 0.7, delay: 1.0 }),
     }),
-    // Девушка сидит в кресле по центру зала, как на макете; голова
-    // заходит на нижнюю строку заголовка.
+    // Девушка сидит в кресле по центру зала, как на макете: ниже пояса
+    // её закрывает передний ряд (cinema-seats-front, те же ряды зала).
+    // Раньше фигура обрывалась на коленях посреди зала — «нет ног»
+    // (замечание пользователя 09.10.2026); теперь в кадре девушка
+    // в пиджаке, а передний ряд — поверх неё.
     sticker(
       "sample-cinema",
       300,
-      590,
-      0.52,
+      536,
+      0.54,
       0,
       anim({ in: "slide-bottom", inDuration: 0.8, delay: 1.6 }),
     ),
-    text("tpl.bd-cinema.left", 112, 486, gold, "rubik", 30, {
+    sticker(
+      "cinema-seats-front",
+      300,
+      687.5,
+      1,
+      0,
+      anim({ in: "fade", inDuration: 0.8, delay: 0 }),
+    ),
+    text("tpl.bd-cinema.left", 96, 486, gold, "rubik", 30, {
       anim: anim({ in: "slide-left", inDuration: 0.6, delay: 2.2 }),
     }),
-    text("tpl.bd-cinema.right", 488, 490, gold, "rubik", 30, {
+    text("tpl.bd-cinema.right", 504, 490, gold, "rubik", 30, {
       anim: anim({ in: "slide-right", inDuration: 0.6, delay: 2.3 }),
     }),
     sticker(

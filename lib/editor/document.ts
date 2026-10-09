@@ -361,6 +361,10 @@ export const STICKER_IDS = [
   "paper-scrap",
   "notebook-sheet",
   "circle-doodle",
+  // Правки 09.10.2026: настоящий фотоаппарат вместо рисованного,
+  // передний ряд кресел «Кинопремьеры».
+  "camera-real",
+  "cinema-seats-front",
 ] as const;
 export type StickerId = (typeof STICKER_IDS)[number];
 

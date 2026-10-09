@@ -12,8 +12,8 @@ import {
   CATALOG_ALL,
   CATALOG_CUSTOM,
   CATALOG_FILTERS,
-  TEMPLATES,
   type CatalogFilter,
+  type TEMPLATES,
 } from "@/lib/catalog/templates";
 import { t } from "@/lib/i18n";
 
@@ -63,7 +63,10 @@ const ENTRIES: readonly Entry[] = [
     filter: item.filter,
     item,
   })),
-  ...TEMPLATES.map((item): Entry => ({ kind: "game", key: item.slug, filter: item.filter, item })),
+  // Шаблоны-игры (TEMPLATES) из сетки убраны 09.10.2026 по просьбе
+  // пользователя: «С днём рождения!» со скретч-картой был единственным
+  // и выглядел в блоке «День рождения» карточкой без открытки. Страница
+  // /cards/<slug> и сама игра остались — ветка "game" ждёт новых.
 ];
 
 function Card({ entry, className }: { entry: Entry; className?: string }) {

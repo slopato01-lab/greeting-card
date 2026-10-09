@@ -1093,4 +1093,30 @@ svg(
     '<path d="M150 10 C190 14 198 50 170 70 C130 92 40 90 14 64 C-6 42 30 10 100 8 C130 7 160 12 176 24" fill="none" stroke="#1d1d1d" stroke-width="2.4" stroke-linecap="round"/>',
 )
 
+# Передний ряд зала «Кинопремьеры» (09.10.2026): те же ряды 5 и 6, что
+# в cinema-seats, с тем же затемнением по краям — поверх героини, чтобы
+# она сидела в кресле, а не обрывалась на коленях. 600 × 225, ставится
+# нижним краем к низу открытки: y 575–800 зала.
+front = []
+for k, (y, w, h) in [(5, (575, 120, 146)), (6, (735, 140, 170))]:
+    off = (k % 2) * w / 2
+    x = -w + off
+    while x < 600 + w:
+        front.append(
+            f'<rect x="{x + 4:.0f}" y="{y}" width="{w - 8}" height="{h}" rx="{w * 0.22:.0f}" fill="url(#seat)"/>'
+            f'<rect x="{x + 10:.0f}" y="{y + 6}" width="{w - 20}" height="{h * 0.3:.0f}" rx="{w * 0.18:.0f}" fill="#d0313f" opacity=".45"/>'
+        )
+        x += w
+svg(
+    "cinema-seats-front",
+    600,
+    225,
+    # Сплошной: в щелях между креслами — тот же фон зала, иначе героиня
+    # просвечивает между спинками.
+    '<g transform="translate(0 -575)"><rect y="575" width="600" height="225" fill="#1a0b0c"/>' + "".join(front)
+    + '<rect y="575" width="600" height="225" fill="url(#dim)"/></g>',
+    '<linearGradient id="seat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a51d2a"/><stop offset=".7" stop-color="#6e0f19"/><stop offset="1" stop-color="#3a070c"/></linearGradient>'
+    '<radialGradient id="dim" cx="300" cy="360" r="450" gradientUnits="userSpaceOnUse" gradientTransform="translate(300 360) scale(1 1.3333) translate(-300 -360)"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>'
+)
+
 print("Готово:", len(list(OUT.glob("*.svg"))), "стикеров")

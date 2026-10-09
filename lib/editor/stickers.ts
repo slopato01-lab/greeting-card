@@ -229,7 +229,7 @@ export const STICKERS: readonly StickerInfo[] = [
     [
       ["sample-groom", 472, 640, false],
       ["sample-bride", 569, 640, false],
-      ["sample-cinema", 373, 760, false],
+      ["sample-cinema", 560, 766, false],
       ["sample-disco", 386, 760, true],
     ] as const
   ).map(([id, width, height, mono]): StickerInfo => ({
@@ -582,6 +582,25 @@ export const STICKERS: readonly StickerInfo[] = [
     height: 360,
   },
   { id: "circle-doodle", theme: "common", label: "sticker.circle-doodle", width: 200, height: 90 },
+  // Настоящий компактный фотоаппарат (Flickr, CC0, CREDITS.md): фон снят
+  // по контуру корпуса, повёрнут вертикально, как на макете «с др».
+  // Экран — x 91–474, y 41–587 файла.
+  {
+    id: "camera-real",
+    theme: "birthday",
+    label: "sticker.camera-real",
+    width: 544,
+    height: 879,
+    ext: "png",
+  },
+  {
+    id: "cinema-seats-front",
+    theme: "birthday",
+    label: "sticker.cinema-seats-front",
+    width: 600,
+    height: 225,
+    hidden: true,
+  },
 ];
 
 const BY_ID = new Map(STICKERS.map((sticker) => [sticker.id, sticker]));
