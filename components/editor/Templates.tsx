@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import { CrownBadge } from "@/components/CrownBadge";
-import { GroupLabel, Panel } from "@/components/editor/controls";
+import { GroupLabel, Panel, SelectField } from "@/components/editor/controls";
+import { type CatalogFilter, templateFilter } from "@/lib/catalog/templates";
 import { isPremium } from "@/lib/editor/premium";
 import { TEMPLATES, type TemplateId } from "@/lib/editor/templates";
 import { t } from "@/lib/i18n";
@@ -20,6 +21,10 @@ import { t } from "@/lib/i18n";
  *
  * Текущий шаблон подсвечен золотой рамкой и помечен aria-current.
  *
+ * Сверху — выпадающий список «Тема» (09.10.2026, просьба пользователя):
+ * «Все» и поводы, у которых есть шаблоны, в порядке шаблонов. Поводы
+ * те же, что в каталоге на главной (templateFilter).
+ *
  * Превью рисует сам редактор (невидимый StaticCanvas), поэтому они
  * появляются, когда холст готов; до того — плашки --photo того же
  * размера, чтобы панель не прыгала.
@@ -30,6 +35,16 @@ import { t } from "@/lib/i18n";
  * классом до 1280: на десктопе панель — своя колонка, там видны все.
  */
 const COLLAPSED = 3;
+
+const ALL = "catalog.filter.1";
+
+type Theme = CatalogFilter | typeof ALL;
+
+/** «Все» и поводы, у которых есть хотя бы один шаблон. */
+const THEMES: readonly Theme[] = [
+  ALL,
+  ...new Set(TEMPLATES.flatMap((template) => templateFilter(template.id) ?? [])),
+];
 
 export function TemplatesPanel({
   disabled,
@@ -45,6 +60,10 @@ export function TemplatesPanel({
   className?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [theme, setTheme] = useState<Theme>(ALL);
+  const shown = TEMPLATES.filter(
+    (template) => theme === ALL || templateFilter(template.id) === theme,
+  );
   const listRef = useRef<HTMLUListElement>(null);
   const opened = useRef(false);
 
@@ -63,8 +82,16 @@ export function TemplatesPanel({
     <Panel labelledBy="editor-templates" {...(className === undefined ? {} : { className })}>
       <GroupLabel id="editor-templates" labelKey="editor.templates" />
 
+      <SelectField
+        labelKey="editor.templates.theme"
+        value={theme}
+        options={THEMES}
+        optionLabel={(option) => option}
+        onChange={setTheme}
+      />
+
       <ul ref={listRef} role="list" className="grid grid-cols-3 gap-[8px] xl:grid-cols-2">
-        {TEMPLATES.map((template, index) => {
+        {shown.map((template, index) => {
           const preview = previews[template.id];
           const active = template.id === current;
           return (
@@ -104,7 +131,7 @@ export function TemplatesPanel({
         })}
       </ul>
 
-      {expanded || TEMPLATES.length <= COLLAPSED ? null : (
+      {expanded || shown.length <= COLLAPSED ? null : (
         <button
           type="button"
           onClick={() => {

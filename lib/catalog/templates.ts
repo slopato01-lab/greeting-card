@@ -211,3 +211,22 @@ export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
   animated("wd-post", "catalog.filter.10", "anim.wd-post.name", "anim.wd-post.lead"),
   animated("wd-amor", "catalog.filter.10", "anim.wd-amor.name", "anim.wd-amor.lead"),
 ];
+
+/** Шаблоны редактора, которых нет в каталоге, — со своим поводом. */
+const OFF_CATALOG_FILTERS: Partial<Record<TemplateId, CatalogFilter>> = {
+  "val-loveis": "catalog.filter.8",
+};
+
+/**
+ * Повод шаблона — по нему выпадающий список «Тема» во вкладке
+ * «Шаблоны» редактора (09.10.2026). Берётся из каталога, чтобы темы
+ * в редакторе и на главной не разошлись. null — повода нет, шаблон
+ * виден только в «Все».
+ */
+export function templateFilter(id: TemplateId): CatalogFilter | null {
+  return (
+    ANIMATED_TEMPLATES.find((template) => template.id === id)?.filter ??
+    OFF_CATALOG_FILTERS[id] ??
+    null
+  );
+}

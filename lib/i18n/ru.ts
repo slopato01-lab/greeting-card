@@ -847,6 +847,8 @@ export const ru = {
   "editor.templates": "Шаблоны",
   // Текст пользователя (08.10.2026): на мобильном сначала три шаблона.
   "editor.templates.more": "Смотреть ещё",
+  // Выпадающий список поводов над шаблонами (09.10.2026); пункты — catalog.filter.*.
+  "editor.templates.theme": "Тема",
   "editor.tabs": "Инструменты редактора",
   "editor.tab.templates": "Шаблоны",
   "editor.tab.elements": "Элементы",
