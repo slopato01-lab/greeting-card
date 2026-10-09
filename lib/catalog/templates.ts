@@ -21,7 +21,6 @@ import type { TextKey } from "@/lib/i18n";
 export type CatalogFilter =
   | "catalog.filter.2"
   | "catalog.filter.3"
-  | "catalog.filter.5"
   | "catalog.filter.8"
   | "catalog.filter.9"
   | "catalog.filter.10";
@@ -71,6 +70,7 @@ export const CATALOG_CUSTOM = "catalog.filter.6" satisfies TextKey;
 /**
  * Номера не сдвигаются: «Хорошие новости» (4) и «Любовь» (7) сняты
  * с сайта 08.10.2026 (просьба пользователя) вместе с их шаблонами,
+ * «8 марта» (5) — 09.10.2026: в нём были только серые карточки,
  * а ключи остальных фильтров уже живут в словаре и docs/PRODUCT.md.
  */
 export const CATALOG_FILTERS = [
@@ -80,7 +80,6 @@ export const CATALOG_FILTERS = [
   "catalog.filter.8",
   "catalog.filter.9",
   "catalog.filter.10",
-  "catalog.filter.5",
 ] as const satisfies ReadonlyArray<CatalogFilter>;
 
 export const TEMPLATES = [
@@ -99,72 +98,6 @@ export const TEMPLATES = [
     theme: "birthday",
     cover: "/assets/templates/birthday/balloons.jpg",
     track: "monk",
-  },
-  {
-    slug: "dlya-vtoroy-polovinki",
-    nameKey: "catalog.card.1",
-    filter: "catalog.filter.2",
-    game: "games.card.1.title",
-    lead: "tpl.1.lead",
-    items: ["tpl.1.item.1", "tpl.1.item.2", "tpl.1.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
-  },
-  {
-    slug: "dlya-druga",
-    nameKey: "catalog.card.2",
-    filter: "catalog.filter.2",
-    game: "games.card.2.title",
-    lead: "tpl.2.lead",
-    items: ["tpl.2.item.1", "tpl.2.item.2", "tpl.2.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
-  },
-  {
-    slug: "dlya-mamy",
-    nameKey: "catalog.card.3",
-    filter: "catalog.filter.5",
-    game: "games.card.1.title",
-    lead: "tpl.3.lead",
-    items: ["tpl.3.item.1", "tpl.3.item.2", "tpl.3.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
-  },
-  {
-    slug: "dlya-babushki",
-    nameKey: "catalog.card.4",
-    filter: "catalog.filter.5",
-    game: "games.card.1.title",
-    lead: "tpl.4.lead",
-    items: ["tpl.4.item.1", "tpl.4.item.2", "tpl.4.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
-  },
-  {
-    slug: "dlya-kolleg",
-    nameKey: "catalog.card.5",
-    filter: "catalog.filter.3",
-    game: "games.card.2.title",
-    lead: "tpl.5.lead",
-    items: ["tpl.5.item.1", "tpl.5.item.2", "tpl.5.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
-  },
-  {
-    slug: "pervyy-novyy-god",
-    nameKey: "catalog.card.6",
-    filter: "catalog.filter.3",
-    game: "games.card.1.title",
-    lead: "tpl.6.lead",
-    items: ["tpl.6.item.1", "tpl.6.item.2", "tpl.6.item.3"],
-    theme: null,
-    cover: null,
-    track: null,
   },
 ] as const satisfies ReadonlyArray<Template>;
 
@@ -253,7 +186,8 @@ export const ANIMATED_TEMPLATES: readonly AnimatedTemplate[] = [
   // Серия по design/открытки/ (08.10.2026), lib/editor/series.ts.
   animated("val-wishing", "catalog.filter.8", "anim.val-wishing.name", "anim.val-wishing.lead"),
   animated("val-film", "catalog.filter.8", "anim.val-film.name", "anim.val-film.lead"),
-  animated("val-loveis", "catalog.filter.8", "anim.val-loveis.name", "anim.val-loveis.lead"),
+  // «Любовь это…» (val-loveis) снят 09.10.2026: в окне заглушка-силуэт
+  // вместо фото — карточка выглядела незаполненной. В редакторе остался.
   animated("val-paper", "catalog.filter.8", "anim.val-paper.name", "anim.val-paper.lead"),
   animated("val-strip", "catalog.filter.8", "anim.val-strip.name", "anim.val-strip.lead"),
   animated("bd-disco", "catalog.filter.2", "anim.bd-disco.name", "anim.bd-disco.lead"),

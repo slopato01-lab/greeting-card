@@ -136,27 +136,31 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
           </section>
         </div>
 
-        <section className="page-shell">
-          <h2
-            id="more-templates"
-            className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
-          >
-            {t("tpl.more")}
-          </h2>
+        {/* Игровой шаблон с обложкой остался один (09.10.2026): серые
+          карточки без оформления сняты, показывать в ряду нечего. */}
+        {related.length === 0 ? null : (
+          <section className="page-shell">
+            <h2
+              id="more-templates"
+              className="font-display text-h1 xl:text-h1-d font-medium tracking-tight"
+            >
+              {t("tpl.more")}
+            </h2>
 
-          {/* На мобильном ряд шире экрана и прокручивается пальцем,
+            {/* На мобильном ряд шире экрана и прокручивается пальцем,
             как остальные ряды карточек: сеткой он ужал бы карточки
             до нечитаемых. */}
-          <ul
-            role="list"
-            aria-labelledby="more-templates"
-            className="carousel mt-[30px] items-stretch gap-[20px] xl:mt-[50px] xl:grid xl:grid-cols-3 xl:gap-5 xl:overflow-visible"
-          >
-            {related.map((item) => (
-              <TemplateCard key={item.slug} template={item} className="w-[300px] xl:w-auto" />
-            ))}
-          </ul>
-        </section>
+            <ul
+              role="list"
+              aria-labelledby="more-templates"
+              className="carousel mt-[30px] items-stretch gap-[20px] xl:mt-[50px] xl:grid xl:grid-cols-3 xl:gap-5 xl:overflow-visible"
+            >
+              {related.map((item) => (
+                <TemplateCard key={item.slug} template={item} className="w-[300px] xl:w-auto" />
+              ))}
+            </ul>
+          </section>
+        )}
 
         <Cta />
       </Blocks>
