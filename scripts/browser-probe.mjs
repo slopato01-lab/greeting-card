@@ -19,6 +19,7 @@
  * Без зависимостей: Chrome по протоколу DevTools, WebSocket из Node 22.
  * PROBE_WEBGL=1 включает программный WebGL — нужен для вырезки фона.
  * PROBE_AUTOPLAY=1 разрешает звук без жеста — для записи видео с песней.
+ * PROBE_DPR=2 снимает в двойной плотности — для превью-картинок.
  * Браузер — $CHROME или Chromium из кеша playwright.
  */
 import { spawn } from "node:child_process";
@@ -95,7 +96,8 @@ try {
     width: Number(width),
     // PROBE_HEIGHT — высота окна, когда важна раскладка «на один экран».
     height: Number(process.env.PROBE_HEIGHT ?? 1400),
-    deviceScaleFactor: 1,
+    // PROBE_DPR — плотность пикселей, когда нужен чёткий снимок (превью).
+    deviceScaleFactor: Number(process.env.PROBE_DPR ?? 1),
     mobile: Number(width) < 768,
   });
   await send("Page.navigate", { url });

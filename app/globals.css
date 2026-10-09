@@ -585,6 +585,80 @@
       inset 0 0 0 7px var(--color-paper);
   }
 
+  /* Лабиринт (09.10.2026). Надпись «Уровень 2 из 3» по центру поля:
+     всплывает и тает за 1100 мс, как BANNER_MS в Maze.tsx. */
+  .maze-banner {
+    transform: translate(-50%, -50%);
+    animation: maze-banner 1100ms ease-out both;
+  }
+
+  @keyframes maze-banner {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.7);
+    }
+    20% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.06);
+    }
+    35%,
+    75% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  /* Скример: поздравление резко наезжает из глубины и трясётся
+     полторы секунды. Мерцания нет — только движение. */
+  .maze-scare {
+    animation: maze-scare 1500ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  }
+
+  @keyframes maze-scare {
+    0% {
+      opacity: 0;
+      transform: scale(0.15);
+    }
+    10% {
+      opacity: 1;
+      transform: scale(1.22) rotate(-3deg);
+    }
+    18% {
+      transform: scale(1.05) translate(14px, -10px) rotate(4deg);
+    }
+    26% {
+      transform: scale(1.1) translate(-16px, 8px) rotate(-4deg);
+    }
+    34% {
+      transform: scale(1.04) translate(12px, 12px) rotate(3deg);
+    }
+    42% {
+      transform: scale(1.07) translate(-10px, -12px) rotate(-3deg);
+    }
+    52% {
+      transform: scale(1.02) translate(8px, 6px) rotate(2deg);
+    }
+    64% {
+      transform: scale(1.03) translate(-5px, -4px) rotate(-1deg);
+    }
+    80%,
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .maze-banner,
+    .maze-scare {
+      animation: none;
+    }
+  }
+
   /* Угаданная пара всплывает крупно и тает — 1300 мс, как POP_MS
      в components/games/MemoryGame.tsx. Без движения её не видно вовсе. */
   .memory-pop {

@@ -173,10 +173,13 @@ export function Editor() {
   const [tab, setTab] = useState<EditorTab>("templates");
   const gameStage = tab === "game" && ready;
   // Свои фото игры по её виду; чего не хватает — добирают примеры.
-  const gameOwn = game?.kind === "memory"
+  const gameOwn =
+    game?.kind === "memory"
       ? gamePhotos.map((photo) => photo.url)
-      : gamePhoto === null ? [] : [gamePhoto];
-  const gameShown = playPhotos(game?.kind ?? "puzzle", gameOwn);
+      : gamePhoto === null
+        ? []
+        : [gamePhoto];
+  const gameShown = playPhotos(game?.kind ?? "puzzle", gameOwn, game?.template);
 
   // Адрес попросил вкладку (?game=puzzle из попапа на /games) —
   // открываем её, как при выделении слоя: во время рендера, не в эффекте.

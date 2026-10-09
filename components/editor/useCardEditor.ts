@@ -1102,8 +1102,8 @@ export function useCardEditor() {
 
   /**
    * Своё фото для игры — как фото-слой: проверка, сжатие, IndexedDB.
-   * Пазлу оно заменяет прежнее, «Собери пару» — добавляется к парам,
-   * пока их меньше шести.
+   * Пазлу и лабиринту оно заменяет прежнее, «Собери пару» —
+   * добавляется к парам, пока их меньше шести.
    */
   const setGamePhoto = useCallback(
     async (file: File) => {
@@ -1122,12 +1122,13 @@ export function useCardEditor() {
         if (!(await putAsset(id, result.image.blob))) setNotice("editor.error.photoStorage");
         const current = gameRef.current;
         if (current === null) return;
-        if (current.kind === "puzzle") {
+        if (current.kind !== "memory") {
           setGame({ ...current, asset: id });
           return;
         }
         const photos = current.photos ?? [];
-        if (photos.length < LIMITS.gamePhotos) setGame({ ...current, photos: [...photos, { asset: id }] });
+        if (photos.length < LIMITS.gamePhotos)
+          setGame({ ...current, photos: [...photos, { asset: id }] });
       } finally {
         setBusy(false);
       }

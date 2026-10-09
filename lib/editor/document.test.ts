@@ -368,7 +368,11 @@ test("игра: «Собери пару» хранит до шести фото,
   const doc = parseEditorDoc({
     ...valid,
     game: { kind: "memory", photos: [{ asset: "pair000001" }], title: "", caption: "" },
-    assets: { ...valid.assets, pair000001: "data:image/jpeg;base64,/9j/4AAQ", stray00001: "data:image/jpeg;base64,/9j/4AAQ" },
+    assets: {
+      ...valid.assets,
+      pair000001: "data:image/jpeg;base64,/9j/4AAQ",
+      stray00001: "data:image/jpeg;base64,/9j/4AAQ",
+    },
   });
   assert.deepEqual(Object.keys(doc?.assets ?? {}).sort(), ["abcdef1234", "pair000001"]);
 });

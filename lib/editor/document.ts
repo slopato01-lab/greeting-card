@@ -582,14 +582,19 @@ export type CardMusic =
  * и уборка IndexedDB находят снимки игры сами — поэтому и фото пар
  * лежат списком `{ asset }`, а не голыми строками.
  */
-export const GAME_KINDS = ["puzzle", "memory"] as const;
+export const GAME_KINDS = ["puzzle", "memory", "maze"] as const;
 
 export type GameKind = (typeof GAME_KINDS)[number];
 
 export type CardGame = {
   kind: GameKind;
-  /** Фото пазла. */
+  /** Фото пазла; у лабиринта — своё фото для скримера, оно главнее шаблона. */
   asset?: string;
+  /**
+   * Лабиринт: какой шаблон открытки выскочит в финале (id из
+   * lib/editor/templates.ts, картинка — его обложка .webp).
+   */
+  template?: string;
   /** Фото «Собери пару», до LIMITS.gamePhotos, по порядку. */
   photos?: { asset: string }[];
   /** Обращение над игрой («Ты лучший»). */
@@ -902,6 +907,8 @@ export function parseMusic(raw: unknown): CardMusic | null {
 }
 
 /** Игра из недоверенного JSON. Непонятная — null: открытка будет без игры. */
+const TEMPLATE_NAME = /^[a-z0-9-]{1,40}$/;
+
 export function parseGame(raw: unknown): CardGame | null {
   if (!isObj(raw)) return null;
   const kind = oneOf(raw.kind, GAME_KINDS);
@@ -912,10 +919,17 @@ export function parseGame(raw: unknown): CardGame | null {
   if (kind === null || title === null || caption === null) return null;
   const game: CardGame = { kind, title, caption };
   if (isAssetId(raw.asset)) game.asset = raw.asset;
+  // Шаблон — только именем из латиницы: из него собирается адрес
+  // обложки. Несуществующий просто не покажется, игра не ломается.
+  if (typeof raw.template === "string" && TEMPLATE_NAME.test(raw.template)) {
+    game.template = raw.template;
+  }
   // Непонятные фото пар отбрасываются по одному, игра остаётся.
   if (Array.isArray(raw.photos)) {
     const photos = raw.photos
-      .flatMap((item: unknown) => (isObj(item) && isAssetId(item.asset) ? [{ asset: item.asset }] : []))
+      .flatMap((item: unknown) =>
+        isObj(item) && isAssetId(item.asset) ? [{ asset: item.asset }] : [],
+      )
       .slice(0, LIMITS.gamePhotos);
     if (photos.length > 0) game.photos = photos;
   }

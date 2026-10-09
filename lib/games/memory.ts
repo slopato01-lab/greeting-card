@@ -88,7 +88,10 @@ export function flip(
   const moves = state.moves + 1;
   const first = open[0];
   if (first !== undefined && state.deck[first] === pair) {
-    return { state: { ...state, open: [], matched: [...state.matched, pair], moves }, matched: pair };
+    return {
+      state: { ...state, open: [], matched: [...state.matched, pair], moves },
+      matched: pair,
+    };
   }
   return { state: { ...state, open, moves }, matched: null };
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Maze } from "@/components/games/Maze";
 import { MemoryGame } from "@/components/games/MemoryGame";
 import { PhotoPuzzle } from "@/components/games/PhotoPuzzle";
 import type { GameKind } from "@/lib/editor/document";
@@ -19,5 +20,6 @@ export function GameBody({
   photos: readonly string[];
 }) {
   const props = { seed, photos, cover: null, reward: null, onDone: () => undefined };
+  if (kind === "maze") return <Maze {...props} />;
   return kind === "memory" ? <MemoryGame {...props} /> : <PhotoPuzzle {...props} />;
 }

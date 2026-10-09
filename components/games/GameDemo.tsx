@@ -6,7 +6,13 @@ import { Button } from "@/components/Button";
 import { GamePopup } from "@/components/games/GamePopup";
 import { Icon } from "@/components/Icon";
 import type { GameKind } from "@/lib/editor/document";
-import { editorGameHref, MEMORY_SAMPLE_PHOTOS, playPhotos, PUZZLE_SAMPLE_PHOTO } from "@/lib/games/kinds";
+import {
+  editorGameHref,
+  GAME_INFO,
+  MEMORY_SAMPLE_PHOTOS,
+  playPhotos,
+  PUZZLE_SAMPLE_PHOTO,
+} from "@/lib/games/kinds";
 import { t } from "@/lib/i18n";
 
 /**
@@ -33,6 +39,21 @@ const MEMORY_PREVIEW_OPEN: Readonly<Record<number, string>> = {
 };
 
 function Preview({ kind }: { kind: GameKind }) {
+  if (kind === "maze") {
+    // Снимок первого уровня — его рисует сама игра, см. CREDITS лабиринта.
+    // Квадратом, как у пазла: целиком поле вытягивало карточку на экран.
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={GAME_INFO.maze.preview}
+        alt=""
+        width={720}
+        height={1074}
+        loading="lazy"
+        className="rounded-card xl:rounded-card-d bg-photo aspect-square w-full object-cover object-top"
+      />
+    );
+  }
   if (kind === "puzzle") {
     return (
       // Обычный img, как в карточках шаблонов: оптимизатор Next

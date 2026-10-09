@@ -15,7 +15,7 @@ export const metadata: Metadata = {
  * Три механики MVP. Описания и поводы взяты из docs/PRODUCT.md —
  * из раздела «Три игры MVP» и матрицы «повод × механика».
  *
- * В карточках «Фото-пазл» и «Собери пару» с 09.10.2026 — GameDemo:
+ * В карточках «Фото-пазл», «Собери пару» и «Лабиринт» с 09.10.2026 — GameDemo:
  * «Начать» открывает попап-пробу, из него «Выбрать» ведёт в редактор
  * с уже добавленной игрой. У скретч-карты превью пока нет —
  * плейсхолдер цветом --color-photo. Подставлять картинку-обманку нельзя.
@@ -56,6 +56,13 @@ const GAMES = [
     ],
   },
   {
+    title: "games.card.4.title",
+    body: "games.card.4.body",
+    photos: "games.card.4.photos",
+    level: "games.card.4.level",
+    suits: ["games.tag.birthday", "games.tag.invite", "games.tag.corporate"],
+  },
+  {
     title: "games.card.3.title",
     body: "games.card.3.body",
     photos: "games.card.3.photos",
@@ -84,7 +91,7 @@ export default function GamesPage() {
             <ul
               role="list"
               aria-labelledby={PAGE_TITLE_ID}
-              className="grid gap-[30px] xl:grid-cols-3 xl:gap-5"
+              className="grid gap-[30px] xl:grid-cols-2 xl:gap-5"
             >
               {GAMES.map((game) => (
                 <li
@@ -97,6 +104,8 @@ export default function GamesPage() {
                     <GameDemo kind="puzzle" />
                   ) : game.title === "games.card.2.title" ? (
                     <GameDemo kind="memory" />
+                  ) : game.title === "games.card.4.title" ? (
+                    <GameDemo kind="maze" />
                   ) : (
                     <div aria-hidden="true" className="bg-photo min-h-[200px] xl:min-h-[240px]" />
                   )}

@@ -29,7 +29,16 @@ export function GameStage({
   caption: string;
 }) {
   return (
-    <div className="bg-raised text-ink rounded-panel xl:rounded-panel-d flex w-full max-w-[440px] flex-col gap-[16px] p-[16px] xl:w-[min(100cqw,calc(100cqh-200px))] xl:max-w-[560px] xl:p-[20px]">
+    <div
+      className={[
+        "bg-raised text-ink rounded-panel xl:rounded-panel-d flex w-full max-w-[440px] flex-col gap-[16px] p-[16px] xl:max-w-[560px] xl:p-[20px]",
+        // Поле лабиринта в полтора раза выше ширины: ширина сцены
+        // считается от высоты так, чтобы игра со всеми строками влезла.
+        kind === "maze"
+          ? "xl:w-[min(100cqw,calc((100cqh-270px)*0.67+40px))]"
+          : "xl:w-[min(100cqw,calc(100cqh-200px))]",
+      ].join(" ")}
+    >
       {title.trim() === "" ? null : (
         <p className="bg-paper font-ui caps text-badge text-ink min-h-tap flex items-center justify-center rounded-full px-[16px] py-[10px] text-center break-words">
           {title}
