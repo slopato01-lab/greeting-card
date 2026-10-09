@@ -38,18 +38,27 @@ type Occasion = {
   items: readonly [TextKey, TextKey, TextKey, TextKey];
 };
 
+// Порядок поводов — как перечислила пользователь 09.10.2026: новость,
+// приглашение, любовь, близкие, друг за границей. Ключи не перенумерованы:
+// номер карточки по-прежнему равен номеру пилюли.
 const OCCASIONS = [
+  {
+    pill: "faq.pill.4",
+    title: "faq.card.4.title",
+    lead: "faq.card.4.lead",
+    items: ["faq.card.4.item.1", "faq.card.4.item.2", "faq.card.4.item.3", "faq.card.4.item.4"],
+  },
+  {
+    pill: "faq.pill.5",
+    title: "faq.card.5.title",
+    lead: "faq.card.5.lead",
+    items: ["faq.card.5.item.1", "faq.card.5.item.2", "faq.card.5.item.3", "faq.card.5.item.4"],
+  },
   {
     pill: "faq.pill.1",
     title: "faq.card.1.title",
     lead: "faq.card.1.lead",
     items: ["faq.card.1.item.1", "faq.card.1.item.2", "faq.card.1.item.3", "faq.card.1.item.4"],
-  },
-  {
-    pill: "faq.pill.2",
-    title: "faq.card.2.title",
-    lead: "faq.card.2.lead",
-    items: ["faq.card.2.item.1", "faq.card.2.item.2", "faq.card.2.item.3", "faq.card.2.item.4"],
   },
   {
     pill: "faq.pill.3",
@@ -58,10 +67,10 @@ const OCCASIONS = [
     items: ["faq.card.3.item.1", "faq.card.3.item.2", "faq.card.3.item.3", "faq.card.3.item.4"],
   },
   {
-    pill: "faq.pill.4",
-    title: "faq.card.4.title",
-    lead: "faq.card.4.lead",
-    items: ["faq.card.4.item.1", "faq.card.4.item.2", "faq.card.4.item.3", "faq.card.4.item.4"],
+    pill: "faq.pill.2",
+    title: "faq.card.2.title",
+    lead: "faq.card.2.lead",
+    items: ["faq.card.2.item.1", "faq.card.2.item.2", "faq.card.2.item.3", "faq.card.2.item.4"],
   },
 ] as const satisfies ReadonlyArray<Occasion>;
 
@@ -215,7 +224,7 @@ export function Faq() {
                   className={`rounded-card xl:rounded-card-d bg-surface relative min-w-0 overflow-hidden transition-[flex-grow,flex-basis,background-color] duration-500 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none ${
                     open
                       ? "flex shrink grow basis-0"
-                      : "hover:bg-raised hidden shrink-0 grow-0 basis-[72px] xl:flex"
+                      : "hover:bg-raised hidden shrink-0 grow-0 basis-[56px] xl:flex"
                   }`}
                 >
                   <div
@@ -227,11 +236,6 @@ export function Faq() {
                       open ? "opacity-100 delay-200" : "opacity-0"
                     }`}
                   >
-                    <div
-                      aria-hidden="true"
-                      className="bg-photo rounded-inner xl:rounded-inner-d h-[140px] xl:hidden"
-                    />
-
                     <div className="flex flex-1 flex-col px-[12px] pt-[20px] pb-[14px] xl:px-[20px] xl:pt-[18px] xl:pb-[16px]">
                       <h3 className="font-display text-h3 xl:text-h3-d font-medium tracking-tight">
                         {t(occasion.title)}
@@ -255,7 +259,7 @@ export function Faq() {
                         ))}
                       </ul>
 
-                      <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:flex-row xl:pt-[18px]">
+                      <div className="mt-[28px] flex flex-col gap-[10px] xl:mt-auto xl:flex-row xl:flex-wrap xl:pt-[18px]">
                         <Button href="/editor" labelKey="cta.create" className="xl:w-auto" />
                         {/* Каталог живёт на /cards. */}
                         <GhostButton href="/cards" labelKey="cta.templates" className="xl:w-auto" />
@@ -270,7 +274,7 @@ export function Faq() {
                     tabIndex={-1}
                     aria-controls={panelId(index)}
                     onClick={() => setActive(index)}
-                    className={`absolute inset-y-0 start-0 hidden w-[72px] flex-col items-center justify-between py-[20px] transition-opacity duration-300 motion-reduce:transition-none xl:flex ${
+                    className={`absolute inset-y-0 start-0 hidden w-[56px] flex-col items-center justify-between py-[20px] transition-opacity duration-300 motion-reduce:transition-none xl:flex ${
                       open ? "pointer-events-none opacity-0" : "opacity-100 delay-200"
                     }`}
                   >
