@@ -51,6 +51,8 @@ export function Header() {
   const headerRef = useRef<HTMLElement>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Открыли с клавиатуры — фокус уходит в панель (см. эффект ниже).
+  const focusPanel = useRef(false);
 
   // Пока панель открыта, слушаем Esc, нажатие и фокус вне шапки.
   // Все слушатели снимаются одним AbortSignal — вместе с закрытием
@@ -108,9 +110,11 @@ export function Header() {
   }, []);
 
   // Фокус уходит в панель сразу после раскрытия: иначе с клавиатуры
-  // следующий Tab уводит мимо только что открытого меню.
+  // следующий Tab уводит мимо только что открытого меню. Только
+  // с клавиатуры: после касания iOS Safari считает программный фокус
+  // клавиатурным и обводит «Открытки» рамкой фокуса (жалоба 09.10.2026).
   useEffect(() => {
-    if (!open) return;
+    if (!open || !focusPanel.current) return;
     panelRef.current?.querySelector("a")?.focus();
   }, [open]);
 
@@ -186,7 +190,11 @@ export function Header() {
         <button
           ref={burgerRef}
           type="button"
-          onClick={() => setOpen((value) => !value)}
+          onClick={(event) => {
+            // detail 0 — нажатие Enter или пробелом, без указателя.
+            focusPanel.current = event.detail === 0;
+            setOpen((value) => !value);
+          }}
           aria-label={t("nav.menu")}
           aria-expanded={open}
           aria-controls={panelId}
