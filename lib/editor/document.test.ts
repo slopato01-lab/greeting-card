@@ -19,6 +19,7 @@ import {
   parseColor,
   parseEditorDoc,
   parseEditorJson,
+  gameAssets,
   parseGame,
 } from "./document.ts";
 
@@ -332,7 +333,7 @@ test("игра: пазл со своими текстами и фото прох
 
 test("игра: непонятная не валит открытку, а просто пропадает", () => {
   assert.equal(
-    parseEditorDoc({ ...valid, game: { kind: "memory", title: "", caption: "" } })?.game,
+    parseEditorDoc({ ...valid, game: { kind: "tetris", title: "", caption: "" } })?.game,
     undefined,
   );
   assert.equal(
@@ -345,4 +346,29 @@ test("игра: непонятная не валит открытку, а про
     title: "",
     caption: "",
   });
+});
+
+test("игра: «Собери пару» хранит до шести фото, кривые отбрасывает по одному", () => {
+  const photos = ["pair000001", "pair000002", "../../etc", 7, "pair000003"].map((asset) => ({
+    asset,
+  }));
+  const game = parseGame({ kind: "memory", photos, title: "", caption: "" });
+  assert.deepEqual(game?.photos, [
+    { asset: "pair000001" },
+    { asset: "pair000002" },
+    { asset: "pair000003" },
+  ]);
+  const many = Array.from({ length: 9 }, (_, index) => ({ asset: `pair00000${index}` }));
+  assert.equal(
+    parseGame({ kind: "memory", photos: many, title: "", caption: "" })?.photos?.length,
+    LIMITS.gamePhotos,
+  );
+  assert.deepEqual(gameAssets(game), ["pair000001", "pair000002", "pair000003"]);
+
+  const doc = parseEditorDoc({
+    ...valid,
+    game: { kind: "memory", photos: [{ asset: "pair000001" }], title: "", caption: "" },
+    assets: { ...valid.assets, pair000001: "data:image/jpeg;base64,/9j/4AAQ", stray00001: "data:image/jpeg;base64,/9j/4AAQ" },
+  });
+  assert.deepEqual(Object.keys(doc?.assets ?? {}).sort(), ["abcdef1234", "pair000001"]);
 });

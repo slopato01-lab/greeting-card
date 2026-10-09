@@ -17,6 +17,8 @@ import {
   defaultLayer,
   type EditorDoc,
   emptyDoc,
+  gameAssets,
+  GAME_KINDS,
   imageLayer,
   type Layer,
   LIMITS,
@@ -141,11 +143,10 @@ function withMeta(
   return doc;
 }
 
-/** Фото, которые нужны открытке: фото-слои и снимок игры. */
+/** Фото, которые нужны открытке: фото-слои и снимки игры. */
 function docAssets(doc: EditorDoc): string[] {
   const ids = doc.layers.flatMap((layer) => (layer.kind === "image" ? [layer.asset] : []));
-  if (doc.game?.asset !== undefined) ids.push(doc.game.asset);
-  return ids;
+  return [...ids, ...gameAssets(doc.game)];
 }
 
 /**
@@ -216,8 +217,10 @@ export function useCardEditor() {
   const musicRef = useRef<CardMusic | null>(null);
   const [game, setGameState] = useState<CardGame | null>(null);
   const gameRef = useRef<CardGame | null>(null);
-  /** Адрес своего фото игры: считается при смене игры, а не в рендере. */
+  /** Адрес своего фото пазла: считается при смене игры, а не в рендере. */
   const [gamePhoto, setGamePhotoUrl] = useState<string | null>(null);
+  /** Свои фото «Собери пару» с адресами — так же. Ненайденные пропущены. */
+  const [gamePhotos, setGamePhotoUrls] = useState<{ asset: string; url: string }[]>([]);
   /** Идущий экспорт GIF или видео — его можно прервать. */
   const exporting = useRef<AbortController | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -306,6 +309,19 @@ export function useCardEditor() {
     historyTimer.current = window.setTimeout(commitHistory, HISTORY_IDLE_MS);
   }, [commitHistory]);
 
+  /** Адреса снимков игры для экрана: blob: из уже загруженных фото. */
+  const syncGameUrls = useCallback((value: CardGame | null) => {
+    const url = (id: string) => assets.current.get(id)?.url ?? null;
+    const photo = value?.asset;
+    setGamePhotoUrl(photo === undefined ? null : url(photo));
+    setGamePhotoUrls(
+      (value?.photos ?? []).flatMap((item) => {
+        const found = url(item.asset);
+        return found === null ? [] : [{ asset: item.asset, url: found }];
+      }),
+    );
+  }, []);
+
   const applyDocMeta = useCallback(
     (doc: Pick<EditorDoc, "background" | "duration" | "still" | "music" | "game">) => {
       backgroundRef.current = doc.background;
@@ -318,10 +334,9 @@ export function useCardEditor() {
       setMusicState(doc.music ?? null);
       gameRef.current = doc.game ?? null;
       setGameState(doc.game ?? null);
-      const photo = doc.game?.asset;
-      setGamePhotoUrl(photo === undefined ? null : (assets.current.get(photo)?.url ?? null));
+      syncGameUrls(doc.game ?? null);
     },
-    [],
+    [syncGameUrls],
   );
 
   const assetUrl = useCallback((id: string) => assets.current.get(id)?.url ?? null, []);
@@ -355,7 +370,7 @@ export function useCardEditor() {
         else keep.add(id);
       }
       for (const id of historyAssets(history.current)) keep.add(id);
-      if (gameRef.current?.asset !== undefined) keep.add(gameRef.current.asset);
+      for (const id of gameAssets(gameRef.current)) keep.add(id);
       void pruneAssets(keep);
     } catch {
       // Приватный режим Safari или переполненное хранилище: сохранить
@@ -444,14 +459,16 @@ export function useCardEditor() {
       applyDocMeta(doc);
       if (missing > 0) setNotice("editor.error.photoMissing");
 
-      // Пришли из попапа пазла на /games (/editor?game=puzzle): пазл
+      // Пришли из попапа игры на /games (/editor?game=memory): игра
       // сразу в открытке, редактор открывает вкладку «Игра». Параметр
       // снимается с адреса — иначе обновление вернуло бы убранную игру.
+      // Если в черновике уже есть другая игра, её не трогаем.
       const url = new URL(window.location.href);
-      if (url.searchParams.get("game") === "puzzle") {
+      const asked = GAME_KINDS.find((kind) => kind === url.searchParams.get("game"));
+      if (asked !== undefined) {
         if (gameRef.current === null) {
           const game: CardGame = {
-            kind: "puzzle",
+            kind: asked,
             title: t("game.demo.title"),
             caption: t("game.demo.caption"),
           };
@@ -1077,14 +1094,17 @@ export function useCardEditor() {
     (value: CardGame | null) => {
       gameRef.current = value;
       setGameState(value);
-      const photo = value?.asset;
-      setGamePhotoUrl(photo === undefined ? null : (assets.current.get(photo)?.url ?? null));
+      syncGameUrls(value);
       markDirty();
     },
-    [markDirty],
+    [markDirty, syncGameUrls],
   );
 
-  /** Своё фото для игры — как фото-слой: проверка, сжатие, IndexedDB. */
+  /**
+   * Своё фото для игры — как фото-слой: проверка, сжатие, IndexedDB.
+   * Пазлу оно заменяет прежнее, «Собери пару» — добавляется к парам,
+   * пока их меньше шести.
+   */
   const setGamePhoto = useCallback(
     async (file: File) => {
       if (gameRef.current === null) return;
@@ -1101,7 +1121,13 @@ export function useCardEditor() {
         registerAsset(id, result.image.blob);
         if (!(await putAsset(id, result.image.blob))) setNotice("editor.error.photoStorage");
         const current = gameRef.current;
-        if (current !== null) setGame({ ...current, asset: id });
+        if (current === null) return;
+        if (current.kind === "puzzle") {
+          setGame({ ...current, asset: id });
+          return;
+        }
+        const photos = current.photos ?? [];
+        if (photos.length < LIMITS.gamePhotos) setGame({ ...current, photos: [...photos, { asset: id }] });
       } finally {
         setBusy(false);
       }
@@ -1266,7 +1292,7 @@ export function useCardEditor() {
       withMeta(doc, stillRef.current, musicRef.current, gameRef.current);
       const embedded: Record<string, string> = {};
       const embed = usedAssets(current.canvas);
-      if (gameRef.current?.asset !== undefined) embed.add(gameRef.current.asset);
+      for (const id of gameAssets(gameRef.current)) embed.add(id);
       for (const id of embed) {
         const asset = assets.current.get(id);
         if (asset !== undefined) embedded[id] = await blobToDataUrl(asset.blob);
@@ -1552,6 +1578,7 @@ export function useCardEditor() {
     music,
     game,
     gamePhoto,
+    gamePhotos,
     playing,
     busy,
     busyText,

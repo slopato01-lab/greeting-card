@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { PuzzleDemo } from "@/components/games/PuzzleDemo";
+import { GameDemo } from "@/components/games/GameDemo";
 import { Cta } from "@/components/site/Cta";
 import { PAGE_TITLE_ID, PageHead } from "@/components/site/PageHead";
 import { Blocks } from "@/components/site/Blocks";
@@ -15,8 +15,9 @@ export const metadata: Metadata = {
  * Три механики MVP. Описания и поводы взяты из docs/PRODUCT.md —
  * из раздела «Три игры MVP» и матрицы «повод × механика».
  *
- * В карточке «Фото-пазл» с 09.10.2026 — PuzzleDemo: «Начать» открывает
- * попап-пробу, из него «Выбрать» ведёт в редактор с уже добавленным пазлом. У мемори и скретч-карты превью пока нет —
+ * В карточках «Фото-пазл» и «Собери пару» с 09.10.2026 — GameDemo:
+ * «Начать» открывает попап-пробу, из него «Выбрать» ведёт в редактор
+ * с уже добавленной игрой. У скретч-карты превью пока нет —
  * плейсхолдер цветом --color-photo. Подставлять картинку-обманку нельзя.
  *
  * Макета у страницы нет, раскладка собрана из готовых секций.
@@ -90,10 +91,12 @@ export default function GamesPage() {
                   key={game.title}
                   className="rounded-card xl:rounded-card-d bg-surface flex flex-col overflow-hidden"
                 >
-                  {/* У пазла — живая игра. У остальных превью пока нет:
-                  плейсхолдер тот же, что в карточках шаблонов. */}
+                  {/* У пазла и пар — живая игра. У скретч-карты превью пока
+                  нет: плейсхолдер тот же, что в карточках шаблонов. */}
                   {game.title === "games.card.1.title" ? (
-                    <PuzzleDemo />
+                    <GameDemo kind="puzzle" />
+                  ) : game.title === "games.card.2.title" ? (
+                    <GameDemo kind="memory" />
                   ) : (
                     <div aria-hidden="true" className="bg-photo min-h-[200px] xl:min-h-[240px]" />
                   )}

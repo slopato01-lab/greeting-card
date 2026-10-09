@@ -6,7 +6,6 @@ import { Button } from "@/components/Button";
 import { IconButton, ToolButton } from "@/components/editor/controls";
 import { GamePanel } from "@/components/editor/GamePanel";
 import { GameStage } from "@/components/editor/GameStage";
-import { PUZZLE_SAMPLE_PHOTO } from "@/components/games/PuzzleDemo";
 import { AnimationPanel, Inspector } from "@/components/editor/Inspector";
 import { MusicPanel } from "@/components/editor/MusicPanel";
 import { Paywall, type PaywallReason } from "@/components/editor/Paywall";
@@ -27,6 +26,7 @@ import { stickerInfo } from "@/lib/editor/stickers";
 import { cardKey } from "@/lib/editor/premium";
 import { videoSupported } from "@/lib/editor/record";
 import { TEXT_PRESET_INFO, type TextPreset } from "@/lib/editor/presets";
+import { playPhotos } from "@/lib/games/kinds";
 import { type TextKey, t } from "@/lib/i18n";
 
 /**
@@ -105,6 +105,7 @@ export function Editor() {
     music,
     game,
     gamePhoto,
+    gamePhotos,
     playing,
     busy,
     busyText,
@@ -171,6 +172,11 @@ export function Editor() {
 
   const [tab, setTab] = useState<EditorTab>("templates");
   const gameStage = tab === "game" && ready;
+  // Свои фото игры по её виду; чего не хватает — добирают примеры.
+  const gameOwn = game?.kind === "memory"
+      ? gamePhotos.map((photo) => photo.url)
+      : gamePhoto === null ? [] : [gamePhoto];
+  const gameShown = playPhotos(game?.kind ?? "puzzle", gameOwn);
 
   // Адрес попросил вкладку (?game=puzzle из попапа на /games) —
   // открываем её, как при выделении слоя: во время рендера, не в эффекте.
@@ -269,6 +275,7 @@ export function Editor() {
           <GamePanel
             game={game}
             photo={gamePhoto}
+            photos={gamePhotos}
             disabled={!ready || busy}
             onGame={actions.setGame}
             onPhoto={actions.setGamePhoto}
@@ -320,10 +327,11 @@ export function Editor() {
           ряд кнопки «Просмотр». */}
       <div className="relative order-1 flex min-h-0 items-center justify-center xl:[container-type:size] xl:order-none xl:col-start-3 xl:row-start-1 xl:p-[24px]">
         {/* Вкладка «Игра»: на сцене пазл вместо открытки (09.10.2026).
-            Без игры — пример, тот же, что в попапе-пробе. */}
+            Без игры — пример пазла, тот же, что в попапе-пробе. */}
         {gameStage ? (
           <GameStage
-            photo={gamePhoto ?? PUZZLE_SAMPLE_PHOTO}
+            kind={game?.kind ?? "puzzle"}
+            photos={gameShown}
             title={game?.title ?? t("game.demo.title")}
             caption={game?.caption ?? t("game.demo.caption")}
           />

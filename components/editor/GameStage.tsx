@@ -1,26 +1,30 @@
 "use client";
 
-import { PhotoPuzzle } from "@/components/games/PhotoPuzzle";
+import { GameBody } from "@/components/games/GameBody";
+import type { GameKind } from "@/lib/editor/document";
 
 /**
  * Сцена вкладки «Игра» (09.10.2026, просьба пользователя): пока открыта
- * вкладка, вместо открытки в середине редактора — сам пазл, как его
+ * вкладка, вместо открытки в середине редактора — сама игра, как её
  * увидит получатель. Сбоку, в GamePanel, меняют фото, обращение
  * и подпись — сцена следует за ними сразу.
  *
  * Раскладка та же, что в попапе-пробе (GamePopup) и на /games:
- * обращение на плашке, игра, подпись. Новое фото — новая раскладка
- * (key), правка текста игру не сбрасывает.
+ * обращение на плашке, игра, подпись. Новое фото или другая игра —
+ * новая раскладка (key), правка текста игру не сбрасывает.
  *
  * Холст открытки при этом не размонтируется, а только прячется:
  * Fabric держит слои, и на другой вкладке открытка такая же, как была.
  */
 export function GameStage({
-  photo,
+  kind,
+  photos,
   title,
   caption,
 }: {
-  photo: string;
+  kind: GameKind;
+  /** Фото, готовые к игре: playPhotos в lib/games/kinds.ts. */
+  photos: readonly string[];
   title: string;
   caption: string;
 }) {
@@ -32,13 +36,11 @@ export function GameStage({
         </p>
       )}
 
-      <PhotoPuzzle
-        key={photo}
-        seed={`editor-stage-${photo}`}
-        photos={[photo]}
-        cover={null}
-        reward={null}
-        onDone={() => undefined}
+      <GameBody
+        key={`${kind}:${photos.join(" ")}`}
+        kind={kind}
+        seed={`editor-stage-${photos.join(" ")}`}
+        photos={photos}
       />
 
       {caption.trim() === "" ? null : (

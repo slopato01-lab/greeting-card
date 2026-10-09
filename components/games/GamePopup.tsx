@@ -3,8 +3,9 @@
 import { useEffect, useRef } from "react";
 
 import { Button } from "@/components/Button";
-import { PhotoPuzzle } from "@/components/games/PhotoPuzzle";
+import { GameBody } from "@/components/games/GameBody";
 import { Icon } from "@/components/Icon";
+import type { GameKind } from "@/lib/editor/document";
 import { t, type TextKey } from "@/lib/i18n";
 
 /**
@@ -22,9 +23,11 @@ import { t, type TextKey } from "@/lib/i18n";
  */
 export type GamePopupProps = {
   open: boolean;
+  kind: GameKind;
   /** Зерно раскладки: одно и то же — одна и та же раскладка. */
   seed: string;
-  photo: string;
+  /** Фото, готовые к игре: playPhotos в lib/games/kinds.ts. */
+  photos: readonly string[];
   title: string;
   caption: string;
   /**
@@ -35,7 +38,16 @@ export type GamePopupProps = {
   onClose: () => void;
 };
 
-export function GamePopup({ open, seed, photo, title, caption, action, onClose }: GamePopupProps) {
+export function GamePopup({
+  open,
+  kind,
+  seed,
+  photos,
+  title,
+  caption,
+  action,
+  onClose,
+}: GamePopupProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -80,13 +92,7 @@ export function GamePopup({ open, seed, photo, title, caption, action, onClose }
             </button>
           </div>
 
-          <PhotoPuzzle
-            seed={seed}
-            photos={[photo]}
-            cover={null}
-            reward={null}
-            onDone={() => undefined}
-          />
+          <GameBody kind={kind} seed={seed} photos={photos} />
 
           {caption.trim() === "" ? null : (
             <p className="font-ui caps text-badge text-body text-center break-words">{caption}</p>

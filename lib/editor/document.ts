@@ -481,6 +481,8 @@ export const LIMITS = {
   textLength: 500,
   /** Обращение и подпись игры — одна строка на плашке. */
   gameText: 60,
+  /** Своих фото в «Собери пару» — по одному на пару, пар шесть. */
+  gamePhotos: 6,
   fontSize: { min: 8, max: 200 },
   /** Слой может выходить за край открытки, но не улетать в бесконечность. */
   position: { min: -CARD_HEIGHT, max: CARD_HEIGHT * 2 },
@@ -572,19 +574,24 @@ export type CardMusic =
   { kind: "library"; id: string } | { kind: "yandex"; album: string; track: string };
 
 /**
- * Игра открытки (09.10.2026, план утверждён пользователем): пока только
- * фото-пазл. Свои фото и тексты автора; нет фото — пазл собирает пример
- * с /games. Игра живёт в открытке по ссылке, на холст и в GIF/видео
- * не попадает. Поле `asset` названо как у фото-слоя: история
- * (historyAssets) и уборка IndexedDB находят снимок игры сами.
+ * Игра открытки (09.10.2026, план утверждён пользователем): фото-пазл
+ * и «Собери пару». Свои фото и тексты автора; своих нет или мало —
+ * игра добирает примеры (playPhotos в lib/games/kinds.ts). Игра живёт
+ * в открытке по ссылке, на холст и в GIF/видео не попадает.
+ * Поле `asset` названо как у фото-слоя: история (historyAssets)
+ * и уборка IndexedDB находят снимки игры сами — поэтому и фото пар
+ * лежат списком `{ asset }`, а не голыми строками.
  */
-export const GAME_KINDS = ["puzzle"] as const;
+export const GAME_KINDS = ["puzzle", "memory"] as const;
 
 export type GameKind = (typeof GAME_KINDS)[number];
 
 export type CardGame = {
   kind: GameKind;
+  /** Фото пазла. */
   asset?: string;
+  /** Фото «Собери пару», до LIMITS.gamePhotos, по порядку. */
+  photos?: { asset: string }[];
   /** Обращение над игрой («Ты лучший»). */
   title: string;
   /** Подпись под фото («Тебе от меня»). */
@@ -905,7 +912,22 @@ export function parseGame(raw: unknown): CardGame | null {
   if (kind === null || title === null || caption === null) return null;
   const game: CardGame = { kind, title, caption };
   if (isAssetId(raw.asset)) game.asset = raw.asset;
+  // Непонятные фото пар отбрасываются по одному, игра остаётся.
+  if (Array.isArray(raw.photos)) {
+    const photos = raw.photos
+      .flatMap((item: unknown) => (isObj(item) && isAssetId(item.asset) ? [{ asset: item.asset }] : []))
+      .slice(0, LIMITS.gamePhotos);
+    if (photos.length > 0) game.photos = photos;
+  }
   return game;
+}
+
+/** Все снимки игры: фото пазла и фото пар. */
+export function gameAssets(game: CardGame | null | undefined): string[] {
+  if (game === null || game === undefined) return [];
+  const ids = (game.photos ?? []).map((photo) => photo.asset);
+  if (game.asset !== undefined) ids.unshift(game.asset);
+  return ids;
 }
 
 export function parseEditorDoc(input: unknown): EditorDoc | null {
@@ -933,7 +955,7 @@ export function parseEditorDoc(input: unknown): EditorDoc | null {
   if (allAssets === null) return null;
   const game = parseGame(input.game);
   const used = new Set(parsed.flatMap((l) => (l.kind === "image" ? [l.asset] : [])));
-  if (game?.asset !== undefined) used.add(game.asset);
+  for (const id of gameAssets(game)) used.add(id);
   const assets = Object.fromEntries(Object.entries(allAssets).filter(([id]) => used.has(id)));
 
   const doc: EditorDoc = {
