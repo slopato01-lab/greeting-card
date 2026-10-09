@@ -34,9 +34,13 @@ export function HowHero() {
     <section
       id="steps"
       aria-labelledby={PAGE_TITLE_ID}
-      className="rounded-panel xl:rounded-panel-d bg-surface grid gap-[10px] p-[10px] xl:grid-cols-2 xl:gap-[16px] xl:p-[16px]"
+      // С 1280 панель во весь экран под шапкой (09.10.2026, просьба
+      // пользователя): на высоком мониторе под ней оставалась пустота.
+      // 32px — отступ страницы сверху и воздух снизу. Минимальная
+      // высота, а не фиксированная: на низком ноутбуке текст длиннее экрана.
+      className="rounded-panel xl:rounded-panel-d bg-surface grid gap-[10px] p-[10px] xl:min-h-[calc(100svh-var(--spacing-header-d)-32px)] xl:grid-cols-2 xl:gap-[16px] xl:p-[16px]"
     >
-      <Photo src="/assets/benefits/balloons.webp" className="min-h-[340px] xl:min-h-[600px]">
+      <Photo src="/assets/benefits/balloons.webp" className="min-h-[340px] xl:min-h-0">
         <HowNav current="steps" />
         <div className="absolute inset-x-[12px] bottom-[12px] flex items-end gap-[8px] xl:inset-x-[16px] xl:bottom-[16px]">
           <p className="bg-paper rounded-inner font-ui text-note xl:text-note-d text-ink max-w-[320px] px-[14px] py-[10px] leading-[1.4]">

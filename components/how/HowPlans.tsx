@@ -72,7 +72,14 @@ export function HowPlans() {
               <ul role="list" className="flex flex-col gap-[12px]">
                 {plan.items.map((item) => (
                   <li key={item} className="flex gap-[10px]">
-                    <Icon name="tick" size={20} className="text-gold-deep mt-[1px] shrink-0" />
+                    {/* Зелёный кружок с белой галочкой (09.10.2026, просьба
+                        пользователя), токен --green — только здесь. */}
+                    <span
+                      aria-hidden="true"
+                      className="bg-green text-paper mt-[1px] grid size-[20px] shrink-0 place-items-center rounded-full"
+                    >
+                      <Icon name="tick" size={13} />
+                    </span>
                     <span className="font-ui text-note xl:text-note-d text-ink leading-[1.45]">
                       {t(item)}
                     </span>
