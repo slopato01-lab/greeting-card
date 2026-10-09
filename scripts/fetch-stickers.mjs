@@ -173,6 +173,7 @@ picsum.photos по номеру, обрезаны по центру, \`bw\` — 
 - \`sample-amor-1.jpg\` — Scott Webb, https://stocksnap.io/photo/engagement-ring-4IFH7OWDL8
 - \`sample-amor-2.jpg\` — Shelby Deeter, https://stocksnap.io/photo/couple-love-0X3DOGA75K
 - \`sample-amor-3.jpg\` — frank mckenna, https://stocksnap.io/photo/couple-man-F7HEUYRTTH
+- \`sample-sunset.jpg\` — Caleb Ekeroth, https://stocksnap.io/photo/couple-love-6QXTZFW51U
 - \`xmas-tree-photo.png\` — Pawel Kadysz, https://stocksnap.io/photo/christmas-tree-ELVRAJB0NI
   (край срезан волной, 256 цветов)
 

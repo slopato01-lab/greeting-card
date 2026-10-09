@@ -246,7 +246,7 @@ function valFilm(): EditorDoc {
   ]);
 }
 
-/** «Любовь это…» — карточка в тонкой рамке, большое окно под фото, два сердца. */
+/** «Любовь это…» — карточка в тонкой рамке, большое окно с парой на закате, два сердца. */
 function valLoveIs(): EditorDoc {
   const ink = "#111111";
   const frameIn = anim({ in: "fade", inDuration: 0.5, delay: 0 });
@@ -262,14 +262,9 @@ function valLoveIs(): EditorDoc {
     }),
     sticker("heart-red", 466, 92, 0.48, -8, beat(1.2)),
     sticker("heart-red", 520, 76, 0.4, 10, beat(1.35, 1.5)),
-    sticker(
-      "photo-placeholder",
-      300,
-      372,
-      0.86,
-      0,
-      anim({ in: "zoom", inDuration: 0.7, delay: 1.5 }),
-    ),
+    // Пара на закате вместо силуэта (09.10.2026, просьба пользователя):
+    // та же рамка 344×430, своё фото обрезается под неё.
+    sticker("sample-sunset", 300, 372, 0.43, 0, anim({ in: "zoom", inDuration: 0.7, delay: 1.5 })),
     text("tpl.val-loveis.text", 300, 640, ink, "inter", 23, {
       bold: true,
       anim: anim({ in: "fade", inDuration: 0.8, delay: 2.3 }),

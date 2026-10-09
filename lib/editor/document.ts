@@ -237,6 +237,8 @@ export const STICKER_IDS = [
   "sample-amor-1",
   "sample-amor-2",
   "sample-amor-3",
+  // «Любовь это…»: пара на закате вместо силуэта (09.10.2026).
+  "sample-sunset",
   "kevin",
   "xmas-tree-photo",
   "gingerbread",

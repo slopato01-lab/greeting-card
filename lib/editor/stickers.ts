@@ -321,6 +321,9 @@ export const STICKERS: readonly StickerInfo[] = [
       ["sample-amor-1", 300, 600, true],
       ["sample-amor-2", 300, 360, true],
       ["sample-amor-3", 300, 600, true],
+      // «Любовь это…» (series.ts): пара на закате, в цвете — просьба
+      // пользователя 09.10.2026 вместо силуэта-заглушки.
+      ["sample-sunset", 800, 1000, false],
     ] as const
   ).map(([id, width, height, mono]): StickerInfo => ({
     ...SAMPLE,
