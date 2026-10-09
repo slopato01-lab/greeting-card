@@ -11,7 +11,8 @@ import type { TextKey } from "@/lib/i18n";
  *   не переводились (тут кроме английских есть португальские и турецкие);
  * - фото людей чужие → примеры StockSnap CC0 (`sample-love/strip/xmas/
  *   wed/amor-*`, CREDITS.md), своё фото обрезается под окно примера;
- * - чужие ники → @yourname, логотипы и «designed by» не переносились,
+ * - чужие ники, логотипы и «designed by» не переносились, своих @yourname
+ *   на открытке тоже нет (09.10.2026, просьба пользователя),
  *   годы событий → 2027;
  * - исключение — Кевин из «Один дома» в «новый год 6»: вырезан из самого
  *   макета, пользователь попросила оставить его обязательно.
@@ -126,9 +127,6 @@ function valBooth(): EditorDoc {
     // Нижняя: второй кадр и подпись архива.
     rect(300, 632, 472, 256, white, bottom),
     photo("sample-love-2", 300, 616, 420, 0, bottom),
-    text("tpl.val-booth.archive", 300, 742, ink, "caveat", 17, {
-      anim: anim({ in: "typewriter", inDuration: 0.6, delay: 2.3 }),
-    }),
   ]);
 }
 
@@ -217,9 +215,6 @@ function valSoulmate(): EditorDoc {
     text("tpl.val-soulmate.place", 300, 708, white, "ptserif", 18, {
       angle: -10,
       anim: anim({ in: "fade", inDuration: 0.5, delay: 3.1 }),
-    }),
-    text("tpl.val-soulmate.handle", 552, 548, white, "inter", 11, {
-      anim: anim({ in: "fade", inDuration: 0.5, delay: 2.8 }),
     }),
     text("tpl.val-soulmate.sign", 552, 590, white, "badscript", 40, {
       anim: anim({ in: "letters", inDuration: 0.6, delay: 3.0, loop: "pulse", loopPeriod: 2.6 }),

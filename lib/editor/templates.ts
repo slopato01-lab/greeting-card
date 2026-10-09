@@ -295,7 +295,6 @@ function polaroid(): EditorDoc {
       snow(560, 490, 0.16, 5),
       snow(190, 70, 0.12, 6),
       snow(424, 200, 0.12, 7),
-      corner("tpl.polaroid.handle", 86, "left"),
       corner("tpl.polaroid.tag", 528, "right"),
       sticker(
         "torn-paper",

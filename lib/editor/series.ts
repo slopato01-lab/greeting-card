@@ -12,8 +12,9 @@ import type { TextKey } from "@/lib/i18n";
  * - фото людей с макетов чужие — вместо них примеры с Unsplash
  *   и StockSnap (`sample-*`, CREDITS.md), людей — уже без фона;
  *   своё фото встаёт на их место и обрезается под окно;
- * - фирменные знаки и чужие ники с макетов не переносились: вместо
- *   ника автора — «@yourname», логотип киностудии убран совсем.
+ * - фирменные знаки и чужие ники с макетов не переносились,
+ *   своих ников и сайтов на открытке тоже нет (09.10.2026, пользователь:
+ *   «этого быть на открытке не должно»), логотип киностудии убран совсем.
  *
  * Анимация придумана к каждому макету в духе
  * design/пример анимации и дизайна.MP4: всё появляется по очереди
@@ -173,9 +174,6 @@ function valWishing(): EditorDoc {
     }),
     text("tpl.val-wishing.text", 300, 382, "#5a1a1f", "ptmono", 10.5, {
       anim: anim({ in: "fade", inDuration: 0.8, delay: 1.8 }),
-    }),
-    text("tpl.val-wishing.handle", 300, 436, "#5a1a1f", "ptmono", 13, {
-      anim: anim({ in: "fade", inDuration: 0.6, delay: 2.0 }),
     }),
     sticker(
       "grid-paper",
@@ -690,8 +688,6 @@ function nyXmas(): EditorDoc {
       spacing: 300,
       anim: anim({ in: "tracking", inDuration: 0.8, delay: 2.6 }),
     }),
-    corner("tpl.ny-xmas.handle", 96, 782),
-    corner("tpl.ny-xmas.site", 500, 782),
   ]);
 }
 
@@ -727,13 +723,8 @@ function reelPhotos(
 /** «this is my memory of today» — бордовый холст, снизу половина диска с фото. */
 function frMemory(): EditorDoc {
   const white = "#fbf3ee";
-  const top = (key: TextKey, x: number) =>
-    text(key, x, 40, white, "inter", 12, { anim: anim({ in: "fade", inDuration: 0.6, delay: 0 }) });
   const scale = 1.15;
   return doc("#6e1c1c", [
-    top("tpl.fr-memory.design", 62),
-    top("tpl.fr-memory.by", 300),
-    top("tpl.fr-memory.handle", 520),
     text("tpl.fr-memory.this", 236, 168, white, "playfair", 40, {
       anim: anim({ in: "fade", inDuration: 0.6, delay: 0.4 }),
     }),

@@ -893,7 +893,6 @@ export const ru = {
   "tpl.polaroid.year": "2026",
   "tpl.polaroid.word3": "Год",
   "tpl.polaroid.wish": "Пусть сбудутся все мечты!",
-  "tpl.polaroid.handle": "/мойпрофиль",
   "tpl.polaroid.tag": "#2026",
   "anim.polaroid.name": "Ёлка из полароидов",
   "anim.polaroid.lead":
@@ -915,7 +914,6 @@ export const ru = {
   "tpl.val-wishing.title": "Wishing you a\ndelightful\nValentine's Day!",
   "tpl.val-wishing.text":
     "Wishing you a day brimming with joyful moments and cherished\nmemories. Embrace love in all its forms, whether shared with a\nbeloved one or nurtured through self-love. May your heart be filled\nwith happiness and your spirit radiate brightly!",
-  "tpl.val-wishing.handle": "@yourname",
   "anim.val-wishing.name": "Рукописная валентинка",
   "anim.val-wishing.lead":
     "Красные буквы выводятся от руки, фото ложится на лист в клетку, скрепка и сердца — следом. Замените фото на ваше.",
@@ -1008,15 +1006,10 @@ export const ru = {
   "tpl.ny-xmas.title": "Merry\nChristmas",
   "tpl.ny-xmas.and": "&",
   "tpl.ny-xmas.ny": "HAPPY NEW YEAR",
-  "tpl.ny-xmas.handle": "@YOURNAME",
-  "tpl.ny-xmas.site": "YOURSITE.COM",
   "anim.ny-xmas.name": "Merry Christmas",
   "anim.ny-xmas.lead":
     "Шесть полароидов складываются в ёлку, золотая лента и блёстки переливаются, «Merry Christmas» пишется от руки.",
   "tpl.fr-memory.label": "Мои воспоминания",
-  "tpl.fr-memory.design": "DESIGN",
-  "tpl.fr-memory.by": "BY",
-  "tpl.fr-memory.handle": "@YOURNAME",
   "tpl.fr-memory.this": "this is",
   "tpl.fr-memory.my": "my",
   "tpl.fr-memory.memory": "memory",
@@ -1076,7 +1069,6 @@ export const ru = {
   "tpl.val-booth.episode": "episodio.\n25/sep/2027",
   "tpl.val-booth.quote": "“ this is my\nfavorite boy”",
   "tpl.val-booth.footer": "voesing on social media",
-  "tpl.val-booth.archive": "yourname's archive",
   "anim.val-booth.name": "This is my favorite boy",
   "anim.val-booth.lead":
     "Три белые карточки по очереди ложатся поверх вашего фото: два кадра и цитата от руки.",
@@ -1090,7 +1082,6 @@ export const ru = {
   "tpl.val-soulmate.forever": "forever ?",
   "tpl.val-soulmate.safe": "safe",
   "tpl.val-soulmate.place": "place , ,",
-  "tpl.val-soulmate.handle": "@yourname",
   "tpl.val-soulmate.sign": "fs.",
   "anim.val-soulmate.name": "Soul mate",
   "anim.val-soulmate.lead":
